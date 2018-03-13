@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hgicreate.rno.gsm.mapper.optimize.SpotInterModulationMapper">
+
+    <select id="selectDchno"  resultType="string">
+      select dchno from cdd_RLCFP_${param1} cdd_RLCFP where Date=#{param1} and CELL= #{param2}
+    </select>
+    <select id="queryInfoByCellAndDate" parameterType="string" resultType="string">
+        select distinct BSC from cdd_RLCFP_${param1} cdd_RLCFP where  Date= #{param1} and CELL=#{param2}
+    </select>
+    <insert id="insertToSpotInterModule" parameterType="string">
+        insert into tmp_gsm_spotInterModule VALUES
+        (
+        <foreach collection="list" item="item" index="index" separator=",">
+        '${item}'
+        </foreach>
+        )
+    </insert>
+    <select id="getSpotInterModulationCount" parameterType="map" resultType="long">
+        SELECT count(*) from (select distinct 日期,网元,小区,频点1,频点2,受扰频点,干扰类型 from tmp_gsm_spotInterModule
+         where
+        <if test="dates!=null">
+        日期 IN
+        <foreach collection="dates" item="date" index="index" open="(" close=")" separator=",">
+            ${date}
+        </foreach>
+        </if>
+        <if test="bscs!=null">
+        and  网元 in
+        <foreach collection="bscs" item="bsc" index="index" open="(" close=")" separator=",">
+            '${bsc}'
+        </foreach>
+        </if>
+        <if test="cells!=null">
+        and 小区 in
+        <foreach collection="cells" item="cell" index="index" open="(" close=")" separator=",">
+            '${cell}'
+        </foreach>
+        </if>
+         ) as tmpgsm
+    </select>
+    <select id="querySpotInterModulationByPage" parameterType="map" resultType="map">
+      select top ${cnt} * from(
+		select row_number() over(order by A.日期) as rownumber,* from(
+        select distinct 日期,网元,小区,频点1,频点2,受扰频点,干扰类型 from tmp_gsm_spotInterModule
+        where
+        <if test="dates!=null">
+        日期 IN
+        <foreach collection="dates" item="date" index="index" open="(" close=")" separator=",">
+            ${date}
+        </foreach>
+        </if>
+        <if test="bscs!=null">
+        and  网元 in
+        <foreach collection="bscs" item="bsc" index="index" open="(" close=")" separator=",">
+            '${bsc}'
+        </foreach>
+        </if>
+        <if test="cells!=null">
+        and 小区 in
+        <foreach collection="cells" item="cell" index="index" open="(" close=")" separator=",">
+            '${cell}'
+        </foreach>
+        </if>
+        ) A)B where B.rownumber &gt; ${startIndex}
+    </select>
+    <select id="existTempTable"  resultType="String">
+        select name
+        from sysobjects
+        where name='tmp_gsm_spotInterModule'
+    </select>
+    <update id="dropTempTable">
+        drop table "tmp_gsm_spotInterModule"
+    </update>
+
+    <update id="createNewTable" >
+        create table  tmp_gsm_spotInterModule(
+        	日期 VARCHAR(50),
+	        网元 VARCHAR(50),
+	        小区 VARCHAR(50),
+	        频点1 VARCHAR(50),
+	        频点2 VARCHAR(50),
+	        受扰频点  VARCHAR(50),
+	        干扰类型 VARCHAR(50)
+        )
+    </update>
+</mapper>

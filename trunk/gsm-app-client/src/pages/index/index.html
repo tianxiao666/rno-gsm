@@ -1,0 +1,96 @@
+<ion-header>
+  <ion-navbar>
+    <button ion-button menuToggle>
+      <ion-icon name="menu"></ion-icon>
+    </button>
+    <ion-title>GSM预警监控</ion-title>
+    <ion-buttons end>
+      <button ion-button icon-only (click)="doLogout()">
+        <ion-icon ios="ios-log-out" md="md-log-out"></ion-icon>
+      </button>
+    </ion-buttons>
+
+  </ion-navbar>
+</ion-header>
+
+
+<ion-content>
+  <ion-item [navPush]="monitorPage">
+    <ion-thumbnail item-start>
+      <img src="assets/img/indicator.jpg"/>
+    </ion-thumbnail>
+    <h2>指标监控</h2>
+  </ion-item>
+  <ion-item [navPush]="processPage">
+    <ion-thumbnail item-start>
+      <img src="assets/img/list.jpg"/>
+    </ion-thumbnail>
+    <h2>工单处理</h2>
+  </ion-item>
+  <ion-item [navPush]="extractPage">
+    <ion-thumbnail item-start>
+      <img src="assets/img/download.jpg"/>
+    </ion-thumbnail>
+    <h2>工单提取</h2>
+  </ion-item>
+  <ion-item [navPush]="batchProcessPage">
+    <ion-thumbnail item-start>
+      <img src="assets/img/batch.jpg"/>
+    </ion-thumbnail>
+    <h2>工单批量处理</h2>
+  </ion-item>
+  <ion-item [navPush]="statisticsPage">
+    <ion-thumbnail item-start>
+      <img src="assets/img/statistic.jpg"/>
+    </ion-thumbnail>
+    <h2>工单统计</h2>
+  </ion-item>
+</ion-content>
+
+
+<!--<ion-content padding>-->
+  <!--<ion-grid>-->
+    <!--<ion-row>-->
+      <!--<ion-col col-2>-->
+        <!--<a [navPush]="monitorPage" [navParams]="params">-->
+          <!--<div>-->
+            <!--<img src="assets/img/indicator.jpg"/>-->
+            <!--<div style="color: black;text-align: center"><label>指标监控</label></div>-->
+          <!--</div>-->
+        <!--</a>-->
+      <!--</ion-col>-->
+      <!--<ion-col col-2>-->
+        <!--<a [navPush]="processPage">-->
+          <!--<div>-->
+            <!--<img src="assets/img/list.jpg"/>-->
+            <!--<div style="color: black;text-align: center"><label>工单处理</label></div>-->
+          <!--</div>-->
+        <!--</a>-->
+      <!--</ion-col>-->
+      <!--<ion-col col-2>-->
+        <!--<a [navPush]="extractPage">-->
+          <!--<div>-->
+            <!--<img src="assets/img/download.jpg"/>-->
+            <!--<div style="color: black;text-align: center"><label>工单提取</label></div>-->
+          <!--</div>-->
+        <!--</a>-->
+      <!--</ion-col>-->
+      <!--<ion-col col-2>-->
+        <!--<a [navPush]="batchProcessPage">-->
+          <!--<div>-->
+            <!--<img src="assets/img/batch.jpg"/>-->
+            <!--<div style="color: black;text-align: center;margin-left: -3px"><label>工单批量处理</label></div>-->
+          <!--</div>-->
+        <!--</a>-->
+      <!--</ion-col>-->
+      <!--<ion-col col-2>-->
+        <!--<a [navPush]="statisticsPage">-->
+          <!--<div>-->
+            <!--<img src="assets/img/statistic.jpg"/>-->
+            <!--<div style="color: black;text-align: center"><label>工单统计</label></div>-->
+          <!--</div>-->
+        <!--</a>-->
+      <!--</ion-col>-->
+    <!--</ion-row>-->
+  <!--</ion-grid>-->
+<!--</ion-content>-->

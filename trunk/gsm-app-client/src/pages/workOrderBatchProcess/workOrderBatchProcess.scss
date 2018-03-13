@@ -1,0 +1,47 @@
+page-WorkOrderBatchProcess{
+  #textfield{
+    border: none;
+    white-space: pre-wrap;
+  }
+  .cards-bg{
+    background: #efeff4;
+  }
+  .ionCardHeader{
+    color: #00f;
+  }
+  .button-work{
+    margin: 10px;
+    border-radius: 2px;
+    width: calc(100% - 20px);
+  }
+
+  .sl-custom-file {
+    position: relative;
+    display: inline-block;
+    zoom: 1;
+    cursor: pointer;
+    overflow: hidden;
+    vertical-align: middle;
+  }
+  .btn-file{
+    background-color: #E95C33 !important;
+    color: #fff !important;
+    border: 1px solid #E95C33 !important;
+    width: 150px !important;
+    height: 40px !important;
+    border-radius: 0 !important;
+  }
+  .sl-custom-file .ui-input-file {
+    position: absolute;
+    right: 0;
+    top: 0;
+    _zoom: 30;
+    font-size: 300px \9;
+    height: 100%;
+    _height: auto;
+    opacity: 0;
+    filter: alpha(opacity=0);
+    -ms-filter: "alpha(opacity=0)";
+    cursor: pointer;
+  }
+}

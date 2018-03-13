@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="base :: common_header(~{::title},~{::link},~{::meta},~{::script})">
+	<title>指标图表</title>
+	<!-- webjars -->
+	<link>
+	<script src="/webjars/echarts/3.2.3/echarts.js" th:src="@{/webjars/echarts/echarts.min.js}"></script>
+
+	<!-- custom -->
+	<script src="/static/js/common.js" th:src="@{/js/common.js}"></script>
+	<script src="/static/js/query/indicator_diagram.js" th:src="@{/js/query/indicator_diagram.js}"></script>
+
+</head>
+<body>
+    <div id="loading" class="loading" style="display:none">加载中...</div>
+    <div id="info" class="info-style" style="display:none"></div>
+	<div class="bs-callout bs-callout-danger" id="callout-tables-striped-ie8">
+		<form id="indicatorForm">
+			<table>
+				<tr>
+					<td class="td-style"><label class="label-style" for="dateSelect">日期<font class="star-style"> *</font>:</label> <select class="form-control"
+						style="width: 150px; display: inline-block" id="dateSelect" name="dateSelect">
+						<option value="-1"></option>
+							<option th:each="oneDate:${indicatordate}" th:value="${oneDate}" th:text="${oneDate}"></option>
+					</select>
+					</td>
+					<td class="td-style td-space">
+						<button type="button" id="dateBtn" class="btn btn-default" data-toggle="modal" data-target="#myModal">
+							<i class="glyphicon glyphicon-forward"></i>
+						</button>
+					</td>
+					<td class="td-style"><label class="label-style" for="dateSelect">时间：</label>
+						<select class="form-control" style="width: 150px; display: inline-block" id="timeSelect" name="timeSelect">
+							<option value="-1"></option>
+							<option value="0000:0100">0000:0100</option>
+							<option value="0100:0200">0100:0200</option>
+							<option value="0200:0300">0200:0300</option>
+							<option value="0300:0400">0300:0400</option>
+							<option value="0400:0500">0400:0500</option>
+							<option value="0500:0600">0500:0600</option>
+							<option value="0600:0700">0600:0700</option>
+							<option value="0700:0800">0700:0800</option>
+							<option value="0800:0900">0800:0900</option>
+							<option value="0900:1000">0900:1000</option>
+							<option value="1000:1100">1000:1100</option>
+							<option value="1100:1200">1100:1200</option>
+							<option value="1200:1300">1200:1300</option>
+							<option value="1300:1400">1300:1400</option>
+							<option value="1400:1500">1400:1500</option>
+							<option value="1500:1600">1500:1600</option>
+							<option value="1600:1700">1600:1700</option>
+							<option value="1700:1800">1700:1800</option>
+							<option value="1800:1900">1800:1900</option>
+							<option value="1900:2000">1900:2000</option>
+							<option value="2000:2100">2000:2100</option>
+							<option value="2100:2200">2100:2200</option>
+							<option value="2200:2300">2200:2300</option>
+							<option value="2300:0000">2300:0000</option>
+					</select>
+					</td>
+					<td class="td-style td-space">
+						<button type="button" id="timeBtn" class="btn btn-default" data-toggle="modal" data-target="#myModal">
+							<i class="glyphicon glyphicon-forward"></i>
+						</button>
+					</td>
+					<td class="td-style">
+						<label class="label-style" for="bscSelect"> 网元：</label>
+						<select class="form-control" id="bscSelect" name="bscSelect" style="width: 150px; display: inline-block">
+							<option value="-1"></option>
+							<!--/*@thymesVar id="bsc" type="List"*/-->
+							<option th:each="oneBsc:${indicatorbsc}" th:value="${oneBsc}" th:text="${oneBsc}"></option>
+						</select>
+					</td>
+					<td class="td-style td-space">
+						<button type="button" class="form-control btn btn-default" id="bscButton" data-toggle="modal" data-target="#myModal">
+							<i class="glyphicon glyphicon-forward"></i> </button>
+					</td>
+				</tr>
+				<tr>
+					<td class="td-style">&nbsp;</td>
+				</tr>
+				<tr>
+					<td class="td-style"><label class="label-style" for="cellSelect">小区：</label> <select class="form-control"
+																										 style="width: 150px; display: inline-block" id="cellSelect" name="cellSelect">
+						<option value="-1"></option>
+						<option th:each="oneCell:${indicatorcell}" th:value="${oneCell}" th:text="${oneCell}"></option>
+					</select>
+					</td>
+					<td class="td-style td-space">
+						<button type="button" id="cellBtn" class="btn btn-default" data-toggle="modal" data-target="#myModal">
+							<i class="glyphicon glyphicon-forward"></i>
+						</button>
+					</td>
+					<td  class="td-style"><label class="label-style" for="templateSelect">模板：</label>
+						<select class="form-control" style="width: 150px; display: inline-block" id="templateSelect" name="templateSelect">
+							<option th:each="oneCell:${indicatortemplate}" th:value="${oneCell}" th:text="${oneCell}"></option>
+						</select>
+					</td>
+					<td class="td-style td-space">&nbsp;</td>
+					<td class="td-style"><label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</label></label><label class="label-style" for="axisSelect">X 轴：</label>
+						<select class="form-control" style="width: 150px; display: inline-block" id="axisSelect" name="axisSelect">
+							<option value="按日期">按日期</option>
+							<option value="按时间">按时间</option>
+							<option value="按网元">按网元</option>
+							<option value="按小区">按小区</option>
+						</select>
+					</td>
+					<td class="td-style td-space">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
+					<td class="td-style">
+						<label class="label-style"><input  checked="checked" type="radio" name="graphics" value="柱图" />柱图 </label>
+						&nbsp;
+						<label class="label-style"><input type="radio" name="graphics" value="线图" />线图 </label>
+					</td>
+					<td class="td-style td-space">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
+					<td class="td-style">
+						<button type="button" id="searchBtn" class="btn-width btn btn-default">查询</button>
+					</td>
+				</tr>
+			</table>
+		</form>
+	</div>
+
+	<div class="row style-select modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+		aria-hidden="true">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+					<h4 class="modal-title" id="myModalLabel"></h4>
+				</div>
+				<div class="modal-body" style="margin-top: 1px">
+					<div class="row">
+						<div class="col-xs-5">
+							<h5 class="modal-title" id="myModalLabel1"></h5>
+						</div>
+						<div class="col-xs-2"></div>
+						<div class="col-xs-5">
+							<h5 class="modal-title" id="myModalLabel2"></h5>
+						</div>
+					</div>
+					<div class="row">
+						<div class="col-xs-5">
+							<select name="from[]" id="search" class="form-control" size="16" multiple="multiple"
+								style="height: 280px; width: 220px; overflow: auto;"></select>
+						</div>
+
+						<div class="col-xs-2">
+							<br>
+							<button type="button" id="search_rightSelected" class="btn btn-block">
+								<i class="glyphicon glyphicon-chevron-right"></i>
+							</button>
+							<br>
+							<button type="button" id="search_rightAll" class="btn btn-block">
+								<i class="glyphicon glyphicon-forward"></i>
+							</button>
+							<br> <br> <br>
+							<button type="button" id="search_leftAll" class="btn btn-block">
+								<i class="glyphicon glyphicon-backward"></i>
+							</button>
+							<br>
+							<button type="button" id="search_leftSelected" class="btn btn-block">
+								<i class="glyphicon glyphicon-chevron-left"></i>
+							</button>
+						</div>
+
+						<div class="col-xs-5">
+							<select name="to[]" id="search_to" class="form-control" size="16" multiple="multiple"
+								style="height: 280px; width: 220px; overflow: auto;"></select>
+						</div>
+					</div>
+
+				</div>
+				<div class="modal-footer">
+					<div style="float: left; margin-top: -10px; margin-bottom: -20px">
+						<p id="searching"></p>
+					</div>
+					<div style="float: right; margin-top: -10px; margin-bottom: -20px">
+						<div class="form-group form-inline">
+							<input type="button" id=ensure class="form-control  btn btn-success" value="确定" />
+							<input type="button" id=cancle class="form-control  btn btn-info" data-dismiss="modal" value="取消" />
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div id="chart" style="height: 600px;width: auto"></div>
+</body>
+</html>

@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hgicreate.rno.gsm.mapper.optimize.MotsMapper">
+	<select id="queryMots" parameterType="map" resultType="java.util.LinkedHashMap">
+		<foreach collection="date" item="date" separator="union all">
+			select sts_MOTS.Date      as 日期,
+		       sts_MOTS.Time      as 时间,
+		       sts_MOTS.BSC,
+		       RXMOP_TRX.CELL,
+		       sts_MOTS.ObjectID  as RXOTS,
+		       sts_MOTS.CONERRCNT,
+		       sts_MOTS.CONCNT
+		  from sts_MOTS_${date} sts_MOTS, cdd_RXMOP_TRX_${date} RXMOP_TRX
+		 where sts_MOTS.BSC = RXMOP_TRX.BSC
+		   and SUBSTRING(Replace(sts_MOTS.ObjectID, 'TS', 'TRX'),
+		                 8,
+		                 LEN(sts_MOTS.ObjectID) - 8) =
+		       SUBSTRING(RXMOP_TRX.MO, 8, LEN(RXMOP_TRX.MO))
+			<if test="cell!=null">
+				and RXMOP_TRX.CELL in
+				<foreach collection="cell" item="cell1" open="(" close=")"
+					separator=",">
+					'${cell1}'
+				</foreach>
+			</if>
+			<if test="time!=null">
+				and sts_MOTS.Time in
+				<foreach collection="time" item="time" open="(" close=")"
+					separator=",">
+					'${time}'
+				</foreach>
+			</if>
+		</foreach>
+	</select>
+</mapper>

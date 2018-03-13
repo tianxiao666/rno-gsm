@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="base :: common_header(~{::title},~{::link},~{::meta},~{::script})">
+<title>空闲传输</title>
+<!--自定义-->
+<script src="/static/js/query/idleTransmission.js" th:src="@{/js/query/idleTransmission.js}"></script>
+<script src="/static/js/common.js" th:src="@{/js/common.js}"></script>
+<!--link为通用方法识别标志-->
+<link>
+</head>
+<body>
+	<div id="loading" class="loading" style="display: none">加载中...</div>
+	<div id="info" class="info-style" style="display: none"></div>
+	<div class="bs-callout bs-callout-danger" id="callout-tables-striped-ie8">
+		<form id="idleTransmissionForm" method="post">
+			<input type="hidden" id="hiddenPageSize" name="hiddenPageSize" value="25" /> <input type="hidden"
+				id="hiddenCurrentPage" name="hiddenCurrentPage" value="1" /> <input type="hidden" id="hiddenTotalPageCnt"
+				name="hiddenTotalPageCnt" /> <input type="hidden" id="hiddenTotalCnt" name="hiddenTotalCnt" /> <input
+				type="hidden" id="linage" name="linage" th:value="${linage}" />
+			<table class="table-style">
+				<tr>
+					<td class="td-style"><label class="label-style2" for="dateSelect"><font class="star-style"> *</font>日期：
+					</label> <select class="form-control" style="width: 150px; display: inline-block" id="dateSelect" name="dateSelect">
+							<option value="-1"></option>
+							<option th:each="oneDate:${date}" th:value="${oneDate}" th:text="${oneDate}"></option>
+					</select>
+					<button type="button" id="dateBtn" class="btn btn-default btn-bottom" data-toggle="modal" data-target="#myModal">
+							<i class="glyphicon glyphicon-forward"></i>
+						</button>
+					</td>
+					<td class="td-style"><label class="label-style2" for="bscSelect">网元：
+					</label> <select class="form-control" style="width: 150px; display: inline-block" id="bscSelect" name="bscSelect">
+							<option value="-1"></option>
+							<option th:each="oneBsc:${bsc}" th:value="${oneBsc}" th:text="${oneBsc}"></option>
+					</select>
+					<button type="button" id="bscBtn" class="btn btn-default btn-bottom" data-toggle="modal" data-target="#myModal">
+							<i class="glyphicon glyphicon-forward"></i>
+						</button>
+					</td>
+					<td class="td-style"><label class="label-style2" for="cellSelect">小区：
+					</label> <select class="form-control" style="width: 150px; display: inline-block" id="cellSelect" name="cellSelect">
+							<option value="-1"></option>
+							<option th:each="oneCell:${cell}" th:value="${oneCell}" th:text="${oneCell}"></option>
+					</select>
+					<button type="button" id="cellBtn" class="btn btn-default btn-bottom" data-toggle="modal" data-target="#myModal">
+							<i class="glyphicon glyphicon-forward"></i>
+						</button>
+					</td>
+					<td class="td-style td-left-space">
+						<button type="button" id="searchBtn" class="btn-width btn btn-default">查询</button>
+						<button type="button" id="exportQueryResBtn" class="btn-width btn btn-default">导出</button>
+						<button type="button" id="calBtn" class="btn-width btn btn-default">计算</button>
+						<button type="button" id="exportCalResBtn" class="btn-width btn btn-default">ToEx</button>
+					</td>
+				</tr>
+			</table>
+		</form>
+	</div>
+
+	<div class="row style-select modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+		aria-hidden="true">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+					<h4 class="modal-title" id="myModalLabel"></h4>
+				</div>
+				<div class="modal-body" style="margin-top: 1px">
+					<div class="row">
+						<div class="col-xs-5">
+							<h5 class="modal-title" id="myModalLabel1"></h5>
+						</div>
+						<div class="col-xs-2"></div>
+						<div class="col-xs-5">
+							<h5 class="modal-title" id="myModalLabel2"></h5>
+						</div>
+					</div>
+					<div class="row">
+						<div class="col-xs-5">
+							<select name="from[]" id="search" class="form-control" size="16" multiple="multiple"
+								style="height: 280px; width: 220px; overflow: auto;"></select>
+						</div>
+
+						<div class="col-xs-2">
+							<br>
+							<button type="button" id="search_rightSelected" class="btn btn-block">
+								<i class="glyphicon glyphicon-chevron-right"></i>
+							</button>
+							<br>
+							<button type="button" id="search_rightAll" class="btn btn-block">
+								<i class="glyphicon glyphicon-forward"></i>
+							</button>
+							<br> <br> <br>
+							<button type="button" id="search_leftAll" class="btn btn-block">
+								<i class="glyphicon glyphicon-backward"></i>
+							</button>
+							<br>
+							<button type="button" id="search_leftSelected" class="btn btn-block">
+								<i class="glyphicon glyphicon-chevron-left"></i>
+							</button>
+						</div>
+
+						<div class="col-xs-5">
+							<select name="to[]" id="search_to" class="form-control" size="16" multiple="multiple"
+								style="height: 280px; width: 220px; overflow: auto;"></select>
+						</div>
+					</div>
+
+				</div>
+				<div class="modal-footer">
+					<div style="float: left; margin-top: -10px; margin-bottom: -20px">
+						<p id="searching"></p>
+					</div>
+					<div style="float: right; margin-top: -10px; margin-bottom: -20px">
+						<div class="form-group form-inline">
+							<input type="button" id=ensure class="form-control  btn btn-success" value="确定" /> <input type="button"
+								id=cancle class="form-control  btn btn-info" data-dismiss="modal" value="取消" />
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="bs-example form-bottom-style" data-example-id="striped-table" id="table-div">
+		<table id="idleTransmissionTable" class="table table-hover"></table>
+	</div>
+
+	<div id="idleTransmissionDiv">
+		<nav aria-label="...">
+			<ul class="pagination page-style" style="margin-top: 0px; margin-bottom: 20px">
+				<li><div class="span-style">
+						记录数：<span id="emTotalCnt">0</span> 条
+					</div></li>
+				<li><div class="span-style">
+						共 <span id="emTotalPageCnt">0</span> 页
+					</div></li>
+				<li><a ondragstart="return false" href="javascript:void(0);"
+					onclick="showListViewByPage('first',sumbitCondition,'idleTransmissionForm','idleTransmissionDiv')">首页</a></li>
+				<li><a ondragstart="return false" href="javascript:void(0);"
+					onclick="showListViewByPage('back',sumbitCondition,'idleTransmissionForm','idleTransmissionDiv')" aria-label="Previous"><span
+						aria-hidden="true">上一页</span></a></li>
+				<li><a>第 <input type="text" id="showCurrentPage" class="paging_input_text form-control" value="0" /> 页
+				</a></li>
+				<li><a ondragstart="return false" href="javascript:void(0);"
+					onclick="showListViewByPage('num',sumbitCondition,'idleTransmissionForm','idleTransmissionDiv')">GO</a></li>
+				<li><a ondragstart="return false" href="javascript:void(0);"
+					onclick="showListViewByPage('next',sumbitCondition,'idleTransmissionForm','idleTransmissionDiv')" aria-label="Next"><span
+						aria-hidden="true">下一页</span></a></li>
+				<li><a ondragstart="return false" href="javascript:void(0);"
+					onclick="showListViewByPage('last',sumbitCondition,'idleTransmissionForm','idleTransmissionDiv')">末页</a></li>
+			</ul>
+		</nav>
+	</div>
+</body>
+</html>

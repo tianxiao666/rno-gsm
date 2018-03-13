@@ -1,0 +1,30 @@
+<ion-menu id="menu" [content]="content">
+  <ion-header>
+    <ion-toolbar menuToggle>
+      <ion-title>Menu</ion-title>
+    </ion-toolbar>
+  </ion-header>
+
+  <ion-content>
+    <ion-item>
+      <ion-avatar item-start>
+        <img src="assets/img/hgicreate.jpg">
+      </ion-avatar>
+      <button menuClose ion-item *ngIf="LoginStatus" (click)="doLogout()">
+        {{LoginName}}    注销
+      </button>
+      <button menuClose ion-item *ngIf="!LoginStatus" (click)="doLogin()">
+        请登录
+      </button>
+    </ion-item>
+    <ion-list>
+      <button menuClose ion-item *ngFor="let p of pages" (click)="openPage(p)">
+        {{p.title}}
+      </button>
+    </ion-list>
+  </ion-content>
+</ion-menu>
+
+<!-- Disable swipe-to-go-back because it's poor UX to combine STGB with side menus -->
+<!--<ion-nav [root]="rootPage" #content swipeBackEnabled="false"></ion-nav>-->
+<ion-nav #content swipeBackEnabled="false"></ion-nav>

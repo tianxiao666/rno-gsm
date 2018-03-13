@@ -1,0 +1,5 @@
+{"properties": [{
+  "name": "rno.gsm.app.linage",
+  "type": "java.lang.String",
+  "description": "下拉列表添加的行数"
+}]}

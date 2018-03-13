@@ -1,0 +1,7 @@
+.width-control {
+	width:200px;
+}
+
+.form-inline-control {
+	display: inline-block;
+}

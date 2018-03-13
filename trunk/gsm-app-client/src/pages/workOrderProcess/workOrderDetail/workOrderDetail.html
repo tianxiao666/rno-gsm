@@ -1,0 +1,55 @@
+<ion-header>
+  <ion-navbar>
+    <ion-title>工单详情</ion-title>
+    <ion-buttons end (click)="toIndex()">
+      <button ion-button icon-only>
+        <ion-icon name="md-home">
+        </ion-icon>
+      </button>
+    </ion-buttons>
+  </ion-navbar>
+</ion-header>
+<ion-content>
+
+  <ion-item-group>
+    <ion-item-divider color="light">工单数据</ion-item-divider>
+    <ion-item *ngFor="let prop of props">
+        <ion-label>{{prop}}</ion-label>
+        <ion-input readonly value="{{results[prop]}}"></ion-input>
+    </ion-item>
+  </ion-item-group>
+
+  <ion-item-group>
+    <ion-item-divider color="light">处理信息</ion-item-divider>
+    <ion-item>
+      <ion-label>处理人</ion-label>
+      <ion-input placeholder="请填写处理人" value="{{handler}}" [(ngModel)]="handler"></ion-input>
+    </ion-item>
+    <ion-item height:100px>
+      <ion-label>处理方法</ion-label>
+      <ion-textarea placeholder="请填写处理方法" value="{{handleData}}"
+                    [(ngModel)]="handleData"></ion-textarea>
+    </ion-item>
+    <ion-item>
+      <ion-label>处理结果</ion-label>
+      <ion-select id="reSelect"   interface="action-sheet">
+        <div *ngFor="let handleRes of handleResult;let i=index">
+          <ion-option value="{{handleRes}}" *ngIf="i==0 " selected>{{handleRes}}</ion-option>
+          <ion-option value="{{handleRes}}" *ngIf="i!=0 ">{{handleRes}}</ion-option>
+        </div>
+      </ion-select>
+    </ion-item>
+  </ion-item-group>
+  <ion-item-group>
+    <ion-item-divider color="light"></ion-item-divider>
+    <button ion-button full color="secondary" (click)="updateWorkOrderById(results['工单'])">提交处理</button>
+  </ion-item-group>
+</ion-content>
+<style>
+  input.text-input{
+    text-align:right
+  }
+  textarea.text-input{
+    text-align: right;
+  }
+</style>

@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hgicreate.rno.gsm.app.mapper.WorkOrderProcessMapper">
+    <select id="getWorkOrder" parameterType="map" resultType="java.util.LinkedHashMap">
+        select 工单,日期,中文名,代维,指标 from(
+        select row_number() over(order by A.次数 desc,A.日期  desc,A.工单 desc) as rownumber,* from(
+        select
+        work_order_id as 工单,
+        date as 日期,
+        COALESCE(chinese_name,'') as 中文名,
+        COALESCE(substitude_maintain,'') as 代维,
+        COALESCE(index_name,'') as 指标,
+        frequency as 次数
+        from rno_gsm_work_order_today
+        where 1=1
+        <if test="cells!=null">
+            and
+            <foreach collection="cells" index="index" item="cell" separator="or" open=" " close=" ">
+                cell like concat(concat('%',concat(trim('${cell}'),'')),'%')
+            </foreach>
+        </if>
+        <if test="chinese!=null">
+            and
+            <foreach collection="chinese" index="index" item="item" separator="or" open=" " close=" ">
+                chinese_name like concat(concat('%',concat(trim('${item}'),'')),'%')
+            </foreach>
+        </if>
+        and cast(date as numeric) &lt;= ${endTime}
+        and cast(date as numeric) &gt;= ${beginTime}
+        <if test="indexName!='全部'">
+            and index_name = '${indexName}'
+        </if>
+        <if test="subMaintain!='全部'">
+            and substitude_maintain = '${subMaintain}'
+        </if>
+        union
+        select
+        work_order_id as 工单,
+        date as 日期,
+        COALESCE(chinese_name,'') as 中文名,
+        COALESCE(substitude_maintain,'') as 代维,
+        COALESCE(index_name,'') as 指标,
+        frequency as 次数
+        from rno_gsm_work_order_history
+        where 1=1
+        <if test="cells!=null">
+            and
+            <foreach collection="cells" index="index" item="cell" separator="or" open=" " close=" ">
+                cell like concat(concat('%',concat(trim('${cell}'),'')),'%')
+            </foreach>
+        </if>
+        <if test="chinese!=null">
+            and
+            <foreach collection="chinese" index="index" item="item" separator="or" open=" " close=" ">
+                chinese_name like concat(concat('%',concat(trim('${item}'),'')),'%')
+            </foreach>
+        </if>
+        and cast(date as numeric) &lt;= ${endTime}
+        and cast(date as numeric) &gt;= ${beginTime}
+        <if test="indexName!='全部'">
+            and index_name = '${indexName}'
+        </if>
+        <if test="subMaintain!='全部'">
+            and substitude_maintain = '${subMaintain}'
+        </if>
+        )A)B where B.rownumber &gt; ${start} limit ${num}
+    </select>
+
+    <select id="getDetailById" parameterType="string" resultType="java.util.LinkedHashMap">
+        select a.*, COALESCE(r.handler,' ') as app处理人, COALESCE(r.treatment,' ') as app处理方法,
+        COALESCE(r.treat_result,' ') as 处理结果
+        from(select t.work_order_id       as 工单,
+        t.date                as 日期,
+        t.bsc                 as 网元,
+        t.cell                as CELL,
+        COALESCE(t.chinese_name,' ')        as 中文名,
+        COALESCE(t.county ,' ')             as 县区,
+        COALESCE(t.substitude_maintain,' ') as 代维,
+        COALESCE(t.coverage_scene,' ')      as 覆盖场景,
+        COALESCE(t.is_vip_cell,' ')         as 是否VIP小区,
+        t.index_name          as 指标名,
+        t.index_val           as 指标值,
+        t.frequency           as 当天出现的次数,
+        COALESCE(t.handler,' ')             as 处理人,
+        COALESCE(t.treatment,' ')           as 处理方法
+        from rno_gsm_work_order_today t
+        where t.work_order_id = '${order}'
+        union
+        select h.work_order_id       as 工单,
+        h.date                as 日期,
+        h.bsc                 as 网元,
+        h.cell                as CELL,
+        COALESCE(h.chinese_name,' ')        as 中文名,
+        COALESCE(h.county ,' ')             as 县区,
+        COALESCE(h.substitude_maintain,' ') as 代维,
+        COALESCE(h.coverage_scene,' ')      as 覆盖场景,
+        COALESCE(h.is_vip_cell,' ')         as 是否VIP小区,
+        h.index_name          as 指标名,
+        h.index_val           as 指标值,
+        h.frequency           as 当天出现的次数,
+        COALESCE(h.handler,' ')             as 处理人,
+        COALESCE(h.treatment,' ')           as 处理方法
+        from rno_gsm_work_order_history h
+        where h.work_order_id = '${order}')a
+        left join rno_gsm_work_order_review r
+        on r.work_order_id = a.工单
+    </select>
+
+    <update id="updateReviewTab" parameterType="string">
+        update rno_gsm_work_order_review set handler=#{handler}, treatment=#{treatment},treat_result=#{treatResult} where work_order_id=#{order}
+    </update>
+
+    <insert id="insertReviewTab" parameterType="string">
+        insert into rno_gsm_work_order_review values(#{order}, #{handler}, #{treatment},#{treatResult} )
+    </insert>
+</mapper>

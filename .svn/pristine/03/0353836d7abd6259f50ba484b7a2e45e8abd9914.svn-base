@@ -1,0 +1,3 @@
+server.port=8081
+spring.http.multipart.location=d:/home/gsm/indicator
+logging.level.com.hgicreate.rno.gsm.app=debug

@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hgicreate.rno.gsm.mapper.measure.FasMapper">
+
+    <select id="queryFAS" parameterType="map" resultType="map">
+        select Distinct 日期,时间,CELL
+        from <foreach collection="fasdate" item="date" index="index" open="" close="" separator=",">rno_FAS_${date}</foreach>
+        <if test="fascell!=null">
+            where cell in
+            <foreach collection="fascell" item="cell" index="index" open="(" close=")" separator=",">
+                '${cell}'
+            </foreach>
+        </if>
+    </select>
+
+    <select id="queryFASByPage" parameterType="map" resultType="map">
+        select top ${cnt} * from(
+        select row_number() over(order by A.日期,A.时间,A.CELL ASC) as rownumber,* from(
+            select Distinct 日期,时间,CELL
+            from <foreach collection="fasdate" item="date" index="index" open="" close="" separator=",">rno_FAS_${date}</foreach>
+            <if test="fascell!=null">
+                where cell in
+                <foreach collection="fascell" item="cell" index="index" open="(" close=")" separator=",">
+                    '${cell}'
+                </foreach>
+            </if>
+        )A)B where B.rownumber &gt; ${startIndex}
+    </select>
+
+    <select id="getChartA" parameterType="map" resultType="map">
+        select CAST(频点 AS INT) AS 频点,AVMEDIAN,AVPERCENTILE
+        from <foreach collection="fasDate" item="date" index="index" open="" close="" separator=",">rno_FAS_${date}</foreach>
+        where CELL=<foreach collection="fasCell" item="cell" index="index" open="" close="" separator=",">'${cell}'</foreach>
+              and 时间=<foreach collection="fasTime" item="time" index="index" open="" close="" separator=",">'${time}'</foreach>
+              and 频点 &lt; 125
+        ORDER BY 频点 asc
+    </select>
+    <select id="getChartB" parameterType="map" resultType="map">
+        select dchno,bcchno
+        from  <foreach collection="fasDate" item="date" index="index" open="" close="" separator=",">cdd_rlcfp_${date}</foreach> as cdd_rlcfp,
+        <foreach collection="fasDate" item="date" index="index" open="" close="" separator=",">cdd_rldep_${date}</foreach> as cdd_rldep
+        where  cdd_rldep.Date=cdd_rlcfp.Date
+                and cdd_rldep.cell=cdd_rlcfp.cell
+                and cdd_rldep.cell=<foreach collection="fasCell" item="cell" index="index" open="" close="" separator=",">'${cell}'</foreach>
+    </select>
+
+    <select id="exportFAS" parameterType="map" resultType="java.util.LinkedHashMap">
+        select  日期,时间,BSC,CELL,频点,
+                 cast(round(AVMEDIAN,0) as int) as AVMEDIAN,
+                 cast(round(AVPERCENTILE,0) as int) as AVPERCENTILE,
+                 cast(round(测量数,0) as int) as 测量数
+        from <foreach collection="fasdates" item="date" index="index" open="" close="" separator=",">rno_FAS_${date}</foreach>
+        <if test="fascells!=null">
+            where cell in
+            <foreach collection="fascells" item="cell" index="index" open="(" close=")" separator=",">
+                '${cell}'
+            </foreach>
+        </if>
+    </select>
+
+</mapper>

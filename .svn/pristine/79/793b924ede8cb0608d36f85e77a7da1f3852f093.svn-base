@@ -1,0 +1,21 @@
+page-StatisticsResult {
+  ion-grid, ion-row , ion-col {
+    text-align: center;
+    color: black;
+    margin:0;
+
+    padding:0;
+  }
+  .button-ios{
+    padding:0;
+  }
+  .button-md{
+    padding:0;
+  }
+  ion-row:nth-child(odd) button{
+    background-color: #cccccc;
+  }
+  ion-row:nth-child(even) button{
+    background-color: #aaaaff;
+  }
+}

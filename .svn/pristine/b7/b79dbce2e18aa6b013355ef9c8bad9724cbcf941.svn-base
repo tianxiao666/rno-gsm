@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hgicreate.rno.gsm.mapper.measure.NcsMapper">
+    <select id="selectNcsCount" parameterType="map" resultType="long">
+        select count(*) from (
+        <foreach collection="dates" item="date" index="index" separator="union all">
+            select Distinct 日期,时间,CELL from rno_NCS_${date} where 1=1
+            <if test="cells!=null">
+                and CELL in
+                <foreach collection="cells" item="cell" open="(" close=")" separator=",">
+                    '${cell}'
+                </foreach>
+            </if>
+        </foreach>) as ncs
+    </select>
+    <select id="selectNcsByPage" parameterType="map" resultType="java.util.LinkedHashMap">
+        select top ${cnt} 日期,时间,CELL
+        from (select row_number() over(order by A.日期) as rownumber,*
+        from (
+        <foreach collection="dates" item="date" index="index" separator="union all">
+            select Distinct 日期,时间,CELL from rno_NCS_${date} where 1=1
+            <if test="cells!=null">
+                and CELL in
+                <foreach collection="cells" item="cell" open="(" close=")" separator=",">
+                    '${cell}'
+                </foreach>
+            </if>
+        </foreach>
+        ) A) B
+        where B.rownumber &gt;${startIndex}
+    </select>
+    <select id="selectNcsChartData" parameterType="map" resultType="java.util.LinkedHashMap">
+        <foreach collection="dates" item="date" index="index" separator="union all">
+        select c.DCHNO,c.cell,d.同频,d.邻频,d.csystype from cdd_RLCFP_${date} c , (select rno_NCS.CELL,
+        rno_NCS.可能的CELLR,
+        round(100 * TimesRelss / reparfcn, 2) as 同频,
+        round(100 * TimesRelss2 / reparfcn, 2) AS 邻频,
+        cdd_RLDEP.csystype
+        from rno_NCS_${date} rno_NCS, cdd_RLDEP_${date} cdd_RLDEP
+        where rno_NCS.cell = cdd_RLDEP.cell
+        and 可能的CELLR != ''
+        and rno_NCS.cell in
+            <foreach collection="cells" item="cell" open="(" close=")" separator=",">
+            '${cell}'
+            </foreach>
+        and 时间 in
+            <foreach collection="times" item="time" open="(" close=")" separator=",">
+                '${time}'
+            </foreach>
+            ) d  where c.cell=d.可能的CELLR ORDER BY 1 desc
+        </foreach>
+    </select>
+
+    <select id="selectBcchDch" parameterType="map" resultType="java.util.LinkedHashMap">
+        <foreach collection="dates" item="date" index="index" separator="union all">
+            select DCHNO,BCCHNO from cdd_RLCFP_${date} cdd_RLCFP,cdd_RLDEP_${date} cdd_RLDEP
+            where cdd_RLCFP.Date=cdd_RLDEP.Date
+            and cdd_RLCFP.CELL=cdd_RLDEP.CELL
+            and cdd_RLCFP.CELL='${cell}'
+        </foreach>
+    </select>
+    <select id="exportData" parameterType="map" resultType="java.util.LinkedHashMap">
+        <foreach collection="dates" item="date" index="index" separator="union all">
+        select  日期,时间,RELSS,	RELSS2,RELSS3,CellType,BSC,CELL,AVSS,BCCHNO,BSIC,可能的CELLR,Distance,
+        DefNCell,REPARFCN,REPUNDEFGSM,RECTIMEARFC,TIMES,NAVSS,
+        TIMES1,NAVSS1,TIMES2,NAVSS2,TIMES3,NAVSS3,TIMES4,NAVSS4,TIMES5,NAVSS5,TIMES6,NAVSS6,TimesRelss,TimesRelss2,TimesRelss3
+        from rno_NCS_${date}
+        </foreach>
+    </select>
+
+</mapper>

@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hgicreate.rno.gsm.mapper.query.SiteInfoMapper">
+    <select id="selectSiteInfoCount" parameterType="map" resultType="long">
+      select count(*) from (
+        select CGI,ObjectID,BSC,MSC,NeType,BTSType,频段,CDU_TYPE,中文名,县区,代维,分组,覆盖类型,小区类型,载波数,
+                LAC,CI,BCCH,BSIC,TCH,经度,纬度,方向角,机械下倾角,电调下倾角,天线高度,天线增益,天线类型,是否带直放站
+        from sts_GSM_CELL where 1=1
+        <if test="objectIDs !=null">
+            and ObjectID IN
+            <foreach collection="objectIDs" item="objectID" index="index" open="(" close=")" separator=",">
+                '${objectID}'
+            </foreach>
+        </if>
+        <if test="cgis !=null">
+            and CGI IN
+            <foreach collection="cgis" item="cgi" index="index" open="(" close=")" separator=",">
+                 '${cgi}'
+            </foreach>
+        </if>
+        <if test="bscs !=null">
+            and BSC IN
+            <foreach collection="bscs" item="bsc" index="index" open="(" close=")" separator=",">
+                 '${bsc}'
+            </foreach>
+        </if>
+        ) as site
+    </select>
+    <select id="selectSiteInfo" parameterType="map" resultType="java.util.LinkedHashMap">
+        select CGI,ObjectID,BSC,MSC,NeType,BTSType,频段,CDU_TYPE,中文名,县区,代维,分组,覆盖类型,小区类型,载波数,
+        LAC,CI,BCCH,BSIC,TCH,经度,纬度,方向角,机械下倾角,电调下倾角,天线高度,天线增益,天线类型,是否带直放站
+        from sts_GSM_CELL  where 1=1
+        <if test="objectIDs !=null">
+            and ObjectID IN
+            <foreach collection="objectIDs" item="objectID" index="index" open="(" close=")" separator=",">
+                '${objectID}'
+            </foreach>
+        </if>
+        <if test="cgis !=null">
+            and CGI IN
+            <foreach collection="cgis" item="cgi" index="index" open="(" close=")" separator=",">
+                 '${cgi}'
+            </foreach>
+        </if>
+        <if test="bscs !=null">
+            and BSC IN
+            <foreach collection="bscs" item="bsc" index="index" open="(" close=")" separator=",">
+              '${bsc}'
+            </foreach>
+        </if>
+    </select>
+    <select id="selectSiteInfoByPage" parameterType="map" resultType="java.util.LinkedHashMap">
+       select top ${cnt} CGI,ObjectID,BSC,MSC,NeType,BTSType,频段,CDU_TYPE,中文名,县区,代维,分组,覆盖类型,小区类型,载波数,
+        LAC,CI,BCCH,BSIC,TCH,经度,纬度,方向角,机械下倾角,电调下倾角,天线高度,天线增益,天线类型,是否带直放站
+        from (select row_number() over(order by A.CGI desc) as rownumber,*
+              from (
+        select CGI,ObjectID,BSC,MSC,NeType,BTSType,频段,CDU_TYPE,中文名,县区,代维,分组,覆盖类型,小区类型,载波数,
+        LAC,CI,BCCH,BSIC,TCH,经度,纬度,方向角,机械下倾角,电调下倾角,天线高度,天线增益,天线类型,是否带直放站
+        from sts_GSM_CELL  where 1=1
+        <if test="objectIDs !=null">
+            and ObjectID IN
+            <foreach collection="objectIDs" item="objectID" index="index" open="(" close=")" separator=",">
+                '${objectID}'
+            </foreach>
+        </if>
+        <if test="cgis !=null">
+            and CGI IN
+            <foreach collection="cgis" item="cgi" index="index" open="(" close=")" separator=",">
+                 '${cgi}'
+            </foreach>
+        </if>
+        <if test="bscs !=null">
+            and BSC IN
+            <foreach collection="bscs" item="bsc" index="index" open="(" close=")" separator=",">
+                '${bsc}'
+            </foreach>
+        </if>
+        ) A) B
+        where B.rownumber &gt;${startIndex}
+    </select>
+</mapper>

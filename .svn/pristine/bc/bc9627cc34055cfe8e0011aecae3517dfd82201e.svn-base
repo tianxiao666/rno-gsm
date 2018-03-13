@@ -1,0 +1,355 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hgicreate.rno.gsm.mapper.measure.MrrOriginalMapper">
+	<select id="queryMrr" parameterType="map"
+		resultType="java.util.LinkedHashMap">
+		<foreach collection="date" item="date" separator="union all">
+			select 日期,
+			                时间,
+			       BSC,
+			       CELL,
+			       CHGR,
+			       sum(RxQualUL0) + sum(RxQualUL1) + sum(RxQualUL3) + sum(RxQualUL4) +
+			       sum(RxQualUL5) + sum(RxQualUL6) + sum(RxQualUL7) as 质量UL总采样点,
+			       sum(RxQualDL0) + sum(RxQualDL1) + sum(RxQualDL2) + sum(RxQualDL3) +
+			       sum(RxQualDL4) + sum(RxQualDL5) + sum(RxQualDL6) + sum(RxQualDL7) as 质量DL总采样点
+			  from rno_MRR_RxQual_${date}
+			  where 1=1
+			 <if test="bsc!=null">
+				and BSC in
+				<foreach collection="bsc" item="bsc1" open="(" close=")"
+					separator=",">
+					'${bsc1}'
+				</foreach>
+			</if>
+			<if test="cell!=null">
+				and CELL in
+				<foreach collection="cell" item="cell1" open="(" close=")"
+					separator=",">
+					'${cell1}'
+				</foreach>
+			</if>
+			 GROUP BY 日期, 时间, BSC, CELL, CHGR
+		</foreach>
+	</select>
+	
+	<select id="getQualityByBsc" parameterType="string" resultType="java.util.LinkedHashMap">
+	    <foreach collection="array" item="date" separator="union all">
+		    select 日期,
+			       BSC,
+			       convert(decimal(18,2),100 * (sum(RxQualUL6) + sum(RxQualUL7)) /
+			             (sum(RxQualUL0) + sum(RxQualUL1) + sum(RxQualUL2) +
+			             sum(RxQualUL3) + sum(RxQualUL4) + sum(RxQualUL5) +
+			             sum(RxQualUL6) + sum(RxQualUL7) + 0.000001)) as 上行67质差,
+			       convert(decimal(18,2),100 * (sum(RxQualDL6) + sum(RxQualDL7)) /
+			             (sum(RxQualDL0) + sum(RxQualDL1) + sum(RxQualDL2) +
+			             sum(RxQualDL3) + sum(RxQualDL4) + sum(RxQualDL5) +
+			             sum(RxQualDL6) + sum(RxQualDL7) + 0.000001)) as 下行67质差,
+			       sum(RxQualUL0) as RxQualUL0,
+			       sum(RxQualUL1) as RxQualUL1,
+			       sum(RxQualUL2) as RxQualUL2,
+			       sum(RxQualUL3) as RxQualUL3,
+			       sum(RxQualUL4) as RxQualUL4,
+			       sum(RxQualUL5) as RxQualUL5,
+			       sum(RxQualUL6) as RxQualUL6,
+			       sum(RxQualUL7) as RxQualUL7,
+			       sum(RxQualDL0) as RxQualDL0,
+			       sum(RxQualDL1) as RxQualDL1,
+			       sum(RxQualDL2) as RxQualDL2,
+			       sum(RxQualDL3) as RxQualDL3,
+			       sum(RxQualDL4) as RxQualDL4,
+			       sum(RxQualDL5) as RxQualDL5,
+			       sum(RxQualDL6) as RxQualDL6,
+			       sum(RxQualDL7) as RxQualDL7
+			  from rno_MRR_RxQual_${date}
+			 group by 日期, BSC
+		 </foreach>
+	</select>
+	
+	<select id="getQualityByCell" parameterType="string" resultType="java.util.LinkedHashMap">
+	    <foreach collection="array" item="date" separator="union all">
+	        select 日期,
+			       BSC,
+			       CELL,
+			       convert(decimal(18,2),100 * (sum(RxQualUL6) + sum(RxQualUL7)) /
+			             (sum(RxQualUL0) + sum(RxQualUL1) + sum(RxQualUL2) +
+			             sum(RxQualUL3) + sum(RxQualUL4) + sum(RxQualUL5) +
+			             sum(RxQualUL6) + sum(RxQualUL7) + 0.000001)) as 上行67质差,
+			       convert(decimal(18,2),100 * (sum(RxQualDL6) + sum(RxQualDL7)) /
+			             (sum(RxQualDL0) + sum(RxQualDL1) + sum(RxQualDL2) +
+			             sum(RxQualDL3) + sum(RxQualDL4) + sum(RxQualDL5) +
+			             sum(RxQualDL6) + sum(RxQualDL7) + 0.000001)) as 下行67质差,
+			       sum(RxQualUL0) as RxQualUL0,
+			       sum(RxQualUL1) as RxQualUL1,
+			       sum(RxQualUL2) as RxQualUL2,
+			       sum(RxQualUL3) as RxQualUL3,
+			       sum(RxQualUL4) as RxQualUL4,
+			       sum(RxQualUL5) as RxQualUL5,
+			       sum(RxQualUL6) as RxQualUL6,
+			       sum(RxQualUL7) as RxQualUL7,
+			       sum(RxQualDL0) as RxQualDL0,
+			       sum(RxQualDL1) as RxQualDL1,
+			       sum(RxQualDL2) as RxQualDL2,
+			       sum(RxQualDL3) as RxQualDL3,
+			       sum(RxQualDL4) as RxQualDL4,
+			       sum(RxQualDL5) as RxQualDL5,
+			       sum(RxQualDL6) as RxQualDL6,
+			       sum(RxQualDL7) as RxQualDL7
+			  from rno_MRR_RxQual_${date}
+			 group by 日期, BSC, CELL
+	    </foreach>
+	</select>
+	
+	<select id="getLevelByCell" parameterType="string" resultType="java.util.LinkedHashMap">
+	    <foreach collection="array" item="date" separator="union all">
+	        select 日期,
+			       BSC,
+			       CELL,
+			       convert(decimal(8,2),(SUM(RxLevUL16) + SUM(RxLevUL17) + SUM(RxLevUL18) +
+			             SUM(RxLevUL19) + SUM(RxLevUL20) + SUM(RxLevUL21) +
+			             SUM(RxLevUL22) + SUM(RxLevUL23) + SUM(RxLevUL24) +
+			             SUM(RxLevUL25) + SUM(RxLevUL26) + SUM(RxLevUL27) +
+			             SUM(RxLevUL28) + SUM(RxLevUL29) + SUM(RxLevUL30) +
+			             SUM(RxLevUL31) + SUM(RxLevUL32) + SUM(RxLevUL33) +
+			             SUM(RxLevUL34) + SUM(RxLevUL35) + SUM(RxLevUL36) +
+			             SUM(RxLevUL37) + SUM(RxLevUL38) + SUM(RxLevUL39) +
+			             SUM(RxLevUL40) + SUM(RxLevUL41) + SUM(RxLevUL42) +
+			             SUM(RxLevUL43) + SUM(RxLevUL44) + SUM(RxLevUL45) +
+			             SUM(RxLevUL46) + SUM(RxLevUL47) + SUM(RxLevUL48) +
+			             SUM(RxLevUL49) + SUM(RxLevUL50) + SUM(RxLevUL51) +
+			             SUM(RxLevUL52) + SUM(RxLevUL53) + SUM(RxLevUL54) +
+			             SUM(RxLevUL55) + SUM(RxLevUL56) + SUM(RxLevUL57) +
+			             SUM(RxLevUL58) + SUM(RxLevUL59) + SUM(RxLevUL60) +
+			             SUM(RxLevUL61) + SUM(RxLevUL62) + SUM(RxLevUL63)) /
+			             (SUM(RxLevUL0) + SUM(RxLevUL1) + SUM(RxLevUL2) + SUM(RxLevUL3) +
+			             SUM(RxLevUL4) + SUM(RxLevUL5) + SUM(RxLevUL6) + SUM(RxLevUL7) +
+			             SUM(RxLevUL8) + SUM(RxLevUL9) + SUM(RxLevUL10) +
+			             SUM(RxLevUL11) + SUM(RxLevUL12) + SUM(RxLevUL13) +
+			             SUM(RxLevUL14) + SUM(RxLevUL15) + SUM(RxLevUL16) +
+			             SUM(RxLevUL17) + SUM(RxLevUL18) + SUM(RxLevUL19) +
+			             SUM(RxLevUL20) + SUM(RxLevUL21) + SUM(RxLevUL22) +
+			             SUM(RxLevUL23) + SUM(RxLevUL24) + SUM(RxLevUL25) +
+			             SUM(RxLevUL26) + SUM(RxLevUL27) + SUM(RxLevUL28) +
+			             SUM(RxLevUL29) + SUM(RxLevUL30) + SUM(RxLevUL31) +
+			             SUM(RxLevUL32) + SUM(RxLevUL33) + SUM(RxLevUL34) +
+			             SUM(RxLevUL35) + SUM(RxLevUL36) + SUM(RxLevUL37) +
+			             SUM(RxLevUL38) + SUM(RxLevUL39) + SUM(RxLevUL40) +
+			             SUM(RxLevUL41) + SUM(RxLevUL42) + SUM(RxLevUL43) +
+			             SUM(RxLevUL44) + SUM(RxLevUL45) + SUM(RxLevUL46) +
+			             SUM(RxLevUL47) + SUM(RxLevUL48) + SUM(RxLevUL49) +
+			             SUM(RxLevUL50) + SUM(RxLevUL51) + SUM(RxLevUL52) +
+			             SUM(RxLevUL53) + SUM(RxLevUL54) + SUM(RxLevUL55) +
+			             SUM(RxLevUL56) + SUM(RxLevUL57) + SUM(RxLevUL58) +
+			             SUM(RxLevUL59) + SUM(RxLevUL60) + SUM(RxLevUL61) +
+			             SUM(RxLevUL62) + SUM(RxLevUL63) + 0.000001) * 100) as '-94dbm上行覆盖率',
+			       convert(decimal(8,2),(SUM(RxLevDL20) + SUM(RxLevDL21) + SUM(RxLevDL22) +
+			             SUM(RxLevDL23) + SUM(RxLevDL24) + SUM(RxLevDL25) +
+			             SUM(RxLevDL26) + SUM(RxLevDL27) + SUM(RxLevDL28) +
+			             SUM(RxLevDL29) + SUM(RxLevDL30) + SUM(RxLevDL31) +
+			             SUM(RxLevDL32) + SUM(RxLevDL33) + SUM(RxLevDL34) +
+			             SUM(RxLevDL35) + SUM(RxLevDL36) + SUM(RxLevDL37) +
+			             SUM(RxLevDL38) + SUM(RxLevDL39) + SUM(RxLevDL40) +
+			             SUM(RxLevDL41) + SUM(RxLevDL42) + SUM(RxLevDL43) +
+			             SUM(RxLevDL44) + SUM(RxLevDL45) + SUM(RxLevDL46) +
+			             SUM(RxLevDL47) + SUM(RxLevDL48) + SUM(RxLevDL49) +
+			             SUM(RxLevDL50) + SUM(RxLevDL51) + SUM(RxLevDL52) +
+			             SUM(RxLevDL53) + SUM(RxLevDL54) + SUM(RxLevDL55) +
+			             SUM(RxLevDL56) + SUM(RxLevDL57) + SUM(RxLevDL58) +
+			             SUM(RxLevDL59) + SUM(RxLevDL60) + SUM(RxLevDL61) +
+			             SUM(RxLevDL62) + SUM(RxLevDL63)) /
+			             (SUM(RxLevDL0) + SUM(RxLevDL1) + SUM(RxLevDL2) + SUM(RxLevDL3) +
+			             SUM(RxLevDL4) + SUM(RxLevDL5) + SUM(RxLevDL6) + SUM(RxLevDL7) +
+			             SUM(RxLevDL8) + SUM(RxLevDL9) + SUM(RxLevDL10) +
+			             SUM(RxLevDL11) + SUM(RxLevDL12) + SUM(RxLevDL13) +
+			             SUM(RxLevDL14) + SUM(RxLevDL15) + SUM(RxLevDL16) +
+			             SUM(RxLevDL17) + SUM(RxLevDL18) + SUM(RxLevDL19) +
+			             SUM(RxLevDL20) + SUM(RxLevDL21) + SUM(RxLevDL22) +
+			             SUM(RxLevDL23) + SUM(RxLevDL24) + SUM(RxLevDL25) +
+			             SUM(RxLevDL26) + SUM(RxLevDL27) + SUM(RxLevDL28) +
+			             SUM(RxLevDL29) + SUM(RxLevDL30) + SUM(RxLevDL31) +
+			             SUM(RxLevDL32) + SUM(RxLevDL33) + SUM(RxLevDL34) +
+			             SUM(RxLevDL35) + SUM(RxLevDL36) + SUM(RxLevDL37) +
+			             SUM(RxLevDL38) + SUM(RxLevDL39) + SUM(RxLevDL40) +
+			             SUM(RxLevDL41) + SUM(RxLevDL42) + SUM(RxLevDL43) +
+			             SUM(RxLevDL44) + SUM(RxLevDL45) + SUM(RxLevDL46) +
+			             SUM(RxLevDL47) + SUM(RxLevDL48) + SUM(RxLevDL49) +
+			             SUM(RxLevDL50) + SUM(RxLevDL51) + SUM(RxLevDL52) +
+			             SUM(RxLevDL53) + SUM(RxLevDL54) + SUM(RxLevDL55) +
+			             SUM(RxLevDL56) + SUM(RxLevDL57) + SUM(RxLevDL58) +
+			             SUM(RxLevDL59) + SUM(RxLevDL60) + SUM(RxLevDL61) +
+			             SUM(RxLevDL62) + SUM(RxLevDL63) + 0.000001) * 100) as '-90dbm下行覆盖率',
+			       SUM(RxLevUL0) as RxLevUL0,
+			       SUM(RxLevUL1) as RxLevUL1,
+			       SUM(RxLevUL2) as RxLevUL2,
+			       SUM(RxLevUL3) as RxLevUL3,
+			       SUM(RxLevUL4) as RxLevUL4,
+			       SUM(RxLevUL5) as RxLevUL5,
+			       SUM(RxLevUL6) as RxLevUL6,
+			       SUM(RxLevUL7) as RxLevUL7,
+			       SUM(RxLevUL8) as RxLevUL8,
+			       SUM(RxLevUL9) as RxLevUL9,
+			       SUM(RxLevUL10) as RxLevUL10,
+			       SUM(RxLevUL11) as RxLevUL11,
+			       SUM(RxLevUL12) as RxLevUL12,
+			       SUM(RxLevUL13) as RxLevUL13,
+			       SUM(RxLevUL14) as RxLevUL14,
+			       SUM(RxLevUL15) as RxLevUL15,
+			       SUM(RxLevUL16) as RxLevUL16,
+			       SUM(RxLevUL17) as RxLevUL17,
+			       SUM(RxLevUL18) as RxLevUL18,
+			       SUM(RxLevUL19) as RxLevUL19,
+			       SUM(RxLevUL20) as RxLevUL20,
+			       SUM(RxLevUL21) as RxLevUL21,
+			       SUM(RxLevUL22) as RxLevUL22,
+			       SUM(RxLevUL23) as RxLevUL23,
+			       SUM(RxLevUL24) as RxLevUL24,
+			       SUM(RxLevUL25) as RxLevUL25,
+			       SUM(RxLevUL26) as RxLevUL26,
+			       SUM(RxLevUL27) as RxLevUL27,
+			       SUM(RxLevUL28) as RxLevUL28,
+			       SUM(RxLevUL29) as RxLevUL29,
+			       SUM(RxLevUL30) as RxLevUL30,
+			       SUM(RxLevUL31) as RxLevUL31,
+			       SUM(RxLevUL32) as RxLevUL32,
+			       SUM(RxLevUL33) as RxLevUL33,
+			       SUM(RxLevUL34) as RxLevUL34,
+			       SUM(RxLevUL35) as RxLevUL35,
+			       SUM(RxLevUL36) as RxLevUL36,
+			       SUM(RxLevUL37) as RxLevUL37,
+			       SUM(RxLevUL38) as RxLevUL38,
+			       SUM(RxLevUL39) as RxLevUL39,
+			       SUM(RxLevUL40) as RxLevUL40,
+			       SUM(RxLevUL41) as RxLevUL41,
+			       SUM(RxLevUL42) as RxLevUL42,
+			       SUM(RxLevUL43) as RxLevUL43,
+			       SUM(RxLevUL44) as RxLevUL44,
+			       SUM(RxLevUL45) as RxLevUL45,
+			       SUM(RxLevUL46) as RxLevUL46,
+			       SUM(RxLevUL47) as RxLevUL47,
+			       SUM(RxLevUL48) as RxLevUL48,
+			       SUM(RxLevUL49) as RxLevUL49,
+			       SUM(RxLevUL50) as RxLevUL50,
+			       SUM(RxLevUL51) as RxLevUL51,
+			       SUM(RxLevUL52) as RxLevUL52,
+			       SUM(RxLevUL53) as RxLevUL53,
+			       SUM(RxLevUL54) as RxLevUL54,
+			       SUM(RxLevUL55) as RxLevUL55,
+			       SUM(RxLevUL56) as RxLevUL56,
+			       SUM(RxLevUL57) as RxLevUL57,
+			       SUM(RxLevUL58) as RxLevUL58,
+			       SUM(RxLevUL59) as RxLevUL59,
+			       SUM(RxLevUL60) as RxLevUL60,
+			       SUM(RxLevUL61) as RxLevUL61,
+			       SUM(RxLevUL62) as RxLevUL62,
+			       SUM(RxLevUL63) as RxLevUL63,
+			       SUM(RxLevDL0) as RxLevDL0,
+			       SUM(RxLevDL1) as RxLevDL1,
+			       SUM(RxLevDL2) as RxLevDL2,
+			       SUM(RxLevDL3) as RxLevDL3,
+			       SUM(RxLevDL4) as RxLevDL4,
+			       SUM(RxLevDL5) as RxLevDL5,
+			       SUM(RxLevDL6) as RxLevDL6,
+			       SUM(RxLevDL7) as RxLevDL7,
+			       SUM(RxLevDL8) as RxLevDL8,
+			       SUM(RxLevDL9) as RxLevDL9,
+			       SUM(RxLevDL10) as RxLevDL10,
+			       SUM(RxLevDL11) as RxLevDL11,
+			       SUM(RxLevDL12) as RxLevDL12,
+			       SUM(RxLevDL13) as RxLevDL13,
+			       SUM(RxLevDL14) as RxLevDL14,
+			       SUM(RxLevDL15) as RxLevDL15,
+			       SUM(RxLevDL16) as RxLevDL16,
+			       SUM(RxLevDL17) as RxLevDL17,
+			       SUM(RxLevDL18) as RxLevDL18,
+			       SUM(RxLevDL19) as RxLevDL19,
+			       SUM(RxLevDL20) as RxLevDL20,
+			       SUM(RxLevDL21) as RxLevDL21,
+			       SUM(RxLevDL22) as RxLevDL22,
+			       SUM(RxLevDL23) as RxLevDL23,
+			       SUM(RxLevDL24) as RxLevDL24,
+			       SUM(RxLevDL25) as RxLevDL25,
+			       SUM(RxLevDL26) as RxLevDL26,
+			       SUM(RxLevDL27) as RxLevDL27,
+			       SUM(RxLevDL28) as RxLevDL28,
+			       SUM(RxLevDL29) as RxLevDL29,
+			       SUM(RxLevDL30) as RxLevDL30,
+			       SUM(RxLevDL31) as RxLevDL31,
+			       SUM(RxLevDL32) as RxLevDL32,
+			       SUM(RxLevDL33) as RxLevDL33,
+			       SUM(RxLevDL34) as RxLevDL34,
+			       SUM(RxLevDL35) as RxLevDL35,
+			       SUM(RxLevDL36) as RxLevDL36,
+			       SUM(RxLevDL37) as RxLevDL37,
+			       SUM(RxLevDL38) as RxLevDL38,
+			       SUM(RxLevDL39) as RxLevDL39,
+			       SUM(RxLevDL40) as RxLevDL40,
+			       SUM(RxLevDL41) as RxLevDL41,
+			       SUM(RxLevDL42) as RxLevDL42,
+			       SUM(RxLevDL43) as RxLevDL43,
+			       SUM(RxLevDL44) as RxLevDL44,
+			       SUM(RxLevDL45) as RxLevDL45,
+			       SUM(RxLevDL46) as RxLevDL46,
+			       SUM(RxLevDL47) as RxLevDL47,
+			       SUM(RxLevDL48) as RxLevDL48,
+			       SUM(RxLevDL49) as RxLevDL49,
+			       SUM(RxLevDL50) as RxLevDL50,
+			       SUM(RxLevDL51) as RxLevDL51,
+			       SUM(RxLevDL52) as RxLevDL52,
+			       SUM(RxLevDL53) as RxLevDL53,
+			       SUM(RxLevDL54) as RxLevDL54,
+			       SUM(RxLevDL55) as RxLevDL55,
+			       SUM(RxLevDL56) as RxLevDL56,
+			       SUM(RxLevDL57) as RxLevDL57,
+			       SUM(RxLevDL58) as RxLevDL58,
+			       SUM(RxLevDL59) as RxLevDL59,
+			       SUM(RxLevDL60) as RxLevDL60,
+			       SUM(RxLevDL61) as RxLevDL61,
+			       SUM(RxLevDL62) as RxLevDL62,
+			       SUM(RxLevDL63) as RxLevDL63
+			  from rno_MRR_Rxlev_${date}
+			 group by 日期, BSC, CELL
+	    </foreach>
+	</select>
+	
+	<select id="getAllLevel" parameterType="string" resultType="java.util.LinkedHashMap">
+	    <foreach collection="array" item="date" separator="union all">
+	        select * from rno_MRR_RxLev_${date}
+	    </foreach>
+	</select>
+	
+	<select id="getAllQuality" parameterType="string" resultType="java.util.LinkedHashMap">
+	    <foreach collection="array" item="date" separator="union all">
+	        select * from rno_MRR_RxQual_${date}
+	    </foreach>
+	</select>
+	
+	<select id="getAllTA" parameterType="string" resultType="java.util.LinkedHashMap">
+	    <foreach collection="array" item="date" separator="union all">
+	        select * from rno_MRR_TA_${date}
+	    </foreach>
+	</select>
+	
+	<delete id="deleteMrr" parameterType="string" >
+		<foreach collection="array" item="date" separator=" ">
+		    delete from rno_MRR_RxQual_${date}
+		    delete from rno_MRR_RxLev_${date}
+		    delete from rno_MRR_TA_${date}
+		    delete from rno_MRR_Date where Date ='${date}'
+		</foreach>
+	</delete>
+	
+	<select id="getLevel" parameterType="map" resultType="java.util.LinkedHashMap">
+	   select * from rno_MRR_Rxlev_${date} where cell ='${cell}' and 时间 ='${time}' and CHGR ='${chgr}' and bsc ='${bsc}'
+	</select>
+	
+	<select id="getQuality" parameterType="map" resultType="java.util.LinkedHashMap">
+	   select * from rno_MRR_Rxqual_${date} where cell ='${cell}' and 时间 ='${time}' and CHGR ='${chgr}' and bsc ='${bsc}'
+	</select>
+	
+	<select id="getTA" parameterType="map" resultType="java.util.LinkedHashMap">
+	   select * from rno_MRR_TA_${date} where cell ='${cell}' and 时间 ='${time}' and CHGR ='${chgr}' and bsc ='${bsc}'
+	</select>
+</mapper>

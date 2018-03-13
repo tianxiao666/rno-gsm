@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hgicreate.rno.gsm.mapper.query.WorkOrderStatisticMapper">
+    <select id="countWorkOrder" parameterType="map" resultType="long">
+        select count(work_order_id) from  rno_gsm_work_order_review where 1=1
+            <if test="status != null and status !='受理中'" >
+              and status='${status}'
+            </if>
+            <if test="status =='受理中'">
+                and status is null
+            </if>
+            and work_order_id in (
+        <foreach collection="dates" separator="union" item="date">
+                select 工单 from sts_gongDanChuLi_${date} where 1=1
+                <if test="maintain != null">
+                    and 代维 = '${maintain}'
+                </if>
+                <if test="county != null">
+                    and 县区 = '${county}'
+                </if>
+                <if test="indicator!=null">
+                    and 指标名 = '${indicator}'
+                </if>
+        </foreach> )
+
+    </select>
+    <select id="selectIndicators" parameterType="map" resultType="string">
+        <foreach collection="dates" item="date" separator="union">
+            select DISTINCT 指标名 from sts_gongDanChuLi_${date}
+        </foreach>
+    </select>
+    <select id="selectCounties" parameterType="map" resultType="string">
+        <foreach collection="dates" item="date" separator="union">
+            select DISTINCT 县区 from sts_gongDanChuLi_${date} where 县区 is not null and 县区!=''
+        </foreach>
+    </select>
+    <select id="existWorkOrderTable" parameterType="string" resultType="String">
+        select name
+        from sysobjects
+        where name='sts_gongDanChuLi_'+'${date}'
+    </select>
+    <select id="selectMaintain" parameterType="map" resultType="String">
+        <foreach collection="dates" separator="union" item="date">
+        select DISTINCT 代维 from sts_gongDanChuLi_${date}
+        </foreach>
+    </select>
+</mapper>

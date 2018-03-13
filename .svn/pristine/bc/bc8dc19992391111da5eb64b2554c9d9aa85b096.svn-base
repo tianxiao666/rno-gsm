@@ -1,0 +1,14 @@
+page-login {
+  .cards-bg{
+    background: #000;
+
+  }
+  .ionCardHeader{
+    color: #00f;
+  }
+  .button-work{
+    margin: 10px;
+    border-radius: 2px;
+    width: calc(100% - 20px);
+  }
+}

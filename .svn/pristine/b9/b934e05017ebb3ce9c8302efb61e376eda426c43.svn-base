@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hgicreate.rno.gsm.mapper.optimize.NeighMapper">
+    <select id="getNeighCount" parameterType="map" resultType="long">
+		select count(*)
+		from  (select 日期,
+		BSC,
+		CELL,
+		可能的CELLR as CELLR,
+		Distance,
+		round(100 * TIMES / REPARFCN, 2) as 测量比例
+		from  <foreach collection="neighdate" item="date" index="index" open="" close="" separator=",">rno_ncs_${date}</foreach>
+		where 可能的CELLR != ''
+		and round(100 * TIMES / REPARFCN, 2) &lt; 5
+		and Distance > '0.5'
+		<if test="neighbsc!=null">
+			and BSC in
+			<foreach collection="neighbsc" item="bsc" index="index" open="(" close=")" separator=",">
+				'${bsc}'
+			</foreach>
+		</if>
+		<if test="neighcell!=null">
+			and CELL in
+			<foreach collection="neighcell" item="cell" index="index" open="(" close=")" separator=",">
+				'${cell}'
+			</foreach>
+		</if>
+		) ncs,
+		(select ObjectID,
+		sum(HOVERCNT) as 切换申请,
+		sum(HOVERSUC) as 切换成功
+		from <foreach collection="neighdate" item="date" index="index" open="" close="" separator=",">sts_ho_${date}</foreach>
+		GROUP BY ObjectID) HO
+		where HO.ObjectID = ncs.CELL + '-' + CELLR
+    </select>
+    
+    <select id="queryNeighByPage" parameterType="map" resultType="map">
+		select top ${cnt} * from(
+		select row_number() over(order by A.日期) as rownumber,* from(
+		select ncs.日期,
+		ncs.BSC,
+		ncs.CELL,
+		ncs.CELLR,
+		ncs.Distance as 距离,
+		ncs.测量比例,
+		HO.切换申请,
+		HO.切换成功
+		from (select 日期,
+		BSC,
+		CELL,
+		可能的CELLR as CELLR,
+		Distance,
+		round(100 * TIMES / REPARFCN, 2) as 测量比例
+		from <foreach collection="neighdate" item="date" index="index" open="" close="" separator=",">rno_ncs_${date}</foreach>
+		where 可能的CELLR != ''
+		and round(100 * TIMES / REPARFCN, 2) &lt; 5
+		and Distance > '0.5'
+		<if test="neighbsc!=null">
+			and BSC in
+			<foreach collection="neighbsc" item="bsc" index="index" open="(" close=")" separator=",">
+				'${bsc}'
+			</foreach>
+		</if>
+		<if test="neighcell!=null">
+			and CELL in
+			<foreach collection="neighcell" item="cell" index="index" open="(" close=")" separator=",">
+				'${cell}'
+			</foreach>
+		</if>
+		) ncs,
+		(select ObjectID,
+		sum(HOVERCNT) as 切换申请,
+		sum(HOVERSUC) as 切换成功
+		from <foreach collection="neighdate" item="date" index="index" open="" close="" separator=",">sts_ho_${date}</foreach>
+		GROUP BY ObjectID) HO
+		where HO.ObjectID = ncs.CELL + '-' + CELLR)A)B where B.rownumber &gt; ${startIndex}
+    </select>
+	<select id="exportNeigh" parameterType="map" resultType="java.util.LinkedHashMap">
+		select ncs.日期,
+		ncs.BSC,
+		ncs.CELL,
+		ncs.CELLR,
+		ncs.Distance as 距离,
+		ncs.测量比例,
+		HO.切换申请,
+		HO.切换成功
+		from (select 日期,
+		BSC,
+		CELL,
+		可能的CELLR as CELLR,
+		Distance,
+		round(100 * TIMES / REPARFCN, 2) as 测量比例
+		from <foreach collection="neighdate" item="date" index="index" open="" close="" separator=",">rno_ncs_${date}</foreach>
+		where 可能的CELLR != ''
+		and round(100 * TIMES / REPARFCN, 2) &lt; 5
+		and Distance > '0.5'
+		<if test="neighbsc!=null">
+			and BSC in
+			<foreach collection="neighbsc" item="bsc" index="index" open="(" close=")" separator=",">
+				'${bsc}'
+			</foreach>
+		</if>
+		<if test="neighcell!=null">
+			and CELL in
+			<foreach collection="neighcell" item="cell" index="index" open="(" close=")" separator=",">
+				'${cell}'
+			</foreach>
+		</if>
+		) ncs,
+		(select ObjectID,
+		sum(HOVERCNT) as 切换申请,
+		sum(HOVERSUC) as 切换成功
+		from <foreach collection="neighdate" item="date" index="index" open="" close="" separator=",">sts_ho_${date}</foreach>
+		GROUP BY ObjectID) HO
+		where HO.ObjectID = ncs.CELL + '-' + CELLR
+	</select>
+</mapper>

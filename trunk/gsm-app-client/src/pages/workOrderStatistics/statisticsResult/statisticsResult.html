@@ -1,0 +1,37 @@
+<ion-header>
+  <ion-navbar>
+    <button ion-button menuToggle>
+      <ion-icon name="menu"></ion-icon>
+    </button>
+    <ion-title>统计结果</ion-title>
+    <ion-buttons end (click)="toIndex()">
+      <button ion-button icon-only>
+        <ion-icon name="md-home">
+        </ion-icon>
+      </button>
+    </ion-buttons>
+  </ion-navbar>
+</ion-header>
+
+
+<ion-content padding>
+  <ion-grid>
+    <ion-row ion-button style="background: #2ec95c;">
+      <ion-col col-2>地区</ion-col>
+      <ion-col col-2>完成数</ion-col>
+      <ion-col col-2>未完成数</ion-col>
+      <ion-col col-3>总数</ion-col>
+      <ion-col col-2>完成率</ion-col>
+    </ion-row>
+    <ion-row ion-button *ngFor="let result of results" >
+      <button ion-button full>
+        <ion-col col-2>{{result.area}}</ion-col>
+        <ion-col col-2>{{result.completedCound}}</ion-col>
+        <ion-col col-3>{{result.unCompletedCount}}</ion-col>
+        <ion-col col-2>{{result.total}}</ion-col>
+        <ion-col col-2>{{ result.completedRate}}</ion-col>
+      </button>
+    </ion-row>
+  </ion-grid>
+</ion-content>
+

@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="base :: common_header(~{::title},~{::link},~{::meta},~{::script})">
+    <title>站点信息</title>
+    <!--自定义-->
+    <script src="/static/js/query/siteInfo.js" th:src="@{/js/query/siteInfo.js}"></script>
+    <script src="/static/js/common.js" th:src="@{/js/common.js}"></script>
+    <!--link为通用方法识别标志-->
+    <link>
+</head>
+<body>
+<div id="loading" class="loading" style="display:none">加载中...</div>
+<div id="info" class="info-style" style="display:none"></div>
+<div class="bs-callout bs-callout-danger" id="callout-tables-striped-ie8">
+    <form id="siteInfoForm" action="exportData" method="post">
+        <input type="hidden" id="hiddenPageSize" name="hiddenPageSize" value="25"/>
+        <input type="hidden" id="hiddenCurrentPage" name="hiddenCurrentPage" value="1"/>
+        <input type="hidden" id="hiddenTotalPageCnt" name="hiddenTotalPageCnt"/>
+        <input type="hidden" id="hiddenTotalCnt" name="hiddenTotalCnt"/>
+        <!--/*@thymesVar id="linage" type="java"*/-->
+        <input type="hidden" id="linage" name="linage" th:value="${linage}"/>
+        <table>
+            <tr>
+                <td class="td-style td-space">
+                    <select class="form-control" style="width: 80px; display: inline-block">
+                        <option selected>GSM</option>
+                    </select>
+                    <select class="form-control" name="cond" style="width: 150px;display: inline-block">
+                        <option selected>ObjectID</option>
+                        <option>CGI</option>
+                        <option>BSC</option>
+                    </select>
+                    <input class="form-control" type="text" name="queryIndex" style="width: 150px;display: inline-block"
+                           placeholder="多个用，隔开"/>
+                </td>
+
+                <td class="td-style">
+                    <button type="button" id="searchBtn" class="btn btn-default btn-width">查询</button>
+                    <button type="button" id="exportBtn" class="btn btn-default btn-width">导出</button>
+                </td>
+            </tr>
+        </table>
+    </form>
+</div>
+<div class="bs-example form-bottom-style" data-example-id="striped-table">
+    <table id="siteInfoTable" class="table table-hover"></table>
+</div>
+
+<nav aria-label="...">
+    <ul class="pagination page-style" style="margin-top: 0px;margin-bottom: 20px" id="siteInfoDiv">
+        <li><a href="javascript:return false;" style="cursor: default">记录数：<span id="emTotalCnt">0</span> 条</a></li>
+        <li><a href="javascript:return false;" style="cursor: default">共 <span id="emTotalPageCnt">0</span> 页</a></li>
+        <li><a ondragstart="return false" href="javascript:void(0);" style="cursor: pointer"
+               onclick="showListViewByPage('first',submitCondition,'siteInfoForm','siteInfoDiv')">首页</a></li>
+
+        <li><a ondragstart="return false" href="javascript:void(0);" style="cursor: pointer"
+               onclick="showListViewByPage('back',submitCondition,'siteInfoForm','siteInfoDiv')" aria-label="Previous">
+            <span aria-hidden="true">上一页</span></a></li>
+
+        <li><a disabled="true">第 <input type="text" id="showCurrentPage" class="paging_input_text form-control"
+                                        value="0"/> 页</a></li>
+        <li><a ondragstart="return false" href="javascript:void(0);" style="cursor: pointer"
+               onclick="showListViewByPage('num',submitCondition,'siteInfoForm','siteInfoDiv')">GO</a></li>
+
+        <li><a ondragstart="return false" href="javascript:void(0);" style="cursor: pointer"
+               onclick="showListViewByPage('next',submitCondition,'siteInfoForm','siteInfoDiv')" aria-label="Next">
+            <span aria-hidden="true">下一页</span></a></li>
+
+        <li><a ondragstart="return false" href="javascript:void(0);" style="cursor: pointer"
+               onclick="showListViewByPage('last',submitCondition,'siteInfoForm','siteInfoDiv')">末页</a></li>
+    </ul>
+</nav>
+</body>
+</html>

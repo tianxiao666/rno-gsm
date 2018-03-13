@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <!-- Required meta tags-->
+    <meta charset="utf-8"/>
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui"/>
+    <meta name="apple-mobile-web-app-capable" content="yes"/>
+    <meta name="apple-mobile-web-app-status-bar-style" content="black"/>
+    <meta name="mobile-web-app-capable" content="yes"/>
+
+    <!-- Your app title -->
+    <title>GSM预警监控</title>
+    <link rel="stylesheet" th:href="@{/webjars/bootstrap/css/bootstrap.min.css}"/>
+
+    <!-- Path to Framework7 iOS CSS theme styles-->
+    <link rel="stylesheet" th:href="@{/lib/framework7-1.5.4/css/framework7.ios.min.css}"/>
+    <!-- Path to Framework7 iOS related color styles -->
+    <link rel="stylesheet" th:href="@{/lib/framework7-1.5.4/css/framework7.ios.colors.min.css}"/>
+    <!-- Path to your custom app styles-->
+    <link rel="stylesheet" th:href="@{/css/my-app.css}"/>
+    <link rel="apple-touch-icon-precomposed" th:href="@{/img/timg.jpg}"/>
+</head>
+<body>
+
+<!-- Views -->
+<div class="views">
+    <!-- Your main view, should have "view-main" class -->
+    <div class="view view-main">
+        <!-- Top Navbar-->
+        <div class="navbar" id="indexNavbar">
+            <div class="navbar-inner" data-page="index">
+                <div class="center sliding">GSM预警监控</div>
+                <div class="right">
+                    <a href="#"  class="ac-1">
+                    <image src="../static/img/logout.jpg"
+                                                             th:src="@{/img/logout.jpg}" width="25" height="25"></image></a>
+                </div>
+
+            </div>
+        </div>
+        <!-- Pages container, because we use fixed-through navbar and toolbar, it has additional appropriate classes-->
+        <div class="pages  navbar-through toolbar-through">
+
+            <!-- Page, "data-page" contains page name -->
+            <div data-page="index" class="page ">
+
+                <!-- Scrollable page content -->
+                <div class="page-content" style="top: 20px;background:white">
+                    <table class="table">
+
+                          <td style="padding-left:5px;padding-right:5px;margin-top:-5px;border:none;height: 117px;width: 90px;float: left">
+                              <a th:href="@{/indexMonitor}" data-page="indexMonitor"  class="external">
+                                  <div>
+                                      <image src="../static/img/indicator.jpg"
+                                             th:src="@{/img/indicator.jpg}" width="85" height="75"></image>
+
+                                      <div style="color: black;margin-left: 10px;margin-top:5px"><label>指标监控</label>
+                                      </div>
+                                  </div>
+                              </a>
+                          </td>
+                          <td style="padding-left:5px;padding-right: 5px;border:none;float: left;height: 117px;width: 90px">
+
+                              <a th:href="@{/wo}" data-page="workOrderCondition" class="external">
+                                  <div>
+                                      <image src="../static/img/manage.jpg"
+                                             th:src="@{/img/list.jpg}" width="83" height="70"></image>
+                                      <div style="color: black;margin-left:10px;margin-top:6px"><label>工单处理</label>
+                                      </div>
+                                  </div>
+                              </a>
+                          </td>
+                          <td style="padding-left:5px;padding-right:5px;border:none;float: left;height: 117px;width: 90px">
+
+                              <a  th:href="@{/woe}" data-page="workOrderExtract"  class="external">
+                                  <div>
+                                      <image src="../static/img/download.jpg"
+                                             th:src="@{/img/download.jpg}" width="80" height="70"></image>
+                                      <div style="color: black;margin-left:10px;margin-top:6px"><label>工单提取</label>
+                                      </div>
+                                  </div>
+                              </a>
+                          </td>
+                          <td style="padding-left:5px;padding-right:5px;border:none;float: left;height: 117px;width: 95px">
+                              <a th:href="@{/batchProcess}" data-page="workOrderBatch"  class="external">
+                                  <div>
+                                      <image src="../static/img/batch.jpg"
+                                             th:src="@{/img/batch.jpg}" width="80" height="70"></image>
+
+                                      <div style="color: black;margin-left: 0;margin-top:6px"><label>工单批量处理</label>
+                                      </div>
+                                  </div>
+                              </a>
+                          </td>
+                          <td style="padding-left:5px;padding-right: 5px;border:none;float: left;height: 117px;width: 90px">
+                              <a  th:href="@{/wos}" data-page="workOrderStatistics"  class="external">
+                                  <div>
+                                      <image src="../static/img/statistic.jpg"
+                                             th:src="@{/img/statistic.jpg}" width="78" height="67"></image>
+
+                                      <div style="color: black;margin-left: 10px;margin-top:8px"><label>工单统计</label>
+                                      </div>
+                                  </div>
+                              </a>
+                          </td>
+
+                  </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Path to Framework7 Library JS-->
+<script type="text/javascript" th:src="@{/lib/framework7-1.5.4/js/framework7.min.js}"></script>
+
+<!-- Path to your app js-->
+<script type="text/javascript" th:src="@{/js/index.js}"></script>
+
+</body>
+</html>

@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html  xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui"/>
+    <meta name="apple-mobile-web-app-capable" content="yes"/>
+    <meta name="apple-mobile-web-app-status-bar-style" content="black"/>
+    <meta name="mobile-web-app-capable" content="yes"/>
+
+    <title>工单批量处理</title>
+
+    <link rel="stylesheet" th:href="@{/webjars/bootstrap/css/bootstrap.min.css}"/>
+    <!-- Path to Framework7 iOS CSS theme styles-->
+    <link rel="stylesheet" th:href="@{/lib/framework7-1.5.4/css/framework7.ios.min.css}"/>
+    <!-- Path to Framework7 iOS related color styles -->
+    <link rel="stylesheet" th:href="@{/lib/framework7-1.5.4/css/framework7.ios.colors.min.css}"/>
+    <!-- Path to your custom app styles-->
+    <!--<link rel="stylesheet" th:href="@{/css/mobile.css}">-->
+    <link rel="stylesheet" th:href="@{/css/my-app.css}"/>
+</head>
+<body>
+<div class="views">
+    <!-- Your main view, should have "view-main" class -->
+    <div class="view view-main">
+        <!-- Top Navbar-->
+        <div class="navbar">
+            <div class="navbar-inner" data-page="index">
+                <div class="left">
+                    <a href="/index" class="back link external"> <image src="../static/img/back.jpg"
+                                                                        th:src="@{/img/back.jpg}" width="25" height="25"></image></a>
+                </div>
+                <div class="center sliding">工单批量处理</div>
+                <div class="right">
+                    <a href="/index" class="external"><image src="../static/img/house.jpg"
+                                                             th:src="@{/img/house.jpg}" width="25" height="25"></image></a>
+                </div>
+            </div>
+        </div>
+        <div class="pages navbar-through toolbar-through">
+            <!-- index page -->
+            <div data-page="workOrderBatch" class="page">
+                <!-- Scrollable page content -->
+                <div class="page-content">
+                    <div class="content-block">请上传工单处理Excel文件,其中处理结果可选填“待处理”，“已完成”，“正在处理”，“延迟处理”中的一项。</div>
+                    <form id="orderBatchForm"  action="processWorkOrderBatch" target="myIframe" method="post" enctype="multipart/form-data">
+                        <div class="list-block inset">
+                            <ul>
+                                <li>
+                                    <div class="item-content">
+                                        <div class="item-inner">
+                                            <div class="file-box">
+                                                <input type='button' class='btn btn-info' value='选择文件...' />
+                                                <input  type="file" name="file" id="file" class="file"
+                                                        size="28" onchange="document.getElementById('textfield').value=this.value"/>
+                                                <input type='text' name='textfield' id='textfield' class='txt' />
+                                            </div>
+                                        </div>
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="content-block" >
+                            <div class="row">
+                                <div class="col-100" style="margin:0 15px">
+                                    <a href="#"  id="workOrderBatchBtn"
+                                       class="button button-big button-fill color-green">提交处理</a>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                    <iframe id="myIframe" name="myIframe" scrolling="no" style="border:none;"></iframe>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Path to Framework7 Library JS-->
+<script type="text/javascript" th:src="@{/lib/framework7-1.5.4/js/framework7.min.js}"></script>
+<!-- Path to your app js-->
+<script type="text/javascript" th:src="@{/js/workOrderBatch.js}"></script>
+</body>
+</html>

@@ -1,0 +1,19 @@
+page-index {
+  a div label{
+    text-align: center;
+    font-weight: bold;
+  }
+  .col{
+    margin:1em;
+    transition:0.25s ease;
+  }
+  .col:hover{
+    transform:translate3d(0,0,30px);
+    border-radius: 10px;
+    box-shadow: 0 0 10px #ccc;
+  }
+  ion-col a{
+    text-decoration: none;
+    text-align: center;
+  }
+}

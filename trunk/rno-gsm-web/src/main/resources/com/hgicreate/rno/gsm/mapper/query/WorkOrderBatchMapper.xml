@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hgicreate.rno.gsm.mapper.query.WorkOrderBatchMapper">
+    <update id="updateWorkOrderBatch" parameterType="string">
+        update rno_gsm_work_order_review set handler = #{handler}, treatment = #{treatment},
+            treat_result = #{treatResult},administrator=#{admin},status=#{status}
+        where work_order_id = #{order}
+    </update>
+    <insert id="insertWorkOrderBatch" parameterType="string">
+        insert into rno_gsm_work_order_review (work_order_id,handler,treatment,
+                                               treat_result,administrator,status)
+        values (#{order}, #{handler}, #{treatment},#{treatResult},#{admin},#{status} )
+    </insert>
+    <update id="updateWorkOrderBatchAdmin" parameterType="string">
+        update rno_gsm_work_order_review set handle_count = #{handleCount}, status = #{status},administrator = #{admin} where work_order_id = #{order}
+    </update>
+    <insert id="insertWorkOrderBatchAdmin" parameterType="string">
+        insert into rno_gsm_work_order_review (work_order_id,handle_count,status,administrator) values(#{order}, #{handleCount}, #{status},#{admin} )
+    </insert>
+</mapper>

@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<!-- Required meta tags-->
+<meta charset="utf-8"/>
+<meta name="viewport"
+	content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="black"/>
+<meta name="mobile-web-app-capable" content="yes"/>
+
+<!-- Your app title -->
+<title>GSM指标监控</title>
+<link rel="stylesheet" th:href="@{/webjars/bootstrap/css/bootstrap.min.css}"/>
+<!-- Path to Framework7 iOS CSS theme styles-->
+<link rel="stylesheet" th:href="@{/lib/framework7-1.5.4/css/framework7.ios.min.css}"/>
+<!-- Path to Framework7 iOS related color styles -->
+<link rel="stylesheet" th:href="@{/lib/framework7-1.5.4/css/framework7.ios.colors.min.css}"/>
+<!-- Path to your custom app styles-->
+<!--<link rel="stylesheet" th:href="@{/css/mobile.css}">-->
+<link rel="stylesheet" th:href="@{/css/my-app.css}"/>
+<link rel="apple-touch-icon-precomposed" th:href="@{/img/timg.jpg}"/>
+</head>
+<body>
+	<!-- Views -->
+	<div class="views">
+		<!-- Your main view, should have "view-main" class -->
+		<div class="view view-main">
+			<!-- Top Navbar-->
+			<div class="navbar">
+				<div class="navbar-inner" data-page="index">
+					<div class="left">
+						<a href="/index" class="back link external"> <image src="../static/img/back.jpg"
+																			th:src="@{/img/back.jpg}" width="25" height="25"></image></a>
+					</div>
+					<div class="center sliding">工单统计</div>
+					<div class="right">
+						<a href="/index" class="external"><image src="../static/img/house.jpg"
+																 th:src="@{/img/house.jpg}" width="25" height="25"></image></a>
+					</div>
+				</div>
+
+				<div class="navbar-inner cached" data-page="result">
+					<div class="left">
+						<a href="#" class="back link"> <image src="../static/img/house.jpg"
+															  th:src="@{/img/back.jpg}" width="25" height="25"></image></a>
+					</div>
+					<div class="center sliding result"></div>
+					<div class="right">
+						<a href="/index" class="external"><image src="../static/img/house.jpg"
+																 th:src="@{/img/house.jpg}" width="25" height="25"></image></a>
+					</div>
+				</div>
+			</div>
+			<!-- Pages container, because we use fixed-through navbar and toolbar, it has additional appropriate classes-->
+			<div class="pages navbar-through toolbar-through">
+				<!-- index page -->
+				<div data-page="workOrderStatisticsCondition" class="page">
+					<!-- Scrollable page content -->
+					<div class="page-content">
+						<div class="content-block-title">查询条件</div>
+						<form id="workOrderStatisticsForm"  action="countWorkOrderStatistics" method="post">
+							<div class="list-block inset">
+								<ul>
+									<!-- Smart select item -->
+									<li><a href="#" class="item-link smart-select" data-open-in="picker" data-back-on-select="true"
+										   data-picker-close-text="确定">
+										<select name="county" id="county">
+										<option value="-1" selected>全部</option>
+										<option value="赤坎">赤坎</option>
+										<option value="霞山">霞山</option>
+										<option value="麻章">麻章</option>
+										<option value="吴川">吴川</option>
+										<option value="雷州">雷州</option>
+										<option value="坡头">坡头</option>
+										<option value="廉江">廉江</option>
+										<option value="徐闻">徐闻</option>
+										<option value="遂溪">遂溪</option>
+									</select>
+										<div class="item-content">
+											<div class="item-inner">
+												<!-- Select label -->
+												<div class="item-title">地区</div>
+												<!-- Selected value, not required -->
+												<div class="item-after"></div>
+											</div>
+										</div>
+									</a></li>
+									<li><a href="#" class="item-link smart-select" data-open-in="picker" data-back-on-select="true"
+										   data-picker-close-text="确定"> <select name="subMaintain" id="subMaintain">
+										<option value="-1" selected>全部</option>
+										<option value="鼎利">鼎利</option>
+										<option value="华苏">华苏</option>
+										<option value="长实">长实</option>
+										<option value="工程">工程</option>
+										<option value="润建">润建</option>
+										<option value="浙通服">浙通服</option>
+									</select>
+										<div class="item-content">
+											<div class="item-inner">
+												<!-- Select label -->
+												<div class="item-title">代维</div>
+												<!-- Selected value, not required -->
+												<div class="item-after"></div>
+											</div>
+										</div>
+									</a></li>
+									<li><a href="#" class="item-link smart-select" data-open-in="picker" data-back-on-select="true"
+										   data-picker-close-text="确定"> <select name="questionType" id="questionType">
+										<option value="-1" selected>全部</option>
+										<option value="0话务">0话务</option>
+										<option value="CF告警">CF告警</option>
+										<option value="EDGE下行0流量">EDGE下行0流量</option>
+										<option value="SDCCH拥塞数">SDCCH拥塞数</option>
+										<option value="SQI">SQI</option>
+										<option value="S拥塞">S拥塞</option>
+										<option value="S掉话">S掉话</option>
+										<option value="TBF建立成功率">TBF建立成功率</option>
+										<option value="TCH话务量">TCH话务量</option>
+										<option value="TCH话务量减少60%">TCH话务量减少60%</option>
+										<option value="上行干扰">上行干扰</option>
+										<option value="下行语音质量">下行语音质量</option>
+										<option value="传输断链">传输断链</option>
+										<option value="信道完好率">信道完好率</option>
+										<option value="切入">切入</option>
+										<option value="切出">切出</option>
+										<option value="寻呼拥塞">寻呼拥塞</option>
+										<option value="干扰">干扰</option>
+										<option value="指配拥塞">指配拥塞</option>
+										<option value="掉话率">掉话率</option>
+										<option value="无线接入性">无线接入性</option>
+										<option value="误码滑码">误码滑码</option>
+									</select>
+										<div class="item-content">
+											<div class="item-inner">
+												<!-- Select label -->
+												<div class="item-title">指标类型</div>
+												<!-- Selected value, not required -->
+												<div class="item-after"></div>
+											</div>
+										</div>
+									</a></li>
+									<li>
+										<div class="item-content">
+											<div class="item-inner">
+												<div class="item-title">频次</div>
+												<div class="item-input" style="display:block;width:170px;margin-right:5px">
+													<input type="search" name="frequency" id="frequency" placeholder="  输入出现频次" autocomplete="on"/>
+												</div>
+											</div>
+										</div>
+									</li>
+									<li>
+										<div class="item-content">
+											<div class="item-inner">
+												<div class="item-title">开始时间</div>
+												<div class="item-input" style="display: block; width: 170px; margin-right: 5px">
+													<input type="text" name="beginTime" id="beginTime" />
+												</div>
+											</div>
+										</div>
+									</li>
+									<li>
+										<div class="item-content">
+											<div class="item-inner">
+												<div class="item-title">结束时间</div>
+												<div class="item-input" style="display: block; width: 170px; margin-right: 5px">
+													<input type="text" name="endTime" id="endTime" />
+												</div>
+											</div>
+										</div>
+									</li>
+								</ul>
+							</div>
+							<div class="content-block" style="margin-top:-20px">
+								<div class="row">
+								    <div class="col-100" style="margin:0 15px">
+										<a href="#"  id="workOrderStatisticsSubmitBtn"
+										   class="button button-big button-fill color-green">查询</a>
+									</div>
+
+								</div>
+							</div>
+						</form>
+					</div>
+				</div>
+
+				<!-- result page -->
+				<div data-page="result" class="page cached">
+					<div class="page-content">
+						<div id="duringTime" class="content-block-title" style="margin: 10px 0;">起止时间：</div>
+					    <div style="width:42px; height:42px;position:absolute;top:10%;left:45%;" class="preloader"></div>
+						<div class="list-block" style="margin: 10px 0;">
+							<div class="container-fluid">
+								<div class="row">
+									<table id="workOrderStatisticsTab" class="table table-condensed table-striped table-display-inline">
+
+									</table>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<!-- Bottom Toolbar-->
+			<div class="toolbar">
+			</div>
+		</div>
+	</div>
+
+	<!-- Path to Framework7 Library JS-->
+	<script type="text/javascript" th:src="@{/lib/framework7-1.5.4/js/framework7.min.js}"></script>
+	<!-- Path to your app js-->
+	<script type="text/javascript" th:src="@{/js/workOrderStatistics.js}"></script>
+</body>
+</html>

@@ -1,0 +1,7 @@
+server.port=8083
+spring.http.multipart.location=/home/gsm/indicator
+
+spring.datasource.url=jdbc:postgresql://119.23.238.37:5432/gsm
+spring.datasource.username=postgres
+spring.datasource.password=Rno@2017
+spring.datasource.driverClassName=org.postgresql.Driver

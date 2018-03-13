@@ -1,0 +1,38 @@
+<ion-header>
+  <ion-navbar>
+    <button ion-button menuToggle>
+      <ion-icon name="menu"></ion-icon>
+    </button>
+    <ion-title>工单批量处理</ion-title>
+    <ion-buttons end (click)="toIndex()">
+      <button ion-button icon-only>
+        <ion-icon name="md-home">
+        </ion-icon>
+      </button>
+    </ion-buttons>
+  </ion-navbar>
+</ion-header>
+
+<ion-content class="cards-bg">
+  <ion-card class="cards-list-demo">
+    <ion-card-header class="ionCardHeader">
+    </ion-card-header>
+    <ion-list>
+      <ion-item>
+        <p style="white-space: pre-wrap">
+          请上传工单处理Excel文件,其中处理结果可选填“待处理”，“已完成”，“正在处理”，“延迟处理”中的一项。
+        </p>
+      </ion-item>
+        <ion-item>
+          <span class="sl-custom-file">
+          <input type="button" value="点击上传文件" class="btn-file"/>
+          <input type="file" name="file" class="ui-input-file" ng2FileSelect [uploader]="uploader"
+                 (change)="selectedFileOnChanged($event)" onchange="document.getElementById('textfield').value=this.value"/>
+            </span>
+        </ion-item>
+
+        <ion-item><input type="text" readonly id="textfield" /></ion-item>
+          <button ion-button class="button-work" color="secondary" (click)="uploadFile()">提交处理</button>
+    </ion-list>
+  </ion-card>
+</ion-content>

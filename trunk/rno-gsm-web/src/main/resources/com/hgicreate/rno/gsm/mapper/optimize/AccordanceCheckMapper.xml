@@ -1,0 +1,1451 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hgicreate.rno.gsm.mapper.optimize.AccordanceCheckMapper">
+    <select id="selectCbYesCount" parameterType="map" resultType="long">
+        select count(*) from (
+        select Date,BSC,CELL,CB,指令 from cdd_CB_yes where Date in
+        <foreach collection="dates" item="date" index="index" open="(" close=")" separator=",">
+            ${date}
+        </foreach>
+        ) as cbY
+    </select>
+    <select id="selectCbYes" parameterType="map" resultType="java.util.LinkedHashMap">
+        select Date,BSC,CELL,CB,指令 from cdd_CB_yes where Date in
+        <foreach collection="dates" item="date" index="index" open="(" close=")" separator=",">
+            ${date}
+        </foreach>
+    </select>
+    <select id="selectCbYesByPage" parameterType="map" resultType="java.util.LinkedHashMap">
+        select top ${cnt} Date,BSC,CELL,CB,指令
+        from (
+        select
+        row_number()
+        over (
+        order by A.Date) as rownumber,
+        *
+        FROM (
+        select Date,BSC,CELL,CB,指令 from cdd_CB_yes where Date in
+        <foreach collection="dates" item="date" index="index" open="(" close=")" separator=",">
+            ${date}
+        </foreach>
+        )A)B where B.rownumber &gt; ${startIndex}
+    </select>
+
+    <select id="selectEcscNoCount" parameterType="map" resultType="long">
+        SELECT count(*) from (
+        select Date,BSC,CELL,ECSC,指令 from cdd_ECSC_no where Date in
+        <foreach collection="dates" item="date" index="index" open="(" close=")" separator=",">
+            ${date}
+        </foreach>
+        ) as ecscC
+    </select>
+    <select id="selectEcscNo" parameterType="map" resultType="java.util.LinkedHashMap">
+        select Date,BSC,CELL,ECSC,指令 from cdd_ECSC_no where Date in
+        <foreach collection="dates" item="date" index="index" open="(" close=")" separator=",">
+            ${date}
+        </foreach>
+    </select>
+    <select id="selectEcscNoByPage" parameterType="map" resultType="java.util.LinkedHashMap">
+        select top ${cnt} Date,BSC,CELL,ECSC,指令
+        from (
+        select
+        row_number()
+        over (
+        order by A.Date) as rownumber,
+        *
+        FROM (
+        select Date,BSC,CELL,ECSC,指令 from cdd_ECSC_no where Date in
+        <foreach collection="dates" item="date" index="index" open="(" close=")" separator=",">
+            ${date}
+        </foreach>
+        )A)B where B.rownumber &gt; ${startIndex}
+    </select>
+
+    <select id="selectGprsupNoCount" parameterType="map" resultType="long">
+        select count(*) from (
+        select Date,BSC,CELL,GPRSSUP,指令 from cdd_GRPSSUP_no where Date in
+        <foreach collection="dates" item="date" index="index" open="(" close=")" separator=",">
+            ${date}
+        </foreach>
+        ) as gprsP
+    </select>
+    <select id="selectGprsupNo" parameterType="map" resultType="java.util.LinkedHashMap">
+        select Date,BSC,CELL,GPRSSUP,指令 from cdd_GRPSSUP_no where Date in
+        <foreach collection="dates" item="date" index="index" open="(" close=")" separator=",">
+            ${date}
+        </foreach>
+    </select>
+    <select id="selectGprsupNoByPage" parameterType="map" resultType="java.util.LinkedHashMap">
+        select top ${cnt} Date,BSC,CELL,GPRSSUP,指令
+        from (
+        select
+        row_number()
+        over (
+        order by A.Date) as rownumber,
+        *
+        FROM (
+        select Date,BSC,CELL,GPRSSUP,指令 from cdd_GRPSSUP_no where Date in
+        <foreach collection="dates" item="date" index="index" open="(" close=")" separator=",">
+            ${date}
+        </foreach>
+        )A)B where B.rownumber &gt; ${startIndex}
+    </select>
+
+    <select id="selectInnerOuterExceptionCount" parameterType="map" resultType="long">
+        select count(*) from (
+        select Date,INT_BSC,EXT_BSC,CELL,类型,内局,外局,指令 from cdd_neiWaiJuYiChang where Date in
+        <foreach collection="dates" item="date" index="index" open="(" close=")" separator=",">
+            ${date}
+        </foreach>
+        ) as inOut
+    </select>
+    <select id="selectInnerOuterException" parameterType="map" resultType="java.util.LinkedHashMap">
+        select Date,INT_BSC,EXT_BSC,CELL,类型,内局,外局,指令 from cdd_neiWaiJuYiChang where Date in
+        <foreach collection="dates" item="date" index="index" open="(" close=")" separator=",">
+            ${date}
+        </foreach>
+    </select>
+    <select id="selectInnerOuterExceptionByPage" parameterType="map" resultType="java.util.LinkedHashMap">
+        select top ${cnt} Date,INT_BSC,EXT_BSC,CELL,类型,内局,外局,指令
+        from (
+        select
+        row_number()
+        over (
+        order by A.Date) as rownumber,
+        *
+        FROM (
+        select Date,INT_BSC,EXT_BSC,CELL,类型,内局,外局,指令 from cdd_neiWaiJuYiChang where Date in
+        <foreach collection="dates" item="date" index="index" open="(" close=")" separator=",">
+            ${date}
+        </foreach>
+        )A)B where B.rownumber &gt; ${startIndex}
+    </select>
+
+    <select id="selectTxExceptionCount" parameterType="map" resultType="long">
+        select count(*) from (
+        select Date,BSC,MO,CELL,CHGR,BAND from cdd_TXyiChang where Date in
+        <foreach collection="dates" item="date" index="index" open="(" close=")" separator=",">
+            ${date}
+        </foreach>
+        ) as txC
+    </select>
+    <select id="selectTxException" parameterType="map" resultType="java.util.LinkedHashMap">
+        select Date,BSC,MO,CELL,CHGR,BAND from cdd_TXyiChang where Date in
+        <foreach collection="dates" item="date" index="index" open="(" close=")" separator=",">
+            ${date}
+        </foreach>
+    </select>
+    <select id="selectTxExceptionByPage" parameterType="map" resultType="java.util.LinkedHashMap">
+        select top ${cnt} Date,BSC,MO,CELL,CHGR,BAND
+        from (
+        select
+        row_number()
+        over (
+        order by A.Date) as rownumber,
+        *
+        FROM (
+        select Date,BSC,MO,CELL,CHGR,BAND from cdd_TXyiChang where Date in
+        <foreach collection="dates" item="date" index="index" open="(" close=")" separator=",">
+            ${date}
+        </foreach>
+        )A)B where B.rownumber &gt; ${startIndex}
+    </select>
+
+    <select id="selectTrxExceptionCount" parameterType="map" resultType="long">
+        select count(*) from (
+        select Date,BSC,MO,CELL,CHGR,TEI,SIG,MCTRI,SWVERREPL,SWVERDLD,SWVERACT,DCP1,DCP2
+        from cdd_TRXyiChang where Date in
+        <foreach collection="dates" item="date" index="index" open="(" close=")" separator=",">
+            ${date}
+        </foreach>
+        ) as trxC
+    </select>
+    <select id="selectTrxException" parameterType="map" resultType="java.util.LinkedHashMap">
+        select Date,BSC,MO,CELL,CHGR,TEI,SIG,MCTRI,SWVERREPL,SWVERDLD,SWVERACT,DCP1,DCP2
+        from cdd_TRXyiChang where Date in
+        <foreach collection="dates" item="date" index="index" open="(" close=")" separator=",">
+            ${date}
+        </foreach>
+    </select>
+    <select id="selectTrxExceptionByPage" parameterType="map" resultType="java.util.LinkedHashMap">
+        select top ${cnt} Date,BSC,MO,CELL,CHGR,TEI,SIG,MCTRI,SWVERREPL,SWVERDLD,SWVERACT,DCP1,DCP2
+        from (
+        select
+        row_number()
+        over (
+        order by A.Date) as rownumber,
+        *
+        FROM (
+        select Date,BSC,MO,CELL,CHGR,TEI,SIG,MCTRI,SWVERREPL,SWVERDLD,SWVERACT,DCP1,DCP2
+        from cdd_TRXyiChang where Date in
+        <foreach collection="dates" item="date" index="index" open="(" close=")" separator=",">
+            ${date}
+        </foreach>
+        )A)B where B.rownumber &gt; ${startIndex}
+    </select>
+
+    <select id="selectTransportExceptionCount" parameterType="map" resultType="long">
+        select count(*) from (
+        select Date,BSC,CELL,MO,DEV,DCP from cdd_chuanShuYiChang where Date in
+        <foreach collection="dates" item="date" index="index" open="(" close=")" separator=",">
+            ${date}
+        </foreach>
+        ) as transC
+    </select>
+    <select id="selectTransportException" parameterType="map" resultType="java.util.LinkedHashMap">
+        select Date,BSC,CELL,MO,DEV,DCP from cdd_chuanShuYiChang where Date in
+        <foreach collection="dates" item="date" index="index" open="(" close=")" separator=",">
+            ${date}
+        </foreach>
+    </select>
+    <select id="selectTransportExceptionByPage" parameterType="map" resultType="java.util.LinkedHashMap">
+        select top ${cnt} Date,BSC,CELL,MO,DEV,DCP
+        from (
+        select
+        row_number()
+        over (
+        order by A.Date) as rownumber,
+        *
+        FROM (
+        select Date,BSC,CELL,MO,DEV,DCP from cdd_chuanShuYiChang where Date in
+        <foreach collection="dates" item="date" index="index" open="(" close=")" separator=",">
+            ${date}
+        </foreach>
+        )A)B where B.rownumber &gt; ${startIndex}
+    </select>
+
+    <select id="selectBaTableCount" parameterType="map" resultType="long">
+        select count(*) from (
+        select Date,BSC,CELL,LISTTYPE,MBCCHNO,测量频点个数 from cdd_BAbiao where Date in
+        <foreach collection="dates" item="date" index="index" open="(" close=")" separator=",">
+            ${date}
+        </foreach>
+        ) as baC
+    </select>
+    <select id="selectBaTable" parameterType="map" resultType="java.util.LinkedHashMap">
+        select Date,BSC,CELL,LISTTYPE,MBCCHNO,测量频点个数 from cdd_BAbiao where Date in
+        <foreach collection="dates" item="date" index="index" open="(" close=")" separator=",">
+            ${date}
+        </foreach>
+    </select>
+    <select id="selectBaTableByPage" parameterType="map" resultType="java.util.LinkedHashMap">
+        select top ${cnt} Date,BSC,CELL,LISTTYPE,MBCCHNO,测量频点个数
+        from (
+        select
+        row_number()
+        over (
+        order by A.Date) as rownumber,
+        *
+        FROM (
+        select Date,BSC,CELL,LISTTYPE,MBCCHNO,测量频点个数 from cdd_BAbiao where Date in
+        <foreach collection="dates" item="date" index="index" open="(" close=")" separator=",">
+            ${date}
+        </foreach>
+        )A)B where B.rownumber &gt; ${startIndex}
+    </select>
+
+    <select id="selectNeighborCount" parameterType="map" resultType="long">
+        select count(*) from (
+        select Date,BSC,CELL,邻区个数 from cdd_linQu where Date in
+        <foreach collection="dates" item="date" index="index" open="(" close=")" separator=",">
+            ${date}
+        </foreach>
+        ) as neighC
+    </select>
+    <select id="selectNeighbor" parameterType="map" resultType="java.util.LinkedHashMap">
+        select Date,BSC,CELL,邻区个数 from cdd_linQu where Date in
+        <foreach collection="dates" item="date" index="index" open="(" close=")" separator=",">
+            ${date}
+        </foreach>
+    </select>
+    <select id="selectNeighborByPage" parameterType="map" resultType="java.util.LinkedHashMap">
+        select top ${cnt} Date,BSC,CELL,邻区个数
+        from (
+        select
+        row_number()
+        over (
+        order by A.Date) as rownumber,
+        *
+        FROM (
+        select Date,BSC,CELL,邻区个数 from cdd_linQu where Date in
+        <foreach collection="dates" item="date" index="index" open="(" close=")" separator=",">
+            ${date}
+        </foreach>
+        )A)B where B.rownumber &gt; ${startIndex}
+    </select>
+
+    <select id="selectSpotLackDefCount" parameterType="map" resultType="long">
+        select count(*) from (
+        select Date,BSC,CELL,LISTTYPE,测量频点个数,漏定义的测量频点,指令 from cdd_ceLiangPinDianLouDingYi where Date in
+        <foreach collection="dates" item="date" index="index" open="(" close=")" separator=",">
+            ${date}
+        </foreach>
+        ) as spoC
+    </select>
+    <select id="selectSpotLackDef" parameterType="map" resultType="java.util.LinkedHashMap">
+        select Date,BSC,CELL,LISTTYPE,测量频点个数,漏定义的测量频点,指令 from cdd_ceLiangPinDianLouDingYi where Date in
+        <foreach collection="dates" item="date" index="index" open="(" close=")" separator=",">
+            ${date}
+        </foreach>
+    </select>
+    <select id="selectSpotLackDefByPage" parameterType="map" resultType="java.util.LinkedHashMap">
+        select top ${cnt} Date,BSC,CELL,LISTTYPE,测量频点个数,漏定义的测量频点,指令
+        from (
+        select
+        row_number()
+        over (
+        order by A.Date) as rownumber,
+        *
+        FROM (
+        select Date,BSC,CELL,LISTTYPE,测量频点个数,漏定义的测量频点,指令 from cdd_ceLiangPinDianLouDingYi where Date in
+        <foreach collection="dates" item="date" index="index" open="(" close=")" separator=",">
+            ${date}
+        </foreach>
+        )A)B where B.rownumber &gt; ${startIndex}
+    </select>
+
+    <select id="selectCduSpotCount" parameterType="map" resultType="long">
+        select count(*) from (
+        select Date,BSC,MO,DU,FHOP from cdd_CDUtiaoPin where Date in
+        <foreach collection="dates" item="date" index="index" open="(" close=")" separator=",">
+            ${date}
+        </foreach>
+        ) as cduC
+    </select>
+    <select id="selectCduSpot" parameterType="map" resultType="java.util.LinkedHashMap">
+        select Date,BSC,MO,DU,FHOP from cdd_CDUtiaoPin where Date in
+        <foreach collection="dates" item="date" index="index" open="(" close=")" separator=",">
+            ${date}
+        </foreach>
+    </select>
+    <select id="selectCduSpotByPage" parameterType="map" resultType="java.util.LinkedHashMap">
+        select top ${cnt} Date,BSC,MO,DU,FHOP
+        from (
+        select
+        row_number()
+        over (
+        order by A.Date) as rownumber,
+        *
+        FROM (
+        select Date,BSC,MO,DU,FHOP from cdd_CDUtiaoPin where Date in
+        <foreach collection="dates" item="date" index="index" open="(" close=")" separator=",">
+            ${date}
+        </foreach>
+        )A)B where B.rownumber &gt; ${startIndex}
+    </select>
+
+    <select id="selectBspwrtCount" parameterType="map" resultType="long">
+        select count(*) from (
+        select Date,BSC,CELL,BSPWRB,BSPWRT from cdd_BSPWRT where Date in
+        <foreach collection="dates" item="date" index="index" open="(" close=")" separator=",">
+            ${date}
+        </foreach>
+        ) as bspwrtC
+    </select>
+    <select id="selectBspwrt" parameterType="map" resultType="java.util.LinkedHashMap">
+        select Date,BSC,CELL,BSPWRB,BSPWRT from cdd_BSPWRT where Date in
+        <foreach collection="dates" item="date" index="index" open="(" close=")" separator=",">
+            ${date}
+        </foreach>
+    </select>
+    <select id="selectBspwrtByPage" parameterType="map" resultType="java.util.LinkedHashMap">
+        select top ${cnt} Date,BSC,CELL,BSPWRB,BSPWRT
+        from (
+        select
+        row_number()
+        over (
+        order by A.Date) as rownumber,
+        *
+        FROM (
+        select Date,BSC,CELL,BSPWRB,BSPWRT from cdd_BSPWRT where Date in
+        <foreach collection="dates" item="date" index="index" open="(" close=")" separator=",">
+            ${date}
+        </foreach>
+        )A)B where B.rownumber &gt; ${startIndex}
+    </select>
+
+
+    <select id="calculateCbYesCount" parameterType="map" resultType="long">
+        select count(*) from (
+        <foreach collection="dates" item="date" index="index" separator="union">
+            select Date,BSC,CELL,CB,'RLSBC:CELL='+CELL+',CB=NO;' as 指令 from cdd_RLSBP_${date} cdd_RLSBP where CB LIKE
+            'YES'
+        </foreach>
+        ) as cb
+    </select>
+    <select id="calculateCbYes" parameterType="map" resultType="java.util.LinkedHashMap">
+        <foreach collection="dates" item="date" index="index" separator="union">
+            select Date,BSC,CELL,CB,'RLSBC:CELL='+CELL+',CB=NO;' as 指令 from cdd_RLSBP_${date} cdd_RLSBP where CB LIKE
+            'YES'
+        </foreach>
+    </select>
+    <select id="calculateCbYesByPage" parameterType="map" resultType="java.util.LinkedHashMap">
+        select top ${cnt} Date,BSC,CELL,CB,'RLSBC:CELL='+CELL+',CB=NO;' as 指令 from(
+        select row_number() over(order by A.Date) as rownumber,* from(
+        <foreach collection="dates" item="date" index="index" separator="union">
+            select Date,BSC,CELL,CB,'RLSBC:CELL='+CELL+',CB=NO;' as 指令 from cdd_RLSBP where CB LIKE 'YES'
+        </foreach>
+        )A)B where B.rownumber &gt; ${startIndex}
+    </select>
+
+    <select id="calculateEcscNoCount" parameterType="map" resultType="long">
+        select count(*) from (
+        <foreach collection="dates" item="date" index="index" separator="union">
+            select Date,BSC,CELL,ECSC,'RLSBC:CELL='+CELL+',ECSC=YES;' as 指令 from cdd_RLSBP_${date} cdd_RLSBP where ECSC
+            LIKE 'NO'
+        </foreach>
+        ) as EcscNo
+    </select>
+    <select id="calculateEcscNo" parameterType="map" resultType="java.util.LinkedHashMap">
+        <foreach collection="dates" item="date" index="index" separator="union">
+            select Date,BSC,CELL,rtrim(CAST(ECSC AS char(20))) as ECSC,'RLSBC:CELL='+CELL+',ECSC=YES;' as 指令 from
+            cdd_RLSBP_${date} cdd_RLSBP where ECSC LIKE 'NO'
+        </foreach>
+    </select>
+    <select id="calculateEcscNoByPage" parameterType="map" resultType="java.util.LinkedHashMap">
+        select top ${cnt} Date,BSC,CELL,rtrim(CAST(ECSC AS char(20))) as ECSC,
+        'RLSBC:CELL='+CELL+',ECSC=YES;' as 指令 from(
+        select row_number() over(order by A.Date) as rownumber,* from(
+        <foreach collection="dates" item="date" index="index" separator="union">
+            select Date,BSC,CELL,rtrim(CAST(ECSC AS char(20))) as ECSC,
+            'RLSBC:CELL='+CELL+',ECSC=YES;' as 指令 from cdd_RLSBP_${date} cdd_RLSBP where ECSC LIKE 'NO'
+        </foreach>
+        )A)B where B.rownumber &gt; ${startIndex}
+    </select>
+
+    <select id="calculateGprsupNoCount" parameterType="map" resultType="long">
+        select count(*) from (
+        <foreach collection="dates" item="date" index="index" separator="union">
+            select Date,BSC,CELL,GPRSSUP,'RLGSI:CELL='+CELL+';' as 指令 from cdd_RLGSP_${date} cdd_RLGSP where GPRSSUP
+            LIKE 'NO'
+        </foreach>) as gprs
+    </select>
+    <select id="calculateGprsupNo" parameterType="map" resultType="java.util.LinkedHashMap">
+        <foreach collection="dates" item="date" index="index" separator="union">
+            select Date,BSC,CELL,GPRSSUP,'RLGSI:CELL='+CELL+';' as 指令 from cdd_RLGSP_${date} cdd_RLGSP where GPRSSUP
+            LIKE 'NO'
+        </foreach>
+    </select>
+    <select id="calculateGprsupNoByPage" parameterType="map" resultType="java.util.LinkedHashMap">
+        select top ${cnt} Date,BSC,CELL,GPRSSUP,'RLGSI:CELL='+CELL+';' as 指令
+        from (
+        select
+        row_number()
+        over (
+        order by A.Date) as rownumber,
+        *
+        FROM (
+        <foreach collection="dates" item="date" index="index" separator="union">
+            select Date,BSC,CELL,GPRSSUP,'RLGSI:CELL='+CELL+';' as 指令 from cdd_RLGSP_${date} cdd_RLGSP where GPRSSUP
+            LIKE 'NO'
+        </foreach>) A) B
+        where B.rownumber &gt; ${startIndex}
+    </select>
+
+    <select id="calculateInnerOuterExceptionCount" parameterType="map" resultType="long">
+        select count(*) from (
+        <foreach collection="dates" item="date" index="index" separator="union">
+            select cdd_RLDEP.Date,
+            cdd_RLDEP.BSC as INT_BSC,
+            cdd_RLDEP_EXT.BSC as EXT_BSC,
+            cdd_RLDEP.CELL,
+            'CGI' as 类型,
+            cdd_RLDEP.CGI as 内局,
+            cdd_RLDEP_EXT.CGI as 外局,
+            'RLDEC:CELL=' + cdd_RLDEP.CELL + ',CGI=' + cdd_RLDEP.CGI + ';' as 指令
+            from cdd_RLDEP_${date} cdd_RLDEP, cdd_RLDEP_EXT_${date} cdd_RLDEP_EXT
+            where cdd_RLDEP.Date = cdd_RLDEP_EXT.Date
+            and cdd_RLDEP.CELL = cdd_RLDEP_EXT.CELL
+            and cdd_RLDEP.CGI != cdd_RLDEP_EXT.CGI
+            union
+            select cdd_RLDEP.Date,
+            cdd_RLDEP.BSC as INT_BSC,
+            cdd_RLDEP_EXT.BSC as EXT_BSC,
+            cdd_RLDEP.CELL,
+            'BSIC' as 类型,
+            cdd_RLDEP.BSIC as 内局,
+            cdd_RLDEP_EXT.BSIC as 外局,
+            'RLDEC:CELL=' + cdd_RLDEP.CELL + ',BSIC=' + cdd_RLDEP.BSIC + ';' as 指令
+            from cdd_RLDEP, cdd_RLDEP_EXT
+            where cdd_RLDEP.Date = cdd_RLDEP_EXT.Date
+            and cdd_RLDEP.CELL = cdd_RLDEP_EXT.CELL
+            and cdd_RLDEP.BSIC != cdd_RLDEP_EXT.BSIC
+            union
+            select cdd_RLDEP.Date,
+            cdd_RLDEP.BSC as INT_BSC,
+            cdd_RLDEP_EXT.BSC as EXT_BSC,
+            cdd_RLDEP.CELL,
+            'BCCHNO' as 类型,
+            cdd_RLDEP.BCCHNO as 内局,
+            cdd_RLDEP_EXT.BCCHNO as 外局,
+            'RLDEC:CELL=' + cdd_RLDEP.CELL + ',BCCHNO=' + cdd_RLDEP.BCCHNO + ';' as 指令
+            from cdd_RLDEP, cdd_RLDEP_EXT
+            where cdd_RLDEP.Date = cdd_RLDEP_EXT.Date
+            and cdd_RLDEP.CELL = cdd_RLDEP_EXT.CELL
+            and cdd_RLDEP.BCCHNO != cdd_RLDEP_EXT.BCCHNO
+            union
+            select cdd_RLCPP.Date,
+            cdd_RLCPP.BSC as INT_BSC,
+            cdd_RLCPP_EXT.BSC as EXT_BSC,
+            cdd_RLCPP.CELL,
+            'MSTXPWR' as 类型,
+            cdd_RLCPP.MSTXPWR as 内局,
+            cdd_RLCPP_EXT.MSTXPWR as 外局,
+            'RLCPC:CELL=' + cdd_RLCPP.CELL + ',MSTXPWR=' + cdd_RLCPP.MSTXPWR + ';' as 指令
+            from cdd_RLCPP_${date} cdd_RLCPP, cdd_RLCPP_EXT_${date} cdd_RLCPP_EXT
+            where cdd_RLCPP.Date = cdd_RLCPP_EXT.Date
+            and cdd_RLCPP.CELL = cdd_RLCPP_EXT.CELL
+            and cdd_RLCPP.MSTXPWR != cdd_RLCPP_EXT.MSTXPWR
+            union
+            select cdd_RLLHP.Date,
+            cdd_RLLHP.BSC as INT_BSC,
+            cdd_RLLHP_EXT.BSC as EXT_BSC,
+            cdd_RLLHP.CELL,
+            'LAYER' as 类型,
+            cdd_RLLHP.LAYER as 内局,
+            cdd_RLLHP_EXT.LAYER as 外局,
+            'RLLHC:CELL=' + cdd_RLLHP.CELL + ',LAYER=' + cdd_RLLHP.LAYER + ';' as 指令
+            from cdd_RLLHP_${date} cdd_RLLHP, cdd_RLLHP_EXT_${date} cdd_RLLHP_EXT
+            where cdd_RLLHP.Date = cdd_RLLHP_EXT.Date
+            and cdd_RLLHP.CELL = cdd_RLLHP_EXT.CELL
+            and cdd_RLLHP.LAYER != cdd_RLLHP_EXT.LAYER
+            union
+            select cdd_RLLHP.Date,
+            cdd_RLLHP.BSC as INT_BSC,
+            cdd_RLLHP_EXT.BSC as EXT_BSC,
+            cdd_RLLHP.CELL,
+            'LAYERTHR' as 类型,
+            cdd_RLLHP.LAYERTHR as 内局,
+            cdd_RLLHP_EXT.LAYERTHR as 外局,
+            'RLLHC:CELL=' + cdd_RLLHP.CELL + ',LAYERTHR=' + cdd_RLLHP.LAYERTHR + ';' as 指令
+            from cdd_RLLHP, cdd_RLLHP_EXT
+            where cdd_RLLHP.Date = cdd_RLLHP_EXT.Date
+            and cdd_RLLHP.CELL = cdd_RLLHP_EXT.CELL
+            and cdd_RLLHP.LAYERTHR != cdd_RLLHP_EXT.LAYERTHR
+            union
+            select cdd_RLLHP.Date,
+            cdd_RLLHP.BSC as INT_BSC,
+            cdd_RLLHP_EXT.BSC as EXT_BSC,
+            cdd_RLLHP.CELL,
+            'LAYERHYST' as 类型,
+            cdd_RLLHP.LAYERHYST as 内局,
+            cdd_RLLHP_EXT.LAYERHYST as 外局,
+            'RLLHC:CELL=' + cdd_RLLHP.CELL + ',LAYERHYST=' + cdd_RLLHP.LAYERHYST + ';' as 指令
+            from cdd_RLLHP, cdd_RLLHP_EXT
+            where cdd_RLLHP.Date = cdd_RLLHP_EXT.Date
+            and cdd_RLLHP.CELL = cdd_RLLHP_EXT.CELL
+            and cdd_RLLHP.LAYERHYST != cdd_RLLHP_EXT.LAYERHYST
+            union
+            select cdd_RLLHP.Date,
+            cdd_RLLHP.BSC as INT_BSC,
+            cdd_RLLHP_EXT.BSC as EXT_BSC,
+            cdd_RLLHP.CELL,
+            'PSSTEMP' as 类型,
+            cdd_RLLHP.PSSTEMP as 内局,
+            cdd_RLLHP_EXT.PSSTEMP as 外局,
+            'RLLHC:CELL=' + cdd_RLLHP.CELL + ',PSSTEMP=' + cdd_RLLHP.PSSTEMP + ';' as 指令
+            from cdd_RLLHP, cdd_RLLHP_EXT
+            where cdd_RLLHP.Date = cdd_RLLHP_EXT.Date
+            and cdd_RLLHP.CELL = cdd_RLLHP_EXT.CELL
+            and cdd_RLLHP.PSSTEMP != cdd_RLLHP_EXT.PSSTEMP
+            union
+            select cdd_RLLHP.Date,
+            cdd_RLLHP.BSC as INT_BSC,
+            cdd_RLLHP_EXT.BSC as EXT_BSC,
+            cdd_RLLHP.CELL,
+            'PTIMTEMP' as 类型,
+            cdd_RLLHP.PTIMTEMP as 内局,
+            cdd_RLLHP_EXT.PTIMTEMP as 外局,
+            'RLLHC:CELL=' + cdd_RLLHP.CELL + ',PTIMTEMP=' + cdd_RLLHP.PTIMTEMP + ';' as 指令
+            from cdd_RLLHP, cdd_RLLHP_EXT
+            where cdd_RLLHP.Date = cdd_RLLHP_EXT.Date
+            and cdd_RLLHP.CELL = cdd_RLLHP_EXT.CELL
+            and cdd_RLLHP.PTIMTEMP != cdd_RLLHP_EXT.PTIMTEMP
+            union
+            select cdd_RLLOP.Date,
+            cdd_RLLOP.BSC as INT_BSC,
+            cdd_RLLOP_EXT.BSC as EXT_BSC,
+            cdd_RLLOP.CELL,
+            'BSPWR' as 类型,
+            cdd_RLLOP.BSPWR as 内局,
+            cdd_RLLOP_EXT.BSPWR as 外局,
+            'RLLOC:CELL=' + cdd_RLLOP.CELL + ',BSPWR=' + cdd_RLLOP.BSPWR + ';' as 指令
+            from cdd_RLLOP_${date} cdd_RLLOP, cdd_RLLOP_EXT_${date} cdd_RLLOP_EXT
+            where cdd_RLLOP.Date = cdd_RLLOP_EXT.Date
+            and cdd_RLLOP.CELL = cdd_RLLOP_EXT.CELL
+            and cdd_RLLOP.BSPWR != cdd_RLLOP_EXT.BSPWR
+            union
+            select cdd_RLLOP.Date,
+            cdd_RLLOP.BSC as INT_BSC,
+            cdd_RLLOP_EXT.BSC as EXT_BSC,
+            cdd_RLLOP.CELL,
+            'BSRXMIN' as 类型,
+            cdd_RLLOP.BSRXMIN as 内局,
+            cdd_RLLOP_EXT.BSRXMIN as 外局,
+            'RLLOC:CELL=' + cdd_RLLOP.CELL + ',BSRXMIN=' + cdd_RLLOP.BSRXMIN + ';' as 指令
+            from cdd_RLLOP_${date} cdd_RLLOP, cdd_RLLOP_EXT_${date} cdd_RLLOP_EXT
+            where cdd_RLLOP.Date = cdd_RLLOP_EXT.Date
+            and cdd_RLLOP.CELL = cdd_RLLOP_EXT.CELL
+            and cdd_RLLOP.BSRXMIN != cdd_RLLOP_EXT.BSRXMIN
+            union
+            select cdd_RLLOP.Date,
+            cdd_RLLOP.BSC as INT_BSC,
+            cdd_RLLOP_EXT.BSC as EXT_BSC,
+            cdd_RLLOP.CELL,
+            'BSRXSUFF' as 类型,
+            cdd_RLLOP.BSRXSUFF as 内局,
+            cdd_RLLOP_EXT.BSRXSUFF as 外局,
+            'RLLOC:CELL=' + cdd_RLLOP.CELL + ',BSRXSUFF=' + cdd_RLLOP.BSRXSUFF + ';' as 指令
+            from cdd_RLLOP_${date} cdd_RLLOP, cdd_RLLOP_EXT_${date} cdd_RLLOP_EXT
+            where cdd_RLLOP.Date = cdd_RLLOP_EXT.Date
+            and cdd_RLLOP.CELL = cdd_RLLOP_EXT.CELL
+            and cdd_RLLOP.BSRXSUFF != cdd_RLLOP_EXT.BSRXSUFF
+            union
+            select cdd_RLLOP.Date,
+            cdd_RLLOP.BSC as INT_BSC,
+            cdd_RLLOP_EXT.BSC as EXT_BSC,
+            cdd_RLLOP.CELL,
+            'MSRXMIN' as 类型,
+            cdd_RLLOP.MSRXMIN as 内局,
+            cdd_RLLOP_EXT.MSRXMIN as 外局,
+            'RLLOC:CELL=' + cdd_RLLOP.CELL + ',MSRXMIN=' + cdd_RLLOP.MSRXMIN + ';' as 指令
+            from cdd_RLLOP_${date} cdd_RLLOP, cdd_RLLOP_EXT_${date} cdd_RLLOP_EXT
+            where cdd_RLLOP.Date = cdd_RLLOP_EXT.Date
+            and cdd_RLLOP.CELL = cdd_RLLOP_EXT.CELL
+            and cdd_RLLOP.MSRXMIN != cdd_RLLOP_EXT.MSRXMIN
+            union
+            select cdd_RLLOP.Date,
+            cdd_RLLOP.BSC as INT_BSC,
+            cdd_RLLOP_EXT.BSC as EXT_BSC,
+            cdd_RLLOP.CELL,
+            'MSRXSUFF' as 类型,
+            cdd_RLLOP.MSRXSUFF as 内局,
+            cdd_RLLOP_EXT.MSRXSUFF as 外局,
+            'RLLOC:CELL=' + cdd_RLLOP.CELL + ',MSRXSUFF=' + cdd_RLLOP.MSRXSUFF + ';' as 指令
+            from cdd_RLLOP_${date} cdd_RLLOP, cdd_RLLOP_EXT_${date} cdd_RLLOP_EXT
+            where cdd_RLLOP.Date = cdd_RLLOP_EXT.Date
+            and cdd_RLLOP.CELL = cdd_RLLOP_EXT.CELL
+            and cdd_RLLOP.MSRXSUFF != cdd_RLLOP_EXT.MSRXSUFF
+            union
+            select cdd_RLLOP.Date,
+            cdd_RLLOP.BSC as INT_BSC,
+            cdd_RLLOP_EXT.BSC as EXT_BSC,
+            cdd_RLLOP.CELL,
+            'BSTXPWR' as 类型,
+            cdd_RLLOP.BSTXPWR as 内局,
+            cdd_RLLOP_EXT.BSTXPWR as 外局,
+            'RLLOC:CELL=' + cdd_RLLOP.CELL + ',BSTXPWR=' + cdd_RLLOP.BSTXPWR + ';' as 指令
+            from cdd_RLLOP_${date} cdd_RLLOP, cdd_RLLOP_EXT_${date} cdd_RLLOP_EXT
+            where cdd_RLLOP.Date = cdd_RLLOP_EXT.Date
+            and cdd_RLLOP.CELL = cdd_RLLOP_EXT.CELL
+            and cdd_RLLOP.BSTXPWR != cdd_RLLOP_EXT.BSTXPWR
+        </foreach>
+        ) as neiWeiJu
+    </select>
+    <select id="calculateInnerOuterException" parameterType="map" resultType="java.util.LinkedHashMap">
+        <foreach collection="dates" item="date" index="index" separator="union">
+            select cdd_RLDEP.Date,
+            cdd_RLDEP.BSC as INT_BSC,
+            cdd_RLDEP_EXT.BSC as EXT_BSC,
+            cdd_RLDEP.CELL,
+            'CGI' as 类型,
+            cdd_RLDEP.CGI as 内局,
+            cdd_RLDEP_EXT.CGI as 外局,
+            'RLDEC:CELL=' + cdd_RLDEP.CELL + ',CGI=' + cdd_RLDEP.CGI + ';' as 指令
+            from cdd_RLDEP_${date} cdd_RLDEP, cdd_RLDEP_EXT_${date} cdd_RLDEP_EXT
+            where cdd_RLDEP.Date = cdd_RLDEP_EXT.Date
+            and cdd_RLDEP.CELL = cdd_RLDEP_EXT.CELL
+            and cdd_RLDEP.CGI != cdd_RLDEP_EXT.CGI
+            union
+            select cdd_RLDEP.Date,
+            cdd_RLDEP.BSC as INT_BSC,
+            cdd_RLDEP_EXT.BSC as EXT_BSC,
+            cdd_RLDEP.CELL,
+            'BSIC' as 类型,
+            cdd_RLDEP.BSIC as 内局,
+            cdd_RLDEP_EXT.BSIC as 外局,
+            'RLDEC:CELL=' + cdd_RLDEP.CELL + ',BSIC=' + cdd_RLDEP.BSIC + ';' as 指令
+            from cdd_RLDEP, cdd_RLDEP_EXT
+            where cdd_RLDEP.Date = cdd_RLDEP_EXT.Date
+            and cdd_RLDEP.CELL = cdd_RLDEP_EXT.CELL
+            and cdd_RLDEP.BSIC != cdd_RLDEP_EXT.BSIC
+            union
+            select cdd_RLDEP.Date,
+            cdd_RLDEP.BSC as INT_BSC,
+            cdd_RLDEP_EXT.BSC as EXT_BSC,
+            cdd_RLDEP.CELL,
+            'BCCHNO' as 类型,
+            cdd_RLDEP.BCCHNO as 内局,
+            cdd_RLDEP_EXT.BCCHNO as 外局,
+            'RLDEC:CELL=' + cdd_RLDEP.CELL + ',BCCHNO=' + cdd_RLDEP.BCCHNO + ';' as 指令
+            from cdd_RLDEP, cdd_RLDEP_EXT
+            where cdd_RLDEP.Date = cdd_RLDEP_EXT.Date
+            and cdd_RLDEP.CELL = cdd_RLDEP_EXT.CELL
+            and cdd_RLDEP.BCCHNO != cdd_RLDEP_EXT.BCCHNO
+            union
+            select cdd_RLCPP.Date,
+            cdd_RLCPP.BSC as INT_BSC,
+            cdd_RLCPP_EXT.BSC as EXT_BSC,
+            cdd_RLCPP.CELL,
+            'MSTXPWR' as 类型,
+            cdd_RLCPP.MSTXPWR as 内局,
+            cdd_RLCPP_EXT.MSTXPWR as 外局,
+            'RLCPC:CELL=' + cdd_RLCPP.CELL + ',MSTXPWR=' + cdd_RLCPP.MSTXPWR + ';' as 指令
+            from cdd_RLCPP_${date} cdd_RLCPP, cdd_RLCPP_EXT_${date} cdd_RLCPP_EXT
+            where cdd_RLCPP.Date = cdd_RLCPP_EXT.Date
+            and cdd_RLCPP.CELL = cdd_RLCPP_EXT.CELL
+            and cdd_RLCPP.MSTXPWR != cdd_RLCPP_EXT.MSTXPWR
+            union
+            select cdd_RLLHP.Date,
+            cdd_RLLHP.BSC as INT_BSC,
+            cdd_RLLHP_EXT.BSC as EXT_BSC,
+            cdd_RLLHP.CELL,
+            'LAYER' as 类型,
+            cdd_RLLHP.LAYER as 内局,
+            cdd_RLLHP_EXT.LAYER as 外局,
+            'RLLHC:CELL=' + cdd_RLLHP.CELL + ',LAYER=' + cdd_RLLHP.LAYER + ';' as 指令
+            from cdd_RLLHP_${date} cdd_RLLHP, cdd_RLLHP_EXT_${date} cdd_RLLHP_EXT
+            where cdd_RLLHP.Date = cdd_RLLHP_EXT.Date
+            and cdd_RLLHP.CELL = cdd_RLLHP_EXT.CELL
+            and cdd_RLLHP.LAYER != cdd_RLLHP_EXT.LAYER
+            union
+            select cdd_RLLHP.Date,
+            cdd_RLLHP.BSC as INT_BSC,
+            cdd_RLLHP_EXT.BSC as EXT_BSC,
+            cdd_RLLHP.CELL,
+            'LAYERTHR' as 类型,
+            cdd_RLLHP.LAYERTHR as 内局,
+            cdd_RLLHP_EXT.LAYERTHR as 外局,
+            'RLLHC:CELL=' + cdd_RLLHP.CELL + ',LAYERTHR=' + cdd_RLLHP.LAYERTHR + ';' as 指令
+            from cdd_RLLHP, cdd_RLLHP_EXT
+            where cdd_RLLHP.Date = cdd_RLLHP_EXT.Date
+            and cdd_RLLHP.CELL = cdd_RLLHP_EXT.CELL
+            and cdd_RLLHP.LAYERTHR != cdd_RLLHP_EXT.LAYERTHR
+            union
+            select cdd_RLLHP.Date,
+            cdd_RLLHP.BSC as INT_BSC,
+            cdd_RLLHP_EXT.BSC as EXT_BSC,
+            cdd_RLLHP.CELL,
+            'LAYERHYST' as 类型,
+            cdd_RLLHP.LAYERHYST as 内局,
+            cdd_RLLHP_EXT.LAYERHYST as 外局,
+            'RLLHC:CELL=' + cdd_RLLHP.CELL + ',LAYERHYST=' + cdd_RLLHP.LAYERHYST + ';' as 指令
+            from cdd_RLLHP, cdd_RLLHP_EXT
+            where cdd_RLLHP.Date = cdd_RLLHP_EXT.Date
+            and cdd_RLLHP.CELL = cdd_RLLHP_EXT.CELL
+            and cdd_RLLHP.LAYERHYST != cdd_RLLHP_EXT.LAYERHYST
+            union
+            select cdd_RLLHP.Date,
+            cdd_RLLHP.BSC as INT_BSC,
+            cdd_RLLHP_EXT.BSC as EXT_BSC,
+            cdd_RLLHP.CELL,
+            'PSSTEMP' as 类型,
+            cdd_RLLHP.PSSTEMP as 内局,
+            cdd_RLLHP_EXT.PSSTEMP as 外局,
+            'RLLHC:CELL=' + cdd_RLLHP.CELL + ',PSSTEMP=' + cdd_RLLHP.PSSTEMP + ';' as 指令
+            from cdd_RLLHP, cdd_RLLHP_EXT
+            where cdd_RLLHP.Date = cdd_RLLHP_EXT.Date
+            and cdd_RLLHP.CELL = cdd_RLLHP_EXT.CELL
+            and cdd_RLLHP.PSSTEMP != cdd_RLLHP_EXT.PSSTEMP
+            union
+            select cdd_RLLHP.Date,
+            cdd_RLLHP.BSC as INT_BSC,
+            cdd_RLLHP_EXT.BSC as EXT_BSC,
+            cdd_RLLHP.CELL,
+            'PTIMTEMP' as 类型,
+            cdd_RLLHP.PTIMTEMP as 内局,
+            cdd_RLLHP_EXT.PTIMTEMP as 外局,
+            'RLLHC:CELL=' + cdd_RLLHP.CELL + ',PTIMTEMP=' + cdd_RLLHP.PTIMTEMP + ';' as 指令
+            from cdd_RLLHP, cdd_RLLHP_EXT
+            where cdd_RLLHP.Date = cdd_RLLHP_EXT.Date
+            and cdd_RLLHP.CELL = cdd_RLLHP_EXT.CELL
+            and cdd_RLLHP.PTIMTEMP != cdd_RLLHP_EXT.PTIMTEMP
+            union
+            select cdd_RLLOP.Date,
+            cdd_RLLOP.BSC as INT_BSC,
+            cdd_RLLOP_EXT.BSC as EXT_BSC,
+            cdd_RLLOP.CELL,
+            'BSPWR' as 类型,
+            cdd_RLLOP.BSPWR as 内局,
+            cdd_RLLOP_EXT.BSPWR as 外局,
+            'RLLOC:CELL=' + cdd_RLLOP.CELL + ',BSPWR=' + cdd_RLLOP.BSPWR + ';' as 指令
+            from cdd_RLLOP_${date} cdd_RLLOP, cdd_RLLOP_EXT_${date} cdd_RLLOP_EXT
+            where cdd_RLLOP.Date = cdd_RLLOP_EXT.Date
+            and cdd_RLLOP.CELL = cdd_RLLOP_EXT.CELL
+            and cdd_RLLOP.BSPWR != cdd_RLLOP_EXT.BSPWR
+            union
+            select cdd_RLLOP.Date,
+            cdd_RLLOP.BSC as INT_BSC,
+            cdd_RLLOP_EXT.BSC as EXT_BSC,
+            cdd_RLLOP.CELL,
+            'BSRXMIN' as 类型,
+            cdd_RLLOP.BSRXMIN as 内局,
+            cdd_RLLOP_EXT.BSRXMIN as 外局,
+            'RLLOC:CELL=' + cdd_RLLOP.CELL + ',BSRXMIN=' + cdd_RLLOP.BSRXMIN + ';' as 指令
+            from cdd_RLLOP_${date} cdd_RLLOP, cdd_RLLOP_EXT_${date} cdd_RLLOP_EXT
+            where cdd_RLLOP.Date = cdd_RLLOP_EXT.Date
+            and cdd_RLLOP.CELL = cdd_RLLOP_EXT.CELL
+            and cdd_RLLOP.BSRXMIN != cdd_RLLOP_EXT.BSRXMIN
+            union
+            select cdd_RLLOP.Date,
+            cdd_RLLOP.BSC as INT_BSC,
+            cdd_RLLOP_EXT.BSC as EXT_BSC,
+            cdd_RLLOP.CELL,
+            'BSRXSUFF' as 类型,
+            cdd_RLLOP.BSRXSUFF as 内局,
+            cdd_RLLOP_EXT.BSRXSUFF as 外局,
+            'RLLOC:CELL=' + cdd_RLLOP.CELL + ',BSRXSUFF=' + cdd_RLLOP.BSRXSUFF + ';' as 指令
+            from cdd_RLLOP_${date} cdd_RLLOP, cdd_RLLOP_EXT_${date} cdd_RLLOP_EXT
+            where cdd_RLLOP.Date = cdd_RLLOP_EXT.Date
+            and cdd_RLLOP.CELL = cdd_RLLOP_EXT.CELL
+            and cdd_RLLOP.BSRXSUFF != cdd_RLLOP_EXT.BSRXSUFF
+            union
+            select cdd_RLLOP.Date,
+            cdd_RLLOP.BSC as INT_BSC,
+            cdd_RLLOP_EXT.BSC as EXT_BSC,
+            cdd_RLLOP.CELL,
+            'MSRXMIN' as 类型,
+            cdd_RLLOP.MSRXMIN as 内局,
+            cdd_RLLOP_EXT.MSRXMIN as 外局,
+            'RLLOC:CELL=' + cdd_RLLOP.CELL + ',MSRXMIN=' + cdd_RLLOP.MSRXMIN + ';' as 指令
+            from cdd_RLLOP_${date} cdd_RLLOP, cdd_RLLOP_EXT_${date} cdd_RLLOP_EXT
+            where cdd_RLLOP.Date = cdd_RLLOP_EXT.Date
+            and cdd_RLLOP.CELL = cdd_RLLOP_EXT.CELL
+            and cdd_RLLOP.MSRXMIN != cdd_RLLOP_EXT.MSRXMIN
+            union
+            select cdd_RLLOP.Date,
+            cdd_RLLOP.BSC as INT_BSC,
+            cdd_RLLOP_EXT.BSC as EXT_BSC,
+            cdd_RLLOP.CELL,
+            'MSRXSUFF' as 类型,
+            cdd_RLLOP.MSRXSUFF as 内局,
+            cdd_RLLOP_EXT.MSRXSUFF as 外局,
+            'RLLOC:CELL=' + cdd_RLLOP.CELL + ',MSRXSUFF=' + cdd_RLLOP.MSRXSUFF + ';' as 指令
+            from cdd_RLLOP_${date} cdd_RLLOP, cdd_RLLOP_EXT_${date} cdd_RLLOP_EXT
+            where cdd_RLLOP.Date = cdd_RLLOP_EXT.Date
+            and cdd_RLLOP.CELL = cdd_RLLOP_EXT.CELL
+            and cdd_RLLOP.MSRXSUFF != cdd_RLLOP_EXT.MSRXSUFF
+            union
+            select cdd_RLLOP.Date,
+            cdd_RLLOP.BSC as INT_BSC,
+            cdd_RLLOP_EXT.BSC as EXT_BSC,
+            cdd_RLLOP.CELL,
+            'BSTXPWR' as 类型,
+            cdd_RLLOP.BSTXPWR as 内局,
+            cdd_RLLOP_EXT.BSTXPWR as 外局,
+            'RLLOC:CELL=' + cdd_RLLOP.CELL + ',BSTXPWR=' + cdd_RLLOP.BSTXPWR + ';' as 指令
+            from cdd_RLLOP_${date} cdd_RLLOP, cdd_RLLOP_EXT_${date} cdd_RLLOP_EXT
+            where cdd_RLLOP.Date = cdd_RLLOP_EXT.Date
+            and cdd_RLLOP.CELL = cdd_RLLOP_EXT.CELL
+            and cdd_RLLOP.BSTXPWR != cdd_RLLOP_EXT.BSTXPWR
+        </foreach>
+    </select>
+    <select id="calculateInnerOuterExceptionByPage" parameterType="map" resultType="java.util.LinkedHashMap">
+        select top ${cnt} Date,INT_BSC,EXT_BSC,CELL,类型,内局,外局,指令
+        from (
+        select
+        row_number()
+        over (
+        order by A.Date) as rownumber,
+        *
+        FROM (
+        <foreach collection="dates" item="date" index="index" separator="union">
+            select cdd_RLDEP.Date,
+            cdd_RLDEP.BSC as INT_BSC,
+            cdd_RLDEP_EXT.BSC as EXT_BSC,
+            cdd_RLDEP.CELL,
+            'CGI' as 类型,
+            cdd_RLDEP.CGI as 内局,
+            cdd_RLDEP_EXT.CGI as 外局,
+            'RLDEC:CELL=' + cdd_RLDEP.CELL + ',CGI=' + cdd_RLDEP.CGI + ';' as 指令
+            from cdd_RLDEP_${date} cdd_RLDEP, cdd_RLDEP_EXT_${date} cdd_RLDEP_EXT
+            where cdd_RLDEP.Date = cdd_RLDEP_EXT.Date
+            and cdd_RLDEP.CELL = cdd_RLDEP_EXT.CELL
+            and cdd_RLDEP.CGI != cdd_RLDEP_EXT.CGI
+            union
+            select cdd_RLDEP.Date,
+            cdd_RLDEP.BSC as INT_BSC,
+            cdd_RLDEP_EXT.BSC as EXT_BSC,
+            cdd_RLDEP.CELL,
+            'BSIC' as 类型,
+            cdd_RLDEP.BSIC as 内局,
+            cdd_RLDEP_EXT.BSIC as 外局,
+            'RLDEC:CELL=' + cdd_RLDEP.CELL + ',BSIC=' + cdd_RLDEP.BSIC + ';' as 指令
+            from cdd_RLDEP, cdd_RLDEP_EXT
+            where cdd_RLDEP.Date = cdd_RLDEP_EXT.Date
+            and cdd_RLDEP.CELL = cdd_RLDEP_EXT.CELL
+            and cdd_RLDEP.BSIC != cdd_RLDEP_EXT.BSIC
+            union
+            select cdd_RLDEP.Date,
+            cdd_RLDEP.BSC as INT_BSC,
+            cdd_RLDEP_EXT.BSC as EXT_BSC,
+            cdd_RLDEP.CELL,
+            'BCCHNO' as 类型,
+            cdd_RLDEP.BCCHNO as 内局,
+            cdd_RLDEP_EXT.BCCHNO as 外局,
+            'RLDEC:CELL=' + cdd_RLDEP.CELL + ',BCCHNO=' + cdd_RLDEP.BCCHNO + ';' as 指令
+            from cdd_RLDEP, cdd_RLDEP_EXT
+            where cdd_RLDEP.Date = cdd_RLDEP_EXT.Date
+            and cdd_RLDEP.CELL = cdd_RLDEP_EXT.CELL
+            and cdd_RLDEP.BCCHNO != cdd_RLDEP_EXT.BCCHNO
+            union
+            select cdd_RLCPP.Date,
+            cdd_RLCPP.BSC as INT_BSC,
+            cdd_RLCPP_EXT.BSC as EXT_BSC,
+            cdd_RLCPP.CELL,
+            'MSTXPWR' as 类型,
+            cdd_RLCPP.MSTXPWR as 内局,
+            cdd_RLCPP_EXT.MSTXPWR as 外局,
+            'RLCPC:CELL=' + cdd_RLCPP.CELL + ',MSTXPWR=' + cdd_RLCPP.MSTXPWR + ';' as 指令
+            from cdd_RLCPP_${date} cdd_RLCPP, cdd_RLCPP_EXT_${date} cdd_RLCPP_EXT
+            where cdd_RLCPP.Date = cdd_RLCPP_EXT.Date
+            and cdd_RLCPP.CELL = cdd_RLCPP_EXT.CELL
+            and cdd_RLCPP.MSTXPWR != cdd_RLCPP_EXT.MSTXPWR
+            union
+            select cdd_RLLHP.Date,
+            cdd_RLLHP.BSC as INT_BSC,
+            cdd_RLLHP_EXT.BSC as EXT_BSC,
+            cdd_RLLHP.CELL,
+            'LAYER' as 类型,
+            cdd_RLLHP.LAYER as 内局,
+            cdd_RLLHP_EXT.LAYER as 外局,
+            'RLLHC:CELL=' + cdd_RLLHP.CELL + ',LAYER=' + cdd_RLLHP.LAYER + ';' as 指令
+            from cdd_RLLHP_${date} cdd_RLLHP, cdd_RLLHP_EXT_${date} cdd_RLLHP_EXT
+            where cdd_RLLHP.Date = cdd_RLLHP_EXT.Date
+            and cdd_RLLHP.CELL = cdd_RLLHP_EXT.CELL
+            and cdd_RLLHP.LAYER != cdd_RLLHP_EXT.LAYER
+            union
+            select cdd_RLLHP.Date,
+            cdd_RLLHP.BSC as INT_BSC,
+            cdd_RLLHP_EXT.BSC as EXT_BSC,
+            cdd_RLLHP.CELL,
+            'LAYERTHR' as 类型,
+            cdd_RLLHP.LAYERTHR as 内局,
+            cdd_RLLHP_EXT.LAYERTHR as 外局,
+            'RLLHC:CELL=' + cdd_RLLHP.CELL + ',LAYERTHR=' + cdd_RLLHP.LAYERTHR + ';' as 指令
+            from cdd_RLLHP, cdd_RLLHP_EXT
+            where cdd_RLLHP.Date = cdd_RLLHP_EXT.Date
+            and cdd_RLLHP.CELL = cdd_RLLHP_EXT.CELL
+            and cdd_RLLHP.LAYERTHR != cdd_RLLHP_EXT.LAYERTHR
+            union
+            select cdd_RLLHP.Date,
+            cdd_RLLHP.BSC as INT_BSC,
+            cdd_RLLHP_EXT.BSC as EXT_BSC,
+            cdd_RLLHP.CELL,
+            'LAYERHYST' as 类型,
+            cdd_RLLHP.LAYERHYST as 内局,
+            cdd_RLLHP_EXT.LAYERHYST as 外局,
+            'RLLHC:CELL=' + cdd_RLLHP.CELL + ',LAYERHYST=' + cdd_RLLHP.LAYERHYST + ';' as 指令
+            from cdd_RLLHP, cdd_RLLHP_EXT
+            where cdd_RLLHP.Date = cdd_RLLHP_EXT.Date
+            and cdd_RLLHP.CELL = cdd_RLLHP_EXT.CELL
+            and cdd_RLLHP.LAYERHYST != cdd_RLLHP_EXT.LAYERHYST
+            union
+            select cdd_RLLHP.Date,
+            cdd_RLLHP.BSC as INT_BSC,
+            cdd_RLLHP_EXT.BSC as EXT_BSC,
+            cdd_RLLHP.CELL,
+            'PSSTEMP' as 类型,
+            cdd_RLLHP.PSSTEMP as 内局,
+            cdd_RLLHP_EXT.PSSTEMP as 外局,
+            'RLLHC:CELL=' + cdd_RLLHP.CELL + ',PSSTEMP=' + cdd_RLLHP.PSSTEMP + ';' as 指令
+            from cdd_RLLHP, cdd_RLLHP_EXT
+            where cdd_RLLHP.Date = cdd_RLLHP_EXT.Date
+            and cdd_RLLHP.CELL = cdd_RLLHP_EXT.CELL
+            and cdd_RLLHP.PSSTEMP != cdd_RLLHP_EXT.PSSTEMP
+            union
+            select cdd_RLLHP.Date,
+            cdd_RLLHP.BSC as INT_BSC,
+            cdd_RLLHP_EXT.BSC as EXT_BSC,
+            cdd_RLLHP.CELL,
+            'PTIMTEMP' as 类型,
+            cdd_RLLHP.PTIMTEMP as 内局,
+            cdd_RLLHP_EXT.PTIMTEMP as 外局,
+            'RLLHC:CELL=' + cdd_RLLHP.CELL + ',PTIMTEMP=' + cdd_RLLHP.PTIMTEMP + ';' as 指令
+            from cdd_RLLHP, cdd_RLLHP_EXT
+            where cdd_RLLHP.Date = cdd_RLLHP_EXT.Date
+            and cdd_RLLHP.CELL = cdd_RLLHP_EXT.CELL
+            and cdd_RLLHP.PTIMTEMP != cdd_RLLHP_EXT.PTIMTEMP
+            union
+            select cdd_RLLOP.Date,
+            cdd_RLLOP.BSC as INT_BSC,
+            cdd_RLLOP_EXT.BSC as EXT_BSC,
+            cdd_RLLOP.CELL,
+            'BSPWR' as 类型,
+            cdd_RLLOP.BSPWR as 内局,
+            cdd_RLLOP_EXT.BSPWR as 外局,
+            'RLLOC:CELL=' + cdd_RLLOP.CELL + ',BSPWR=' + cdd_RLLOP.BSPWR + ';' as 指令
+            from cdd_RLLOP_${date} cdd_RLLOP, cdd_RLLOP_EXT_${date} cdd_RLLOP_EXT
+            where cdd_RLLOP.Date = cdd_RLLOP_EXT.Date
+            and cdd_RLLOP.CELL = cdd_RLLOP_EXT.CELL
+            and cdd_RLLOP.BSPWR != cdd_RLLOP_EXT.BSPWR
+            union
+            select cdd_RLLOP.Date,
+            cdd_RLLOP.BSC as INT_BSC,
+            cdd_RLLOP_EXT.BSC as EXT_BSC,
+            cdd_RLLOP.CELL,
+            'BSRXMIN' as 类型,
+            cdd_RLLOP.BSRXMIN as 内局,
+            cdd_RLLOP_EXT.BSRXMIN as 外局,
+            'RLLOC:CELL=' + cdd_RLLOP.CELL + ',BSRXMIN=' + cdd_RLLOP.BSRXMIN + ';' as 指令
+            from cdd_RLLOP_${date} cdd_RLLOP, cdd_RLLOP_EXT_${date} cdd_RLLOP_EXT
+            where cdd_RLLOP.Date = cdd_RLLOP_EXT.Date
+            and cdd_RLLOP.CELL = cdd_RLLOP_EXT.CELL
+            and cdd_RLLOP.BSRXMIN != cdd_RLLOP_EXT.BSRXMIN
+            union
+            select cdd_RLLOP.Date,
+            cdd_RLLOP.BSC as INT_BSC,
+            cdd_RLLOP_EXT.BSC as EXT_BSC,
+            cdd_RLLOP.CELL,
+            'BSRXSUFF' as 类型,
+            cdd_RLLOP.BSRXSUFF as 内局,
+            cdd_RLLOP_EXT.BSRXSUFF as 外局,
+            'RLLOC:CELL=' + cdd_RLLOP.CELL + ',BSRXSUFF=' + cdd_RLLOP.BSRXSUFF + ';' as 指令
+            from cdd_RLLOP_${date} cdd_RLLOP, cdd_RLLOP_EXT_${date} cdd_RLLOP_EXT
+            where cdd_RLLOP.Date = cdd_RLLOP_EXT.Date
+            and cdd_RLLOP.CELL = cdd_RLLOP_EXT.CELL
+            and cdd_RLLOP.BSRXSUFF != cdd_RLLOP_EXT.BSRXSUFF
+            union
+            select cdd_RLLOP.Date,
+            cdd_RLLOP.BSC as INT_BSC,
+            cdd_RLLOP_EXT.BSC as EXT_BSC,
+            cdd_RLLOP.CELL,
+            'MSRXMIN' as 类型,
+            cdd_RLLOP.MSRXMIN as 内局,
+            cdd_RLLOP_EXT.MSRXMIN as 外局,
+            'RLLOC:CELL=' + cdd_RLLOP.CELL + ',MSRXMIN=' + cdd_RLLOP.MSRXMIN + ';' as 指令
+            from cdd_RLLOP_${date} cdd_RLLOP, cdd_RLLOP_EXT_${date} cdd_RLLOP_EXT
+            where cdd_RLLOP.Date = cdd_RLLOP_EXT.Date
+            and cdd_RLLOP.CELL = cdd_RLLOP_EXT.CELL
+            and cdd_RLLOP.MSRXMIN != cdd_RLLOP_EXT.MSRXMIN
+            union
+            select cdd_RLLOP.Date,
+            cdd_RLLOP.BSC as INT_BSC,
+            cdd_RLLOP_EXT.BSC as EXT_BSC,
+            cdd_RLLOP.CELL,
+            'MSRXSUFF' as 类型,
+            cdd_RLLOP.MSRXSUFF as 内局,
+            cdd_RLLOP_EXT.MSRXSUFF as 外局,
+            'RLLOC:CELL=' + cdd_RLLOP.CELL + ',MSRXSUFF=' + cdd_RLLOP.MSRXSUFF + ';' as 指令
+            from cdd_RLLOP_${date} cdd_RLLOP, cdd_RLLOP_EXT_${date} cdd_RLLOP_EXT
+            where cdd_RLLOP.Date = cdd_RLLOP_EXT.Date
+            and cdd_RLLOP.CELL = cdd_RLLOP_EXT.CELL
+            and cdd_RLLOP.MSRXSUFF != cdd_RLLOP_EXT.MSRXSUFF
+            union
+            select cdd_RLLOP.Date,
+            cdd_RLLOP.BSC as INT_BSC,
+            cdd_RLLOP_EXT.BSC as EXT_BSC,
+            cdd_RLLOP.CELL,
+            'BSTXPWR' as 类型,
+            cdd_RLLOP.BSTXPWR as 内局,
+            cdd_RLLOP_EXT.BSTXPWR as 外局,
+            'RLLOC:CELL=' + cdd_RLLOP.CELL + ',BSTXPWR=' + cdd_RLLOP.BSTXPWR + ';' as 指令
+            from cdd_RLLOP_${date} cdd_RLLOP, cdd_RLLOP_EXT_${date} cdd_RLLOP_EXT
+            where cdd_RLLOP.Date = cdd_RLLOP_EXT.Date
+            and cdd_RLLOP.CELL = cdd_RLLOP_EXT.CELL
+            and cdd_RLLOP.BSTXPWR != cdd_RLLOP_EXT.BSTXPWR
+        </foreach>
+        ) A) B
+        where B.rownumber &gt; ${startIndex}
+    </select>
+
+    <select id="calculateTxExceptionCount" parameterType="map" resultType="long">
+        select count(*) from (
+        <foreach collection="dates" item="date" index="index" separator="union">
+            select Date,BSC,MO,CELL,CHGR,BAND from cdd_RXMOP_TX_${date} cdd_RXMOP_TX where CELL='ALL'
+        </foreach>
+        ) as tx
+    </select>
+    <select id="calculateTxException" parameterType="map" resultType="java.util.LinkedHashMap">
+        <foreach collection="dates" item="date" index="index" separator="union">
+            select Date,BSC,MO,CELL,CHGR,BAND from cdd_RXMOP_TX_${date} cdd_RXMOP_TX where CELL='ALL'
+        </foreach>
+    </select>
+    <select id="calculateTxExceptionByPage" parameterType="map" resultType="java.util.LinkedHashMap">
+        select top ${cnt} Date,BSC,MO,CELL,CHGR,BAND
+        from (select row_number() over(order by A.Date) as rownumber,*
+        from (
+        <foreach collection="dates" item="date" index="index" separator="union">
+            select Date,BSC,MO,CELL,CHGR,BAND from cdd_RXMOP_TX_${date} cdd_RXMOP_TX where CELL='ALL'
+        </foreach>) A) B where B.rownumber &gt;${startIndex}
+    </select>
+
+    <select id="calculateTrxExceptionCount" parameterType="map" resultType="long">
+        select count(*) from (
+        <foreach collection="dates" item="date" index="index" separator="union">
+            select Date,BSC,MO,CELL,CHGR,TEI,SIG,MCTRI,SWVERREPL,SWVERDLD,SWVERACT,DCP1,DCP2
+            from cdd_RXMOP_TRX_${date} cdd_RXMOP_TRX
+            where CELL = 'ALL'
+            or CONVERT(int, right(MO, 1)) != CONVERT(int, right(TEI, 1))
+            or (DCP1 = '128' and DCP2 != '129 &amp; 130')
+            or (DCP1 = '131' and DCP2 != '132 &amp;133')
+            or (DCP1 = '134' and DCP2 != '135 &amp;136')
+            or (DCP1 = '137' and DCP2 != '138 &amp;139')
+            or (DCP1 = '140' and DCP2 != '141 &amp;142')
+            or (DCP1 = '143' and DCP2 != '144 &amp;145')
+            or (DCP1 = '160' and DCP2 != '161 &amp;162')
+            or (DCP1 = '163' and DCP2 != '164 &amp;165')
+            or (DCP1 = '166' and DCP2 != '167 &amp;168')
+            or (DCP1 = '169' and DCP2 != '170 &amp;171')
+            or (DCP1 = '172' and DCP2 != '173 &amp;174')
+            or (DCP1 = '175' and DCP2 != '176 &amp;177')
+            or (DCP1 = '178' and DCP2 != '179 &amp;180 &amp;181 &amp;182 &amp;183 &amp;184 &amp;185 &amp;186')
+            or (DCP1 = '187' and DCP2 != '188 &amp;189 &amp;190 &amp;191 &amp;192 &amp;193 &amp;194 &amp;195')
+            or (DCP1 = '196' and DCP2 != '197 &amp;198 &amp;199 &amp;200 &amp;201 &amp;202 &amp;203 &amp;204')
+            or (DCP1 = '205' and DCP2 != '206 &amp;207 &amp;208 &amp;209 &amp;210 &amp;211 &amp;212 &amp;213')
+            or (DCP1 = '214' and DCP2 != '215 &amp;216 &amp;217 &amp;218 &amp;219 &amp;220 &amp;221 &amp;222')
+            or (DCP1 = '223' and DCP2 != '224 &amp;225 &amp;226 &amp;227 &amp;228 &amp;229 &amp;230 &amp;231')
+            or (DCP1 = '232' and DCP2 != '233 &amp;234 &amp;235 &amp;236 &amp;237 &amp;238 &amp;239 &amp;240')
+            or (DCP1 = '241' and DCP2 != '242 &amp;243 &amp;244 &amp;245 &amp;246 &amp;247 &amp;248 &amp;249')
+            or (DCP1 = '250' and DCP2 != '251 &amp;252 &amp;253 &amp;254 &amp;255 &amp;256 &amp;257 &amp;258')
+            or (DCP1 = '259' and DCP2 != '260 &amp;261 &amp;262 &amp;263 &amp;264 &amp;265 &amp;266 &amp;267')
+            or (DCP1 = '268' and DCP2 != '269 &amp;270 &amp;271 &amp;272 &amp;273 &amp;274 &amp;275 &amp;276')
+            or (DCP1 = '277' and DCP2 != '278 &amp;279 &amp;280 &amp;281 &amp;282 &amp;283 &amp;284 &amp;285')
+        </foreach>
+        ) as TrxYiChang
+    </select>
+    <select id="calculateTrxException" parameterType="map" resultType="java.util.LinkedHashMap">
+        <foreach collection="dates" item="date" index="index" separator="union">
+            select Date,BSC,MO,CELL,CHGR,TEI,SIG,MCTRI,SWVERREPL,SWVERDLD,SWVERACT,DCP1,DCP2
+            from cdd_RXMOP_TRX_${date} cdd_RXMOP_TRX
+            where CELL = 'ALL'
+            or CONVERT(int, right(MO, 1)) != CONVERT(int, right(TEI, 1))
+            or (DCP1 = '128' and DCP2 != '129 &amp; 130')
+            or (DCP1 = '131' and DCP2 != '132 &amp;133')
+            or (DCP1 = '134' and DCP2 != '135 &amp;136')
+            or (DCP1 = '137' and DCP2 != '138 &amp;139')
+            or (DCP1 = '140' and DCP2 != '141 &amp;142')
+            or (DCP1 = '143' and DCP2 != '144 &amp;145')
+            or (DCP1 = '160' and DCP2 != '161 &amp;162')
+            or (DCP1 = '163' and DCP2 != '164 &amp;165')
+            or (DCP1 = '166' and DCP2 != '167 &amp;168')
+            or (DCP1 = '169' and DCP2 != '170 &amp;171')
+            or (DCP1 = '172' and DCP2 != '173 &amp;174')
+            or (DCP1 = '175' and DCP2 != '176 &amp;177')
+            or (DCP1 = '178' and DCP2 != '179 &amp;180 &amp;181 &amp;182 &amp;183 &amp;184 &amp;185 &amp;186')
+            or (DCP1 = '187' and DCP2 != '188 &amp;189 &amp;190 &amp;191 &amp;192 &amp;193 &amp;194 &amp;195')
+            or (DCP1 = '196' and DCP2 != '197 &amp;198 &amp;199 &amp;200 &amp;201 &amp;202 &amp;203 &amp;204')
+            or (DCP1 = '205' and DCP2 != '206 &amp;207 &amp;208 &amp;209 &amp;210 &amp;211 &amp;212 &amp;213')
+            or (DCP1 = '214' and DCP2 != '215 &amp;216 &amp;217 &amp;218 &amp;219 &amp;220 &amp;221 &amp;222')
+            or (DCP1 = '223' and DCP2 != '224 &amp;225 &amp;226 &amp;227 &amp;228 &amp;229 &amp;230 &amp;231')
+            or (DCP1 = '232' and DCP2 != '233 &amp;234 &amp;235 &amp;236 &amp;237 &amp;238 &amp;239 &amp;240')
+            or (DCP1 = '241' and DCP2 != '242 &amp;243 &amp;244 &amp;245 &amp;246 &amp;247 &amp;248 &amp;249')
+            or (DCP1 = '250' and DCP2 != '251 &amp;252 &amp;253 &amp;254 &amp;255 &amp;256 &amp;257 &amp;258')
+            or (DCP1 = '259' and DCP2 != '260 &amp;261 &amp;262 &amp;263 &amp;264 &amp;265 &amp;266 &amp;267')
+            or (DCP1 = '268' and DCP2 != '269 &amp;270 &amp;271 &amp;272 &amp;273 &amp;274 &amp;275 &amp;276')
+            or (DCP1 = '277' and DCP2 != '278 &amp;279 &amp;280 &amp;281 &amp;282 &amp;283 &amp;284 &amp;285')
+        </foreach>
+    </select>
+    <select id="calculateTrxExceptionByPage" parameterType="map" resultType="java.util.LinkedHashMap">
+        select top ${cnt} Date,BSC,MO,CELL,CHGR,TEI,SIG,MCTRI,SWVERREPL,SWVERDLD,SWVERACT,DCP1,DCP2
+        from (select row_number() over(order by A.Date) as rownumber,*
+        from (
+        <foreach collection="dates" item="date" index="index" separator="union">
+            select Date,BSC,MO,CELL,CHGR,TEI,SIG,MCTRI,SWVERREPL,SWVERDLD,SWVERACT,DCP1,DCP2
+            from cdd_RXMOP_TRX_${date} cdd_RXMOP_TRX
+            where CELL = 'ALL'
+            or CONVERT(int, right(MO, 1)) !=
+            CONVERT(int, right(TEI, 1))
+            <![CDATA[     or (DCP1 = '128' and DCP2 != '129  & 130')
+                          or (DCP1 = '131' and DCP2 != '132  &133')
+                          or (DCP1 = '134' and DCP2 != '135  &136')
+                          or (DCP1 = '137' and DCP2 != '138  &139')
+                          or (DCP1 = '140' and DCP2 != '141  &142')
+                          or (DCP1 = '143' and DCP2 != '144  &145')
+                          or (DCP1 = '160' and DCP2 != '161  &162')
+                          or (DCP1 = '163' and DCP2 != '164  &165')
+                          or (DCP1 = '166' and DCP2 != '167  &168')
+                          or (DCP1 = '169' and DCP2 != '170  &171')
+                          or (DCP1 = '172' and DCP2 != '173  &174')
+                          or (DCP1 = '175' and DCP2 != '176  &177')
+                          or (DCP1 = '178' and
+                              DCP2 !=
+                              '179  &180  &181  &182  &183  &184  &185  &186')
+                          or (DCP1 = '187' and
+                              DCP2 !=
+                              '188  &189  &190  &191  &192  &193  &194  &195')
+                          or (DCP1 = '196' and
+                              DCP2 !=
+                              '197 &198 &199 &200 &201 &202 &203 &204')
+                          or (DCP1 = '205' and
+                              DCP2 !=
+                              '206 &207 &208 &209 &210 &211 &212 &213')
+                          or (DCP1 = '214' and
+                              DCP2 !=
+                              '215 &216 &217 &218 &219 &220 &221 &222')
+                          or (DCP1 = '223' and
+                              DCP2 !=
+                              '224 &225 &226 &227 &228 &229 &230 &231')
+                          or (DCP1 = '232' and
+                              DCP2 !=
+                              '233 &234 &235 &236 &237 &238 &239 &240')
+                          or (DCP1 = '241' and
+                              DCP2 !=
+                              '242 &243 &244 &245 &246 &247 &248 &249')
+                          or (DCP1 = '250' and
+                              DCP2 !=
+                              '251 &252 &253 &254 &255 &256 &257 &258')
+                          or (DCP1 = '259' and
+                              DCP2 !=
+                              '260 &261 &262 &263 &264 &265 &266 &267')
+                          or (DCP1 = '268' and
+                              DCP2 !=
+                              '269 270 &271 &272 &273 &274 &275 &276')
+                          or (DCP1 = '277' and
+                              DCP2 !=
+                              '278 &279 &280 &281 &282 &283 &284 &285') ]]>
+        </foreach>
+        ) A) B
+        where B.rownumber &gt;${startIndex}
+    </select>
+
+    <select id="calculateTransportExceptionCount" parameterType="map" resultType="long">
+        SELECT count(*) from (
+        <foreach collection="dates" item="date" index="index" separator="union">
+            select Date, BSC, MO, DEV, DCP
+            from cdd_RXAPP_${date} cdd_RXAPP
+            where (CONVERT(int, right(DEV, 1)) + CONVERT(int, right(DCP, 1)))
+            %2 != 0
+        </foreach>) as transport
+    </select>
+    <select id="calculateTransportException" parameterType="map" resultType="java.util.LinkedHashMap">
+        <foreach collection="dates" item="date" index="index" separator="union">
+            select Date, BSC, MO, DEV, DCP
+            from cdd_RXAPP_${date} cdd_RXAPP
+            where (CONVERT(int, right(DEV, 1)) + CONVERT(int, right(DCP, 1)))
+            %2 != 0
+        </foreach>
+    </select>
+    <select id="calculateTransportExceptionByPage" parameterType="map" resultType="java.util.LinkedHashMap">
+        select top ${cnt} Date, BSC, MO, DEV, DCP from(
+        select row_number() over(order by A.Date) as rownumber,* from(
+        <foreach collection="dates" item="date" index="index" separator="union">
+            select Date, BSC, MO, DEV, DCP
+            from cdd_RXAPP_${date} cdd_RXAPP
+            where (CONVERT(int, right(DEV, 1)) + CONVERT(int, right(DCP, 1)))
+            %2 != 0
+        </foreach>
+        ) A
+        ) B where B.rownumber &gt; ${startIndex}
+    </select>
+
+    <select id="calculateBaTableCount" parameterType="map" resultType="long">
+        select count(*) from (
+        <foreach collection="dates" item="date" index="index" separator="union">
+            select *, LEN(mbcchno) - len(Replace(MBCCHNO, '&amp;', '')) + 1 as 测量频点个数
+            from cdd_RLMFP_${date} cdd_RLMFP
+            where LEN(mbcchno) - len(Replace(MBCCHNO, ' &amp;', '')) + 1 <![CDATA[  >=  ]]> 26
+            or LEN(MBCCHNO) - len(Replace(MBCCHNO, ' &amp;', '')) + 1 <![CDATA[   <=  ]]> 3
+        </foreach>
+        ) as baTable
+    </select>
+    <select id="calculateBaTable" parameterType="map" resultType="java.util.LinkedHashMap">
+        <foreach collection="dates" item="date" index="index" separator="union">
+            select *, LEN(mbcchno) - len(Replace(MBCCHNO, '&amp;', '')) + 1 as 测量频点个数
+            from cdd_RLMFP_${date} cdd_RLMFP
+            where LEN(mbcchno) - len(Replace(MBCCHNO, ' &amp;', '')) + 1 <![CDATA[  >=  ]]> 26
+            or LEN(MBCCHNO) - len(Replace(MBCCHNO, ' &amp;', '')) + 1 <![CDATA[   <=  ]]> 3
+        </foreach>
+    </select>
+    <select id="calculateBaTableByPage" parameterType="map" resultType="java.util.LinkedHashMap">
+        select top ${cnt} Date,BSC,CELL,LISTTYPE,MBCCHNO,测量频点个数
+        from (
+        select
+        row_number()
+        over (
+        order by A.Date) as rownumber,
+        *
+        FROM (
+        <foreach collection="dates" item="date" index="index" separator="union">
+            select *, LEN(mbcchno) - len(Replace(MBCCHNO, '&amp;', '')) + 1 as 测量频点个数
+            from cdd_RLMFP_${date} cdd_RLMFP
+            where LEN(mbcchno) - len(Replace(MBCCHNO, ' &amp;', '')) + 1 <![CDATA[  >=  ]]> 26
+            or LEN(MBCCHNO) - len(Replace(MBCCHNO, ' &amp;', '')) + 1 <![CDATA[   <=  ]]> 3
+        </foreach>
+        )A)B where B.rownumber &gt; ${startIndex}
+    </select>
+
+    <select id="calculateNeighborCount" parameterType="map" resultType="long">
+        select count(*) from (
+        <foreach collection="dates" item="date" index="index" separator="union">
+            select Date,BSC,CELL,count(CELL) as 邻区个数 from cdd_RLNRP_${date} cdd_RLNRP
+            <![CDATA[  group by Date,BSC,CELL having count(CELL)   >= 26 or count(CELL)   <= 3  ]]>
+        </foreach>
+        ) as neighbor
+
+    </select>
+    <select id="calculateNeighbor" parameterType="map" resultType="java.util.LinkedHashMap">
+        <foreach collection="dates" item="date" index="index" separator="union">
+            select Date,BSC,CELL,count(CELL) as 邻区个数 from cdd_RLNRP_${date} cdd_RLNRP
+            <![CDATA[  group by Date,BSC,CELL having count(CELL)   >= 26 or count(CELL)   <= 3  ]]>
+        </foreach>
+    </select>
+    <select id="calculateNeighborByPage" parameterType="map" resultType="java.util.LinkedHashMap">
+        select top ${cnt} Date,BSC,CELL,邻区个数
+        from (
+        select
+        row_number()
+        over (
+        order by A.Date) as rownumber,
+        *
+        FROM (
+        <foreach collection="dates" item="date" index="index" separator="union">
+            select Date,BSC,CELL,count(CELL) as 邻区个数 from cdd_RLNRP_${date} cdd_RLNRP
+            <![CDATA[  group by Date,BSC,CELL having count(CELL)   >= 26 or count(CELL)   <= 3  ]]>
+        </foreach>
+        )A)B where B.rownumber &gt; ${startIndex}
+    </select>
+
+    <select id="calculateSpotLackDefCount" parameterType="map" resultType="long">
+        select count(*) from (
+        <foreach collection="dates" item="date" index="index" separator="union">
+            select BSC, CELL, LISTTYPE, 测量频点个数, BCCHNO as 漏定义的频点
+            from (select BSC,
+            CELL,
+            LISTTYPE,
+            LEN(mbcchno) - len(Replace(MBCCHNO, ' &amp;', '')) + 1 as 测量频点个数,
+            cdd_RLMFP.MBCCHNO,
+            BCCHNO
+            from cdd_rlmfp_${date} cdd_rlmfp,
+            (select distinct BCCHNO
+            from cdd_RLDEP_${date}
+            where CELL in (select CELLR
+            from cdd_RLNRP_${date}
+            where CELL ='${cell}')
+            union
+            select distinct BCCHNO
+            from cdd_RLDEP_EXT_${date}
+            where CELL in (select CELLR
+            from cdd_RLNRP_${date}
+            where CELL='${cell}')) RLNRP
+            where cdd_RLMFP.CELL='${cell}') louDingYi
+            where LEN(louDingYi.MBCCHNO) =
+            len(Replace(louDingYi.MBCCHNO, louDingYi.BCCHNO, ''))
+        </foreach>
+
+        ) as lack
+    </select>
+    <select id="selectSpotLackCell" parameterType="map" resultType="string">
+        <foreach collection="dates" item="date" index="index" separator="union">
+        select distinct CELL from cdd_RLMFP_${date} cdd_RLMFP
+        </foreach>
+    </select>
+    <select id="calculateSpotLackDef" parameterType="map" resultType="java.util.LinkedHashMap">
+        <foreach collection="dates" item="date" index="index" separator="union all">
+                select BSC, CELL, LISTTYPE, 测量频点个数, BCCHNO as 漏定义的频点,
+            'RLMFC:CELL='+CELL+',MBCCHNO='+BCCHNO+',LISTTYPE='+LISTTYPE+',MRNIC;' as 指令
+                from (select BSC,
+                CELL,
+                LISTTYPE,
+                LEN(mbcchno) - len(Replace(MBCCHNO, '&amp;', '')) + 1 as 测量频点个数,
+                cdd_RLMFP.MBCCHNO,
+                BCCHNO
+                from cdd_rlmfp_${date} cdd_rlmfp,
+                (select distinct BCCHNO
+                from cdd_RLDEP_${date}
+                where CELL in (select CELLR
+                from cdd_RLNRP_${date}
+                where CELL ='${cell}')
+                union
+                select distinct BCCHNO
+                from cdd_RLDEP_EXT_${date}
+                where CELL in (select CELLR
+                from cdd_RLNRP_${date}
+                where CELL='${cell}')) RLNRP
+                where cdd_RLMFP.CELL='${cell}') louDingYi
+                where LEN(louDingYi.MBCCHNO) =
+                len(Replace(louDingYi.MBCCHNO, louDingYi.BCCHNO, ''))
+        </foreach>
+    </select>
+    <select id="calculateCduSpotCount" parameterType="map" resultType="long">
+        select count(*) from (
+        <foreach collection="dates" item="date" index="index" separator="union">
+            select cdd_RXMFP_CF.Date,
+            cdd_RXMFP_CF.BSC,
+            Replace(cdd_RXMFP_CF.MO, 'CF', 'TG') as MO,
+            cdd_RXMFP_CF.DU,
+            cdd_RXMOP_TG.FHOP
+            from cdd_RXMFP_CF_${date} cdd_RXMFP_CF, cdd_RXMOP_TG_${date} cdd_RXMOP_TG
+            where cdd_RXMOP_TG.FHOP = 'SY'
+            and (Left(cdd_RXMFP_CF.DU, 5) = 'CDU_F' or
+            Left(cdd_RXMFP_CF.DU, 5) = 'CDU_D')
+            and cdd_RXMFP_CF.BSC = cdd_RXMOP_TG.BSC
+            and Replace(cdd_RXMFP_CF.MO, 'CF', 'TG') = cdd_RXMOP_TG.MO
+        </foreach>
+        ) as cdu
+    </select>
+    <select id="calculateCduSpot" parameterType="map" resultType="java.util.LinkedHashMap">
+        <foreach collection="dates" item="date" index="index" separator="union">
+            select cdd_RXMFP_CF.Date,
+            cdd_RXMFP_CF.BSC,
+            Replace(cdd_RXMFP_CF.MO, 'CF', 'TG') as MO,
+            cdd_RXMFP_CF.DU,
+            cdd_RXMOP_TG.FHOP
+            from cdd_RXMFP_CF_${date} cdd_RXMFP_CF, cdd_RXMOP_TG_${date} cdd_RXMOP_TG
+            where cdd_RXMOP_TG.FHOP = 'SY'
+            and (Left(cdd_RXMFP_CF.DU, 5) = 'CDU_F' or
+            Left(cdd_RXMFP_CF.DU, 5) = 'CDU_D')
+            and cdd_RXMFP_CF.BSC = cdd_RXMOP_TG.BSC
+            and Replace(cdd_RXMFP_CF.MO, 'CF', 'TG') = cdd_RXMOP_TG.MO
+        </foreach>
+    </select>
+    <select id="calculateCduSpotByPage" parameterType="map" resultType="java.util.LinkedHashMap">
+        select top ${cnt} Date,BSC,MO,DU,FHOP
+        from (
+        select
+        row_number()
+        over (
+        order by A.Date) as rownumber,
+        *
+        FROM (
+        <foreach collection="dates" item="date" index="index" separator="union">
+            select cdd_RXMFP_CF.Date,
+            cdd_RXMFP_CF.BSC,
+            Replace(cdd_RXMFP_CF.MO, 'CF', 'TG') as MO,
+            cdd_RXMFP_CF.DU,
+            cdd_RXMOP_TG.FHOP
+            from cdd_RXMFP_CF_${date} cdd_RXMFP_CF, cdd_RXMOP_TG_${date} cdd_RXMOP_TG
+            where cdd_RXMOP_TG.FHOP = 'SY'
+            and (Left(cdd_RXMFP_CF.DU, 5) = 'CDU_F' or
+            Left(cdd_RXMFP_CF.DU, 5) = 'CDU_D')
+            and cdd_RXMFP_CF.BSC = cdd_RXMOP_TG.BSC
+            and Replace(cdd_RXMFP_CF.MO, 'CF', 'TG') = cdd_RXMOP_TG.MO
+        </foreach>
+        and Replace(cdd_RXMFP_CF.MO, 'CF', 'TG') = cdd_RXMOP_TG.MO
+        )A)B where B.rownumber &gt; ${startIndex}
+    </select>
+
+    <select id="calculateBspwrtCount" parameterType="map" resultType="long">
+        select count(*) from (
+        <foreach collection="dates" item="date" index="index" separator="union">
+            select Date,BSC,CELL,BSPWRB,BSPWRT from cdd_RLCPP_${date} cdd_RLCPP where BSPWRB != BSPWRT
+            and sctype=''
+        </foreach>
+        ) as bspw
+    </select>
+    <select id="calculateBspwrt" parameterType="map" resultType="java.util.LinkedHashMap">
+        <foreach collection="dates" item="date" index="index" separator="union">
+            select Date,BSC,CELL,BSPWRB,BSPWRT from cdd_RLCPP_${date} cdd_RLCPP where BSPWRB != BSPWRT
+            and sctype=''
+        </foreach>
+    </select>
+    <select id="calculateBspwrtByPage" parameterType="map" resultType="java.util.LinkedHashMap">
+        select top ${cnt} Date,BSC,CELL,BSPWRB,BSPWRT
+        from (
+        select
+        row_number()
+        over (
+        order by A.Date) as rownumber,
+        *
+        FROM (
+        <foreach collection="dates" item="date" index="index" separator="union">
+            select Date,BSC,CELL,BSPWRB,BSPWRT from cdd_RLCPP_${date} cdd_RLCPP where BSPWRB != BSPWRT
+            and sctype=''
+        </foreach>
+        )A)B where B.rownumber &gt; ${startIndex}
+    </select>
+
+</mapper>

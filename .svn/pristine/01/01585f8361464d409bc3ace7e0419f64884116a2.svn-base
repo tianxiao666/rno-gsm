@@ -1,0 +1,2145 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hgicreate.rno.gsm.mapper.query.IndexMonitorMapper">
+    <select id="selectCrowdCount" parameterType="map" resultType="long">
+        SET ANSI_WARNINGS off SET ARITHABORT off SET ARITHIGNORE on
+        select count(*) from (
+        <foreach collection="stss" item="sts" index="index" separator="union">
+            select ${topX} CELTCHF.Date as '日期',
+            CELTCHF.Time as '时间',
+            CELTCHF.BSC as 'BSC',
+            CELTCHF.ObjectID as 'CELL',
+            isnull(GSM_CELL.中文名,'nulled')   as '中文名',
+            isnull(GSM_CELL.县区,'nulled')  as '县区',
+            isnull(GSM_CELL.代维,'nulled')  as '代维' ,
+            isnull(GSM_CELL.覆盖类型,'nulled')  as '覆盖场景',
+            isnull(GSM_CELL.小区类型,'nulled')  as '是否VIP小区',
+            ROUND((CELTCHF.TFTRALACC + CELTCHH.THTRALACC) /
+            (CELTCHH.THNSCAN + 0.00001),
+            2) as '总话务',
+            ROUND((CELTCHF.TFTRALACC + CELTCHH.THTRALACC) /
+            (CELTCHH.THNSCAN * CLTCH.TNUCHCNT + 0.00001),
+            2) as '每线话务',
+            ROUND(CELTCHH.THTRALACC / (CELTCHH.THNSCAN + 0.00001), 2) as 'H话务量',
+            CELTCHF.TFCALLS + CELTCHH.THCALLS as '申请数',
+            CELTCHF.TFMSESTB + CELTCHH.THMSESTB as '指配数',
+            CELTCHF.TFCONGSAS + CELTCHF.TFCONGSHO + CELTCHH.THCONGSAS +
+            CELTCHH.THCONGSHO as '拥塞数',
+            CELTCHFP.TFESTPGSMSUB as '指配拥塞数',
+            ROUND(100 * CLTCH.TAVAACC /
+            (0.00001 + CLTCH.TAVASCAN * CLTCH.TNUCHCNT),
+            2) as '信道完好率'
+            from (select * from temp${sts}_CELTCHF) CELTCHF
+            Left Join (select * from temp${sts}_CELTCHH) CELTCHH
+            on CELTCHF.ObjectID = CELTCHH.ObjectID
+            and CELTCHF.DATE = CELTCHH.DATE
+            and CELTCHF.TIME = CELTCHH.TIME
+            and CELTCHF.BSC = CELTCHH.BSC
+            Left Join (select * from temp${sts}_CLTCH) CLTCH
+            on CELTCHF.ObjectID = CLTCH.ObjectID
+            and CELTCHF.DATE = CLTCH.DATE
+            and CELTCHF.TIME = CLTCH.TIME
+            and CELTCHF.BSC = CLTCH.BSC
+            Left Join (select * from temp${sts}_CELTCHFP) CELTCHFP
+            on CELTCHF.ObjectID = CELTCHFP.ObjectID
+            and CELTCHF.DATE = CELTCHFP.DATE
+            and CELTCHF.TIME = CELTCHFP.TIME
+            and CELTCHF.BSC = CELTCHFP.BSC
+            Left Join sts_GSM_CELL GSM_CELL
+            on CELTCHF.ObjectID = GSM_CELL.ObjectID
+            where CELTCHFP.TFESTPGSMSUB >= 5
+            order by 16 desc
+        </foreach>) as infoWellRate
+        SET ANSI_WARNINGS on SET ARITHABORT on SET ARITHIGNORE off
+    </select>
+
+    <select id="selectCrowd" parameterType="map" resultType="java.util.LinkedHashMap">
+        SET ANSI_WARNINGS off SET ARITHABORT off SET ARITHIGNORE on
+        <foreach collection="stss" item="sts" index="index" separator="union">
+            select ${topX} CELTCHF.Date as '日期',
+                   CELTCHF.Time as '时间',
+                   CELTCHF.BSC as 'BSC',
+                   CELTCHF.ObjectID as 'CELL',
+            isnull(GSM_CELL.中文名,'nulled')   as '中文名',
+            isnull(GSM_CELL.县区,'nulled')  as '县区',
+            isnull(GSM_CELL.代维,'nulled')  as '代维' ,
+            isnull(GSM_CELL.覆盖类型,'nulled')  as '覆盖场景',
+            isnull(GSM_CELL.小区类型,'nulled')  as '是否VIP小区',
+                   ROUND((CELTCHF.TFTRALACC + CELTCHH.THTRALACC) /
+                         (CELTCHH.THNSCAN + 0.00001),
+                         2) as '总话务',
+                   ROUND((CELTCHF.TFTRALACC + CELTCHH.THTRALACC) /
+                         (CELTCHH.THNSCAN * CLTCH.TNUCHCNT + 0.00001),
+                         2) as '每线话务',
+                   ROUND(CELTCHH.THTRALACC / (CELTCHH.THNSCAN + 0.00001), 2) as 'H话务量',
+                   CELTCHF.TFCALLS + CELTCHH.THCALLS as '申请数',
+                   CELTCHF.TFMSESTB + CELTCHH.THMSESTB as '指配数',
+                   CELTCHF.TFCONGSAS + CELTCHF.TFCONGSHO + CELTCHH.THCONGSAS +
+                   CELTCHH.THCONGSHO as '拥塞数',
+                   CELTCHFP.TFESTPGSMSUB as '指配拥塞数',
+                   ROUND(100 * CLTCH.TAVAACC /
+                         (0.00001 + CLTCH.TAVASCAN * CLTCH.TNUCHCNT),
+                         2) as '信道完好率'
+              from (select * from temp${sts}_CELTCHF) CELTCHF
+              Left Join (select * from temp${sts}_CELTCHH) CELTCHH
+                on CELTCHF.ObjectID = CELTCHH.ObjectID
+               and CELTCHF.DATE = CELTCHH.DATE
+               and CELTCHF.TIME = CELTCHH.TIME
+               and CELTCHF.BSC = CELTCHH.BSC
+              Left Join (select * from temp${sts}_CLTCH) CLTCH
+                on CELTCHF.ObjectID = CLTCH.ObjectID
+               and CELTCHF.DATE = CLTCH.DATE
+               and CELTCHF.TIME = CLTCH.TIME
+               and CELTCHF.BSC = CLTCH.BSC
+              Left Join (select * from temp${sts}_CELTCHFP) CELTCHFP
+                on CELTCHF.ObjectID = CELTCHFP.ObjectID
+               and CELTCHF.DATE = CELTCHFP.DATE
+               and CELTCHF.TIME = CELTCHFP.TIME
+               and CELTCHF.BSC = CELTCHFP.BSC
+              Left Join sts_GSM_CELL GSM_CELL
+                on CELTCHF.ObjectID = GSM_CELL.ObjectID
+             where CELTCHFP.TFESTPGSMSUB >= 5
+             order by 16 desc
+        </foreach>
+        SET ANSI_WARNINGS on SET ARITHABORT on SET ARITHIGNORE off
+    </select>
+
+    <select id="selectCrowdByPage" parameterType="map" resultType="java.util.LinkedHashMap">
+         SET ANSI_WARNINGS off SET ARITHABORT off SET ARITHIGNORE on
+         select top ${cnt} 日期,时间,BSC,CELL,中文名,县区,代维,覆盖场景,是否VIP小区,总话务,每线话务,H话务量,申请数,指配数,拥塞数,指配拥塞数,信道完好率
+        from (select row_number() over(order by A.指配拥塞数 desc) as rownumber,*
+              from (
+        <foreach collection="stss" item="sts" index="index" separator="union">
+            select ${topX} CELTCHF.Date as '日期',
+            CELTCHF.Time as '时间',
+            CELTCHF.BSC as 'BSC',
+            CELTCHF.ObjectID as 'CELL',
+            isnull(GSM_CELL.中文名,'nulled')   as '中文名',
+            isnull(GSM_CELL.县区,'nulled')  as '县区',
+            isnull(GSM_CELL.代维,'nulled')  as '代维' ,
+            isnull(GSM_CELL.覆盖类型,'nulled')  as '覆盖场景',
+            isnull(GSM_CELL.小区类型,'nulled')  as '是否VIP小区',
+            ROUND((CELTCHF.TFTRALACC + CELTCHH.THTRALACC) /
+            (CELTCHH.THNSCAN + 0.00001),
+            2) as '总话务',
+            ROUND((CELTCHF.TFTRALACC + CELTCHH.THTRALACC) /
+            (CELTCHH.THNSCAN * CLTCH.TNUCHCNT + 0.00001),
+            2) as '每线话务',
+            ROUND(CELTCHH.THTRALACC / (CELTCHH.THNSCAN + 0.00001), 2) as 'H话务量',
+            CELTCHF.TFCALLS + CELTCHH.THCALLS as '申请数',
+            CELTCHF.TFMSESTB + CELTCHH.THMSESTB as '指配数',
+            CELTCHF.TFCONGSAS + CELTCHF.TFCONGSHO + CELTCHH.THCONGSAS +
+            CELTCHH.THCONGSHO as '拥塞数',
+            CELTCHFP.TFESTPGSMSUB as '指配拥塞数',
+            ROUND(100 * CLTCH.TAVAACC /
+            (0.00001 + CLTCH.TAVASCAN * CLTCH.TNUCHCNT),
+            2) as '信道完好率'
+            from (select * from temp${sts}_CELTCHF) CELTCHF
+            Left Join (select * from temp${sts}_CELTCHH) CELTCHH
+            on CELTCHF.ObjectID = CELTCHH.ObjectID
+            and CELTCHF.DATE = CELTCHH.DATE
+            and CELTCHF.TIME = CELTCHH.TIME
+            and CELTCHF.BSC = CELTCHH.BSC
+            Left Join (select * from temp${sts}_CLTCH) CLTCH
+            on CELTCHF.ObjectID = CLTCH.ObjectID
+            and CELTCHF.DATE = CLTCH.DATE
+            and CELTCHF.TIME = CLTCH.TIME
+            and CELTCHF.BSC = CLTCH.BSC
+            Left Join (select * from temp${sts}_CELTCHFP) CELTCHFP
+            on CELTCHF.ObjectID = CELTCHFP.ObjectID
+            and CELTCHF.DATE = CELTCHFP.DATE
+            and CELTCHF.TIME = CELTCHFP.TIME
+            and CELTCHF.BSC = CELTCHFP.BSC
+            Left Join sts_GSM_CELL GSM_CELL
+            on CELTCHF.ObjectID = GSM_CELL.ObjectID
+            where CELTCHFP.TFESTPGSMSUB >= 5
+            order by 16 desc
+        </foreach>
+              ) A) B
+        where B.rownumber &gt;${startIndex}
+        SET ANSI_WARNINGS on SET ARITHABORT on SET ARITHIGNORE off
+    </select>
+
+    <select id="selectCallDropCount" parameterType="map" resultType="long">
+         SET ANSI_WARNINGS off SET ARITHABORT off SET ARITHIGNORE on
+         select count(*) from (
+        <foreach collection="stss" item="sts" index="index" separator="union">
+            select  ${topX} CELTCHF.Date as '日期',
+            CELTCHF.Time as '时间',
+            CELTCHF.BSC as 'BSC',
+            CELTCHF.ObjectID as 'CELL',
+            isnull(GSM_CELL.中文名,'nulled')   as '中文名',
+            isnull(GSM_CELL.县区,'nulled')  as '县区',
+            isnull(GSM_CELL.代维,'nulled')  as '代维' ,
+            isnull(GSM_CELL.覆盖类型,'nulled')  as '覆盖场景',
+            isnull(GSM_CELL.小区类型,'nulled')  as '是否VIP小区',
+            CELTCHFP.TFCONGPGSMSUB as 'CMCC掉话数',
+            ROUND(CELTCHFP.TFCONGPGSMSUB /
+            (CELTCHF.TFMSESTB + CELTCHH.THMSESTB + 0.00001) * 100,
+            2) as 'CMCC掉话率',
+            ROUND((CELTCHF.TFTRALACC + CELTCHH.THTRALACC) /
+            (CELTCHH.THNSCAN * CLTCH.TNUCHCNT + 0.00001),
+            2) as '每线话务量'
+            from (select * from temp${sts}_CELTCHF) CELTCHF
+            Left Join (select * from temp${sts}_CELTCHFP) CELTCHFP
+            on CELTCHF.ObjectID = CELTCHFP.ObjectID
+            and CELTCHF.DATE = CELTCHFP.DATE
+            and CELTCHF.TIME = CELTCHFP.TIME
+            and CELTCHF.BSC = CELTCHFP.BSC
+            Left Join (select * from temp${sts}_CELTCHH) CELTCHH
+            on CELTCHF.ObjectID = CELTCHH.ObjectID
+            and CELTCHF.DATE = CELTCHH.DATE
+            and CELTCHF.TIME = CELTCHH.TIME
+            and CELTCHF.BSC = CELTCHH.BSC
+            Left Join (select * from temp${sts}_CLTCH) CLTCH
+            on CELTCHF.ObjectID = CLTCH.ObjectID
+            and CELTCHF.DATE = CLTCH.DATE
+            and CELTCHF.TIME = CLTCH.TIME
+            and CELTCHF.BSC = CLTCH.BSC
+            Left Join sts_GSM_CELL GSM_CELL
+            on CELTCHF.ObjectID = GSM_CELL.ObjectID
+            where ROUND(CELTCHFP.TFCONGPGSMSUB /
+            (CELTCHF.TFMSESTB + CELTCHH.THMSESTB + 0.00001) * 100,
+            2) >= 1
+            and ROUND((CELTCHF.TFTRALACC + CELTCHH.THTRALACC) /
+            (CELTCHH.THNSCAN * CLTCH.TNUCHCNT + 0.00001),
+            2) >= 0.1
+            order by 11 desc
+        </foreach>
+         ) as callDrop
+         SET ANSI_WARNINGS on SET ARITHABORT on SET ARITHIGNORE off
+    </select>
+
+    <select id="selectCallDrop" parameterType="map" resultType="java.util.LinkedHashMap">
+          SET ANSI_WARNINGS off SET ARITHABORT off SET ARITHIGNORE on
+        <foreach collection="stss" item="sts" index="index" separator="union">
+            select ${topX} CELTCHF.Date as '日期',
+                   CELTCHF.Time as '时间',
+                   CELTCHF.BSC as 'BSC',
+                   CELTCHF.ObjectID as 'CELL',
+            isnull(GSM_CELL.中文名,'nulled')   as '中文名',
+            isnull(GSM_CELL.县区,'nulled')  as '县区',
+            isnull(GSM_CELL.代维,'nulled')  as '代维' ,
+            isnull(GSM_CELL.覆盖类型,'nulled')  as '覆盖场景',
+            isnull(GSM_CELL.小区类型,'nulled')  as '是否VIP小区',
+                   CELTCHFP.TFCONGPGSMSUB as 'CMCC掉话数',
+            CONVERT(decimal(18,2),CELTCHFP.TFCONGPGSMSUB /
+            (CELTCHF.TFMSESTB + CELTCHH.THMSESTB + 0.00001) * 100) as 'CMCC掉话率',
+                   ROUND((CELTCHF.TFTRALACC + CELTCHH.THTRALACC) /
+                         (CELTCHH.THNSCAN * CLTCH.TNUCHCNT + 0.00001),
+                         2) as '每线话务量'
+              from (select * from temp${sts}_CELTCHF) CELTCHF
+              Left Join (select * from temp${sts}_CELTCHFP) CELTCHFP
+                on CELTCHF.ObjectID = CELTCHFP.ObjectID
+               and CELTCHF.DATE = CELTCHFP.DATE
+               and CELTCHF.TIME = CELTCHFP.TIME
+               and CELTCHF.BSC = CELTCHFP.BSC
+              Left Join (select * from temp${sts}_CELTCHH) CELTCHH
+                on CELTCHF.ObjectID = CELTCHH.ObjectID
+               and CELTCHF.DATE = CELTCHH.DATE
+               and CELTCHF.TIME = CELTCHH.TIME
+               and CELTCHF.BSC = CELTCHH.BSC
+              Left Join (select * from temp${sts}_CLTCH) CLTCH
+                on CELTCHF.ObjectID = CLTCH.ObjectID
+               and CELTCHF.DATE = CLTCH.DATE
+               and CELTCHF.TIME = CLTCH.TIME
+               and CELTCHF.BSC = CLTCH.BSC
+              Left Join sts_GSM_CELL GSM_CELL
+                on CELTCHF.ObjectID = GSM_CELL.ObjectID
+             where ROUND(CELTCHFP.TFCONGPGSMSUB /
+                         (CELTCHF.TFMSESTB + CELTCHH.THMSESTB + 0.00001) * 100,
+                         2) >= 1
+               and ROUND((CELTCHF.TFTRALACC + CELTCHH.THTRALACC) /
+                         (CELTCHH.THNSCAN * CLTCH.TNUCHCNT + 0.00001),
+                         2) >= 0.1
+             order by 11 desc
+        </foreach>
+        SET ANSI_WARNINGS on SET ARITHABORT on SET ARITHIGNORE off
+    </select>
+
+    <select id="selectCallDropByPage" parameterType="map" resultType="java.util.LinkedHashMap">
+        SET ANSI_WARNINGS off SET ARITHABORT off SET ARITHIGNORE on
+         select top ${cnt} 日期,时间,BSC,CELL,中文名,县区,代维,覆盖场景,是否VIP小区,CMCC掉话数,CMCC掉话率,每线话务量
+        from (select row_number() over(order by A.CMCC掉话率 desc) as rownumber,*
+              from (
+        <foreach collection="stss" item="sts" index="index" separator="union">
+            select  ${topX} CELTCHF.Date as '日期',
+            CELTCHF.Time as '时间',
+            CELTCHF.BSC as 'BSC',
+            CELTCHF.ObjectID as 'CELL',
+            isnull(GSM_CELL.中文名,'nulled')   as '中文名',
+            isnull(GSM_CELL.县区,'nulled')  as '县区',
+            isnull(GSM_CELL.代维,'nulled')  as '代维' ,
+            isnull(GSM_CELL.覆盖类型,'nulled')  as '覆盖场景',
+            isnull(GSM_CELL.小区类型,'nulled')  as '是否VIP小区',
+            CELTCHFP.TFCONGPGSMSUB as 'CMCC掉话数',
+            CONVERT(decimal(18,2),CELTCHFP.TFCONGPGSMSUB /
+            (CELTCHF.TFMSESTB + CELTCHH.THMSESTB + 0.00001) * 100) as 'CMCC掉话率',
+            ROUND((CELTCHF.TFTRALACC + CELTCHH.THTRALACC) /
+            (CELTCHH.THNSCAN * CLTCH.TNUCHCNT + 0.00001),
+            2) as '每线话务量'
+            from (select * from temp${sts}_CELTCHF) CELTCHF
+            Left Join (select * from temp${sts}_CELTCHFP) CELTCHFP
+            on CELTCHF.ObjectID = CELTCHFP.ObjectID
+            and CELTCHF.DATE = CELTCHFP.DATE
+            and CELTCHF.TIME = CELTCHFP.TIME
+            and CELTCHF.BSC = CELTCHFP.BSC
+            Left Join (select * from temp${sts}_CELTCHH) CELTCHH
+            on CELTCHF.ObjectID = CELTCHH.ObjectID
+            and CELTCHF.DATE = CELTCHH.DATE
+            and CELTCHF.TIME = CELTCHH.TIME
+            and CELTCHF.BSC = CELTCHH.BSC
+            Left Join (select * from temp${sts}_CLTCH) CLTCH
+            on CELTCHF.ObjectID = CLTCH.ObjectID
+            and CELTCHF.DATE = CLTCH.DATE
+            and CELTCHF.TIME = CLTCH.TIME
+            and CELTCHF.BSC = CLTCH.BSC
+            Left Join sts_GSM_CELL GSM_CELL
+            on CELTCHF.ObjectID = GSM_CELL.ObjectID
+            where ROUND(CELTCHFP.TFCONGPGSMSUB /
+            (CELTCHF.TFMSESTB + CELTCHH.THMSESTB + 0.00001) * 100,
+            2) >= 1
+            and ROUND((CELTCHF.TFTRALACC + CELTCHH.THTRALACC) /
+            (CELTCHH.THNSCAN * CLTCH.TNUCHCNT + 0.00001),
+            2) >= 0.1
+            order by 11 desc
+        </foreach>
+              ) A) B
+        where B.rownumber &gt;${startIndex}
+        SET ANSI_WARNINGS on SET ARITHABORT on SET ARITHIGNORE off
+    </select>
+
+    <select id="selectIcmCount" parameterType="map" resultType="long">
+          SET ANSI_WARNINGS off SET ARITHABORT off SET ARITHIGNORE on
+         select count(*) from (
+        <foreach collection="stss" item="sts" index="index" separator="union">
+            select  ${topX} IDLEUTCHF.Date as '日期',
+            IDLEUTCHF.Time as '时间',
+            IDLEUTCHF.BSC as 'BSC',
+            IDLEUTCHF.ObjectID as 'CELL',
+            isnull(GSM_CELL.中文名,'nulled')   as '中文名',
+            isnull(GSM_CELL.县区,'nulled')  as '县区',
+            isnull(GSM_CELL.代维,'nulled')  as '代维' ,
+            isnull(GSM_CELL.覆盖类型,'nulled')  as '覆盖场景',
+            isnull(GSM_CELL.小区类型,'nulled')  as '是否VIP小区',
+            ROUND(100 * (IDLEUTCHF.ITFUSIB4 + IDLEUTCHF.ITFUSIB5) /
+            (0.00001 + IDLEUTCHF.ITFUSIB1 + IDLEUTCHF.ITFUSIB2 +
+            IDLEUTCHF.ITFUSIB3 + IDLEUTCHF.ITFUSIB4 + IDLEUTCHF.ITFUSIB5),
+            2) as '四五级'
+            from (select * from temp${sts}_IDLEUTCHF) IDLEUTCHF
+            Left Join sts_GSM_CELL GSM_CELL
+            on IDLEUTCHF.ObjectID = GSM_CELL.ObjectID
+            where ROUND(100 * (IDLEUTCHF.ITFUSIB4 + IDLEUTCHF.ITFUSIB5) /
+            (0.00001 + IDLEUTCHF.ITFUSIB1 + IDLEUTCHF.ITFUSIB2 +
+            IDLEUTCHF.ITFUSIB3 + IDLEUTCHF.ITFUSIB4 + IDLEUTCHF.ITFUSIB5),
+            2) >= 30
+            order by 10 desc
+        </foreach>
+         ) as icmx
+         SET ANSI_WARNINGS on SET ARITHABORT on SET ARITHIGNORE off
+    </select>
+
+    <select id="selectIcm" parameterType="map" resultType="java.util.LinkedHashMap">
+        SET ANSI_WARNINGS off SET ARITHABORT off SET ARITHIGNORE on
+        <foreach collection="stss" item="sts" index="index" separator="union">
+          select  ${topX} IDLEUTCHF.Date as '日期',
+                 IDLEUTCHF.Time as '时间',
+                 IDLEUTCHF.BSC as 'BSC',
+                 IDLEUTCHF.ObjectID as 'CELL',
+            isnull(GSM_CELL.中文名,'nulled')   as '中文名',
+            isnull(GSM_CELL.县区,'nulled')  as '县区',
+            isnull(GSM_CELL.代维,'nulled')  as '代维' ,
+            isnull(GSM_CELL.覆盖类型,'nulled')  as '覆盖场景',
+            isnull(GSM_CELL.小区类型,'nulled')  as '是否VIP小区',
+                 ROUND(100 * (IDLEUTCHF.ITFUSIB4 + IDLEUTCHF.ITFUSIB5) /
+                       (0.00001 + IDLEUTCHF.ITFUSIB1 + IDLEUTCHF.ITFUSIB2 +
+                       IDLEUTCHF.ITFUSIB3 + IDLEUTCHF.ITFUSIB4 + IDLEUTCHF.ITFUSIB5),
+                       2) as '四五级'
+            from (select * from temp${sts}_IDLEUTCHF) IDLEUTCHF
+            Left Join sts_GSM_CELL GSM_CELL
+              on IDLEUTCHF.ObjectID = GSM_CELL.ObjectID
+           where ROUND(100 * (IDLEUTCHF.ITFUSIB4 + IDLEUTCHF.ITFUSIB5) /
+                       (0.00001 + IDLEUTCHF.ITFUSIB1 + IDLEUTCHF.ITFUSIB2 +
+                       IDLEUTCHF.ITFUSIB3 + IDLEUTCHF.ITFUSIB4 + IDLEUTCHF.ITFUSIB5),
+                       2) >= 30
+           order by 10 desc
+        </foreach>
+        SET ANSI_WARNINGS on SET ARITHABORT on SET ARITHIGNORE off
+    </select>
+
+    <select id="selectIcmByPage" parameterType="map" resultType="java.util.LinkedHashMap">
+        SET ANSI_WARNINGS off SET ARITHABORT off SET ARITHIGNORE on
+         select top ${cnt} 日期,时间,BSC,CELL,中文名,县区,代维,覆盖场景,是否VIP小区,四五级
+        from (select row_number() over(order by A.四五级 desc) as rownumber,*
+              from (
+        <foreach collection="stss" item="sts" index="index" separator="union">
+            select ${topX} IDLEUTCHF.Date as '日期',
+            IDLEUTCHF.Time as '时间',
+            IDLEUTCHF.BSC as 'BSC',
+            IDLEUTCHF.ObjectID as 'CELL',
+            isnull(GSM_CELL.中文名,'nulled')   as '中文名',
+            isnull(GSM_CELL.县区,'nulled')  as '县区',
+            isnull(GSM_CELL.代维,'nulled')  as '代维' ,
+            isnull(GSM_CELL.覆盖类型,'nulled')  as '覆盖场景',
+            isnull(GSM_CELL.小区类型,'nulled')  as '是否VIP小区',
+            ROUND(100 * (IDLEUTCHF.ITFUSIB4 + IDLEUTCHF.ITFUSIB5) /
+            (0.00001 + IDLEUTCHF.ITFUSIB1 + IDLEUTCHF.ITFUSIB2 +
+            IDLEUTCHF.ITFUSIB3 + IDLEUTCHF.ITFUSIB4 + IDLEUTCHF.ITFUSIB5),
+            2) as '四五级'
+            from (select * from temp${sts}_IDLEUTCHF) IDLEUTCHF
+            Left Join sts_GSM_CELL GSM_CELL
+            on IDLEUTCHF.ObjectID = GSM_CELL.ObjectID
+            where ROUND(100 * (IDLEUTCHF.ITFUSIB4 + IDLEUTCHF.ITFUSIB5) /
+            (0.00001 + IDLEUTCHF.ITFUSIB1 + IDLEUTCHF.ITFUSIB2 +
+            IDLEUTCHF.ITFUSIB3 + IDLEUTCHF.ITFUSIB4 + IDLEUTCHF.ITFUSIB5),
+            2) >= 30
+            order by 10 desc
+        </foreach>
+              ) A) B
+        where B.rownumber &gt;${startIndex}
+        SET ANSI_WARNINGS on SET ARITHABORT on SET ARITHIGNORE off
+    </select>
+
+    <select id="selectSIcmCount" parameterType="map" resultType="long">
+        SET ANSI_WARNINGS off SET ARITHABORT off SET ARITHIGNORE on
+         select count(*) from (
+        <foreach collection="stss" item="sts" index="index" separator="union">
+            select  ${topX} CLSDCCH.Date as '日期',
+            CLSDCCH.Time      as '时间',
+            CLSDCCH.BSC       as 'BSC',
+            CLSDCCH.ObjectID  as 'CELL',
+            isnull(GSM_CELL.中文名,'nulled')   as '中文名',
+            isnull(GSM_CELL.县区,'nulled')  as '县区',
+            isnull(GSM_CELL.代维,'nulled')  as '代维' ,
+            isnull(GSM_CELL.覆盖类型,'nulled')  as '覆盖场景',
+            isnull(GSM_CELL.小区类型,'nulled')  as '是否VIP小区',
+            CLSDCCH.CCONGS    as 'S拥塞数'
+            from (select * from temp${sts}_CLSDCCH) CLSDCCH
+            Left Join sts_GSM_CELL GSM_CELL
+            on CLSDCCH.ObjectID = GSM_CELL.ObjectID
+            where CLSDCCH.CCONGS >= 50
+            order by 10 desc
+        </foreach>
+         ) as sicmx
+         SET ANSI_WARNINGS on SET ARITHABORT on SET ARITHIGNORE off
+    </select>
+
+    <select id="selectSIcm" parameterType="map" resultType="java.util.LinkedHashMap">
+        SET ANSI_WARNINGS off SET ARITHABORT off SET ARITHIGNORE on
+        <foreach collection="stss" item="sts" index="index" separator="union">
+          select  ${topX} CLSDCCH.Date as '日期',
+                 CLSDCCH.Time      as '时间',
+                 CLSDCCH.BSC       as 'BSC',
+                 CLSDCCH.ObjectID  as 'CELL',
+            isnull(GSM_CELL.中文名,'nulled')   as '中文名',
+            isnull(GSM_CELL.县区,'nulled')  as '县区',
+            isnull(GSM_CELL.代维,'nulled')  as '代维' ,
+            isnull(GSM_CELL.覆盖类型,'nulled')  as '覆盖场景',
+            isnull(GSM_CELL.小区类型,'nulled')  as '是否VIP小区',
+                 CLSDCCH.CCONGS    as 'S拥塞数'
+            from (select * from temp${sts}_CLSDCCH) CLSDCCH
+            Left Join sts_GSM_CELL GSM_CELL
+              on CLSDCCH.ObjectID = GSM_CELL.ObjectID
+           where CLSDCCH.CCONGS >= 50
+           order by 10 desc
+        </foreach>
+        SET ANSI_WARNINGS on SET ARITHABORT on SET ARITHIGNORE off
+    </select>
+
+    <select id="selectSIcmByPage" parameterType="map" resultType="java.util.LinkedHashMap">
+         SET ANSI_WARNINGS off SET ARITHABORT off SET ARITHIGNORE on
+         select top ${cnt} 日期,时间,BSC,CELL,中文名,县区,代维,覆盖场景,是否VIP小区,S拥塞数
+        from (select row_number() over(order by A.S拥塞数 desc) as rownumber,*
+              from (
+        <foreach collection="stss" item="sts" index="index" separator="union">
+            select  ${topX} CLSDCCH.Date as '日期',
+            CLSDCCH.Time      as '时间',
+            CLSDCCH.BSC       as 'BSC',
+            CLSDCCH.ObjectID  as 'CELL',
+            GSM_CELL.中文名   as '中文名',
+            GSM_CELL.县区     as '县区',
+            GSM_CELL.代维     as '代维',
+            GSM_CELL.覆盖类型 as '覆盖场景',
+            GSM_CELL.小区类型 as '是否VIP小区',
+            CLSDCCH.CCONGS    as 'S拥塞数'
+            from (select * from temp${sts}_CLSDCCH) CLSDCCH
+            Left Join sts_GSM_CELL GSM_CELL
+            on CLSDCCH.ObjectID = GSM_CELL.ObjectID
+            where CLSDCCH.CCONGS >= 50
+            order by 10 desc
+        </foreach>
+              ) A) B
+        where B.rownumber &gt;${startIndex}
+        SET ANSI_WARNINGS on SET ARITHABORT on SET ARITHIGNORE off
+    </select>
+
+    <select id="selectSCallDropCount" parameterType="map" resultType="long">
+         SET ANSI_WARNINGS off SET ARITHABORT off SET ARITHIGNORE on
+         select count(*) from (
+        <foreach collection="stss" item="sts" index="index" separator="union">
+            select ${topX} CLSDCCH.Date as '日期',
+            CLSDCCH.Time as '时间',
+            CLSDCCH.BSC as 'BSC',
+            CLSDCCH.ObjectID as 'CELL',
+            isnull(GSM_CELL.中文名,'nulled')   as '中文名',
+            isnull(GSM_CELL.县区,'nulled')  as '县区',
+            isnull(GSM_CELL.代维,'nulled')  as '代维' ,
+            isnull(GSM_CELL.覆盖类型,'nulled')  as '覆盖场景',
+            isnull(GSM_CELL.小区类型,'nulled')  as '是否VIP小区',
+            CLSDCCH.CNDROP as 'S掉话',
+            CELLCCHDR.CDISSS as '弱信号掉话',
+            CELLCCHDR.CDISQA as '质差掉话',
+            CELLCCHDR.CDISTA as 'TA掉话',
+            CLSDCCH.CNDROP - CELLCCHDR.CDISSS - CELLCCHDR.CDISQA -
+            CELLCCHDR.CDISTA as '其他掉话'
+            from (select * from temp${sts}_CLSDCCH) CLSDCCH
+            Left Join (select * from temp${sts}_CELLCCHDR) CELLCCHDR
+            on CLSDCCH.ObjectID = CELLCCHDR.ObjectID
+            and CLSDCCH.DATE = CELLCCHDR.DATE
+            and CLSDCCH.TIME = CELLCCHDR.TIME
+            and CLSDCCH.BSC = CELLCCHDR.BSC
+            Left Join sts_GSM_CELL GSM_CELL
+            on CLSDCCH.ObjectID = GSM_CELL.ObjectID
+            where CLSDCCH.CNDROP >= 20
+            order by 10 desc
+        </foreach>
+         ) as sCallDrop
+         SET ANSI_WARNINGS on SET ARITHABORT on SET ARITHIGNORE off
+    </select>
+
+    <select id="selectSCallDrop" parameterType="map" resultType="java.util.LinkedHashMap">
+          SET ANSI_WARNINGS off SET ARITHABORT off SET ARITHIGNORE on
+        <foreach collection="stss" item="sts" index="index" separator="union">
+        select  ${topX} CLSDCCH.Date as '日期',
+                   CLSDCCH.Time as '时间',
+                   CLSDCCH.BSC as 'BSC',
+                   CLSDCCH.ObjectID as 'CELL',
+            isnull(GSM_CELL.中文名,'nulled')   as '中文名',
+            isnull(GSM_CELL.县区,'nulled')  as '县区',
+            isnull(GSM_CELL.代维,'nulled')  as '代维' ,
+            isnull(GSM_CELL.覆盖类型,'nulled')  as '覆盖场景',
+            isnull(GSM_CELL.小区类型,'nulled')  as '是否VIP小区',
+                   CLSDCCH.CNDROP as 'S掉话',
+                   CELLCCHDR.CDISSS as '弱信号掉话',
+                   CELLCCHDR.CDISQA as '质差掉话',
+                   CELLCCHDR.CDISTA as 'TA掉话',
+                   CLSDCCH.CNDROP - CELLCCHDR.CDISSS - CELLCCHDR.CDISQA -
+                   CELLCCHDR.CDISTA as '其他掉话'
+              from (select * from temp${sts}_CLSDCCH) CLSDCCH
+              Left Join (select * from temp${sts}_CELLCCHDR) CELLCCHDR
+                on CLSDCCH.ObjectID = CELLCCHDR.ObjectID
+               and CLSDCCH.DATE = CELLCCHDR.DATE
+               and CLSDCCH.TIME = CELLCCHDR.TIME
+               and CLSDCCH.BSC = CELLCCHDR.BSC
+              Left Join sts_GSM_CELL GSM_CELL
+                on CLSDCCH.ObjectID = GSM_CELL.ObjectID
+             where CLSDCCH.CNDROP >= 20
+             order by 10 desc
+        </foreach>
+        SET ANSI_WARNINGS on SET ARITHABORT on SET ARITHIGNORE off
+    </select>
+
+    <select id="selectSCallDropByPage" parameterType="map" resultType="java.util.LinkedHashMap">
+         SET ANSI_WARNINGS off SET ARITHABORT off SET ARITHIGNORE on
+         select top ${cnt} 日期,时间,BSC,CELL,中文名,县区,代维,覆盖场景,是否VIP小区,S掉话,弱信号掉话,质差掉话,TA掉话,其他掉话
+        from (select row_number() over(order by A.S掉话 desc) as rownumber,*
+              from (
+        <foreach collection="stss" item="sts" index="index" separator="union">
+            select ${topX} CLSDCCH.Date as '日期',
+            CLSDCCH.Time as '时间',
+            CLSDCCH.BSC as 'BSC',
+            CLSDCCH.ObjectID as 'CELL',
+            isnull(GSM_CELL.中文名,'nulled')   as '中文名',
+            isnull(GSM_CELL.县区,'nulled')  as '县区',
+            isnull(GSM_CELL.代维,'nulled')  as '代维' ,
+            isnull(GSM_CELL.覆盖类型,'nulled')  as '覆盖场景',
+            isnull(GSM_CELL.小区类型,'nulled')  as '是否VIP小区',
+            CLSDCCH.CNDROP as 'S掉话',
+            CELLCCHDR.CDISSS as '弱信号掉话',
+            CELLCCHDR.CDISQA as '质差掉话',
+            CELLCCHDR.CDISTA as 'TA掉话',
+            CLSDCCH.CNDROP - CELLCCHDR.CDISSS - CELLCCHDR.CDISQA -
+            CELLCCHDR.CDISTA as '其他掉话'
+            from (select * from temp${sts}_CLSDCCH) CLSDCCH
+            Left Join (select * from temp${sts}_CELLCCHDR) CELLCCHDR
+            on CLSDCCH.ObjectID = CELLCCHDR.ObjectID
+            and CLSDCCH.DATE = CELLCCHDR.DATE
+            and CLSDCCH.TIME = CELLCCHDR.TIME
+            and CLSDCCH.BSC = CELLCCHDR.BSC
+            Left Join sts_GSM_CELL GSM_CELL
+            on CLSDCCH.ObjectID = GSM_CELL.ObjectID
+            where CLSDCCH.CNDROP >= 20
+            order by 10 desc
+        </foreach>
+              ) A) B
+        where B.rownumber &gt;${startIndex}
+        SET ANSI_WARNINGS on SET ARITHABORT on SET ARITHIGNORE off
+    </select>
+
+    <select id="selectSqiCount" parameterType="map" resultType="long">
+         SET ANSI_WARNINGS off SET ARITHABORT off SET ARITHIGNORE on
+         select count(*) from (
+        <foreach collection="stss" item="sts" index="index" separator="union">
+            select  ${topX} CELLSQI.Date as '日期',
+            CELLSQI.Time as '时间',
+            CELLSQI.BSC as 'BSC',
+            CELLSQI.ObjectID as 'CELL',
+            isnull(GSM_CELL.中文名,'nulled')   as '中文名',
+            isnull(GSM_CELL.县区,'nulled')  as '县区',
+            isnull(GSM_CELL.代维,'nulled')  as '代维' ,
+            isnull(GSM_CELL.覆盖类型,'nulled')  as '覆盖场景',
+            isnull(GSM_CELL.小区类型,'nulled')  as '是否VIP小区',
+            ROUND(100 * (CELLSQI.TSQIGOOD + 0.5 * CELLSQI.TSQIACCPT) /
+            (0.00001 + CELLSQI.TSQIGOOD + CELLSQI.TSQIACCPT +
+            CELLSQI.TSQIBAD),
+            2) as 'SQI',
+            CELLSQI.TSQIGOOD as 'TSQIGOOD',
+            CELLSQI.TSQIACCPT as 'TSQIACCPT',
+            CELLSQI.TSQIBAD as 'TSQIBAD',
+            ROUND(100 * (IDLEUTCHF.ITFUSIB4 + IDLEUTCHF.ITFUSIB5) /
+            (0.00001 + IDLEUTCHF.ITFUSIB1 + IDLEUTCHF.ITFUSIB2 +
+            IDLEUTCHF.ITFUSIB3 + IDLEUTCHF.ITFUSIB4 + IDLEUTCHF.ITFUSIB5),
+            2) as '四五级'
+            from (select * from temp${sts}_CELLSQI) CELLSQI
+            Left Join (select * from temp${sts}_IDLEUTCHF) IDLEUTCHF
+            on CELLSQI.ObjectID = IDLEUTCHF.ObjectID
+            and CELLSQI.DATE = IDLEUTCHF.DATE
+            and CELLSQI.TIME = IDLEUTCHF.TIME
+            and CELLSQI.BSC = IDLEUTCHF.BSC
+            Left Join sts_GSM_CELL GSM_CELL
+            on CELLSQI.ObjectID = GSM_CELL.ObjectID
+            <![CDATA[ where ROUND(100 * (CELLSQI.TSQIGOOD + 0.5 * CELLSQI.TSQIACCPT) /
+            (0.00001 + CELLSQI.TSQIGOOD + CELLSQI.TSQIACCPT +
+            CELLSQI.TSQIBAD),
+            2) <= 95
+            and CELLSQI.TSQIGOOD >= 1    ]]>
+            order by 10 asc
+        </foreach>
+         ) as pagingCrowd
+         SET ANSI_WARNINGS on SET ARITHABORT on SET ARITHIGNORE off
+    </select>
+
+    <select id="selectSqi" parameterType="map" resultType="java.util.LinkedHashMap">
+        SET ANSI_WARNINGS off SET ARITHABORT off SET ARITHIGNORE on
+        <foreach collection="stss" item="sts" index="index" separator="union">
+            select  ${topX} CELLSQI.Date as '日期',
+            CELLSQI.Time as '时间',
+            CELLSQI.BSC as 'BSC',
+            CELLSQI.ObjectID as 'CELL',
+            isnull(GSM_CELL.中文名,'nulled')   as '中文名',
+            isnull(GSM_CELL.县区,'nulled')  as '县区',
+            isnull(GSM_CELL.代维,'nulled')  as '代维' ,
+            isnull(GSM_CELL.覆盖类型,'nulled')  as '覆盖场景',
+            isnull(GSM_CELL.小区类型,'nulled')  as '是否VIP小区',
+            ROUND(100 * (CELLSQI.TSQIGOOD + 0.5 * CELLSQI.TSQIACCPT) /
+            (0.00001 + CELLSQI.TSQIGOOD + CELLSQI.TSQIACCPT +
+            CELLSQI.TSQIBAD),
+            2) as 'SQI',
+            CELLSQI.TSQIGOOD as 'TSQIGOOD',
+            CELLSQI.TSQIACCPT as 'TSQIACCPT',
+            CELLSQI.TSQIBAD as 'TSQIBAD',
+            ROUND(100 * (IDLEUTCHF.ITFUSIB4 + IDLEUTCHF.ITFUSIB5) /
+            (0.00001 + IDLEUTCHF.ITFUSIB1 + IDLEUTCHF.ITFUSIB2 +
+            IDLEUTCHF.ITFUSIB3 + IDLEUTCHF.ITFUSIB4 + IDLEUTCHF.ITFUSIB5),
+            2) as '四五级'
+            from (select * from temp${sts}_CELLSQI) CELLSQI
+            Left Join (select * from temp${sts}_IDLEUTCHF) IDLEUTCHF
+            on CELLSQI.ObjectID = IDLEUTCHF.ObjectID
+            and CELLSQI.DATE = IDLEUTCHF.DATE
+            and CELLSQI.TIME = IDLEUTCHF.TIME
+            and CELLSQI.BSC = IDLEUTCHF.BSC
+            Left Join sts_GSM_CELL GSM_CELL
+            on CELLSQI.ObjectID = GSM_CELL.ObjectID
+            <![CDATA[ where ROUND(100 * (CELLSQI.TSQIGOOD + 0.5 * CELLSQI.TSQIACCPT) /
+            (0.00001 + CELLSQI.TSQIGOOD + CELLSQI.TSQIACCPT +
+            CELLSQI.TSQIBAD),
+            2) <= 95
+            and CELLSQI.TSQIGOOD >= 1    ]]>
+            order by 10 asc
+        </foreach>
+        SET ANSI_WARNINGS on SET ARITHABORT on SET ARITHIGNORE off
+    </select>
+
+    <select id="selectSqiByPage" parameterType="map" resultType="java.util.LinkedHashMap">
+        SET ANSI_WARNINGS off SET ARITHABORT off SET ARITHIGNORE on
+         select top ${cnt} 日期,时间,BSC,CELL,中文名,县区,代维,覆盖场景,是否VIP小区,SQI,TSQIGOOD,TSQIACCPT,TSQIBAD,四五级
+        from (select row_number() over(order by A.SQI asc) as rownumber,*
+              from (
+        <foreach collection="stss" item="sts" index="index" separator="union">
+            select  ${topX} CELLSQI.Date as '日期',
+            CELLSQI.Time as '时间',
+            CELLSQI.BSC as 'BSC',
+            CELLSQI.ObjectID as 'CELL',
+            isnull(GSM_CELL.中文名,'nulled')   as '中文名',
+            isnull(GSM_CELL.县区,'nulled')  as '县区',
+            isnull(GSM_CELL.代维,'nulled')  as '代维' ,
+            isnull(GSM_CELL.覆盖类型,'nulled')  as '覆盖场景',
+            isnull(GSM_CELL.小区类型,'nulled')  as '是否VIP小区',
+            ROUND(100 * (CELLSQI.TSQIGOOD + 0.5 * CELLSQI.TSQIACCPT) /
+            (0.00001 + CELLSQI.TSQIGOOD + CELLSQI.TSQIACCPT +
+            CELLSQI.TSQIBAD),
+            2) as 'SQI',
+            CELLSQI.TSQIGOOD as 'TSQIGOOD',
+            CELLSQI.TSQIACCPT as 'TSQIACCPT',
+            CELLSQI.TSQIBAD as 'TSQIBAD',
+            ROUND(100 * (IDLEUTCHF.ITFUSIB4 + IDLEUTCHF.ITFUSIB5) /
+            (0.00001 + IDLEUTCHF.ITFUSIB1 + IDLEUTCHF.ITFUSIB2 +
+            IDLEUTCHF.ITFUSIB3 + IDLEUTCHF.ITFUSIB4 + IDLEUTCHF.ITFUSIB5),
+            2) as '四五级'
+            from (select * from temp${sts}_CELLSQI) CELLSQI
+            Left Join (select * from temp${sts}_IDLEUTCHF) IDLEUTCHF
+            on CELLSQI.ObjectID = IDLEUTCHF.ObjectID
+            and CELLSQI.DATE = IDLEUTCHF.DATE
+            and CELLSQI.TIME = IDLEUTCHF.TIME
+            and CELLSQI.BSC = IDLEUTCHF.BSC
+            Left Join sts_GSM_CELL GSM_CELL
+            on CELLSQI.ObjectID = GSM_CELL.ObjectID
+            <![CDATA[ where ROUND(100 * (CELLSQI.TSQIGOOD + 0.5 * CELLSQI.TSQIACCPT) /
+            (0.00001 + CELLSQI.TSQIGOOD + CELLSQI.TSQIACCPT +
+            CELLSQI.TSQIBAD),
+            2) <= 95
+            and CELLSQI.TSQIGOOD >= 1    ]]>
+            order by 10 asc
+        </foreach>
+              ) A) B
+        where B.rownumber &gt;${startIndex}
+        SET ANSI_WARNINGS on SET ARITHABORT on SET ARITHIGNORE off
+    </select>
+
+    <select id="selectWirelessAccessCount" parameterType="map" resultType="long">
+         SET ANSI_WARNINGS off SET ARITHABORT off SET ARITHIGNORE on
+         select count(*) from (
+        <foreach collection="stss" item="sts" index="index" separator="union">
+            select  ${topX} RANDOMACC.Date as '日期',
+            RANDOMACC.Time as '时间',
+            RANDOMACC.BSC as 'BSC',
+            RANDOMACC.ObjectID as 'CELL',
+            isnull(GSM_CELL.中文名,'nulled')   as '中文名',
+            isnull(GSM_CELL.县区,'nulled')  as '县区',
+            isnull(GSM_CELL.代维,'nulled')  as '代维' ,
+            isnull(GSM_CELL.覆盖类型,'nulled')  as '覆盖场景',
+            isnull(GSM_CELL.小区类型,'nulled')  as '是否VIP小区',
+            CELTCHFP.TFCONGPGSM as '分子TFCONGPGSM',
+            CLTCH.TCASSALL as '分子TCASSALL',
+            RANDOMACC.CNROCNT as '分母CNROCNT',
+            RANDOMACC.RAACCFA as '分母RAACCFA',
+            CLTCH.TASSALL as '分母TASSALL',
+            CELTCHFP.TFCONGPGSM * CLTCH.TCASSALL as '无线分子',
+            (RANDOMACC.CNROCNT + RANDOMACC.RAACCFA) * CLTCH.TASSALL as '无线分母',
+            ROUND(100 * (CELTCHFP.TFCONGPGSM * CLTCH.TCASSALL) /
+            (0.00001 +
+            (RANDOMACC.CNROCNT + RANDOMACC.RAACCFA) * CLTCH.TASSALL),
+            2) as '无线接入性',
+            ROUND((CELTCHF.TFTRALACC + CELTCHH.THTRALACC) /
+            (CELTCHH.THNSCAN * CLTCH.TNUCHCNT + 0.00001),
+            2) as '每线话务量'
+            from (select * from temp${sts}_RANDOMACC) RANDOMACC
+            Left Join (select * from temp${sts}_CELTCHFP) CELTCHFP
+            on RANDOMACC.ObjectID = CELTCHFP.ObjectID
+            and RANDOMACC.DATE = CELTCHFP.DATE
+            and RANDOMACC.TIME = CELTCHFP.TIME
+            and RANDOMACC.BSC = CELTCHFP.BSC
+            Left Join (select * from temp${sts}_CLTCH) CLTCH
+            on RANDOMACC.ObjectID = CLTCH.ObjectID
+            and RANDOMACC.DATE = CLTCH.DATE
+            and RANDOMACC.TIME = CLTCH.TIME
+            and RANDOMACC.BSC = CLTCH.BSC
+            Left Join (select * from temp${sts}_CELTCHF) CELTCHF
+            on RANDOMACC.ObjectID = CELTCHF.ObjectID
+            and RANDOMACC.DATE = CELTCHF.DATE
+            and RANDOMACC.TIME = CELTCHF.TIME
+            and RANDOMACC.BSC = CELTCHF.BSC
+            Left Join (select * from temp${sts}_CELTCHH) CELTCHH
+            on RANDOMACC.ObjectID = CELTCHH.ObjectID
+            and RANDOMACC.DATE = CELTCHH.DATE
+            and RANDOMACC.TIME = CELTCHH.TIME
+            and RANDOMACC.BSC = CELTCHH.BSC
+            Left Join sts_GSM_CELL GSM_CELL
+            on RANDOMACC.ObjectID = GSM_CELL.ObjectID
+            <![CDATA[  where ROUND(100 * (CELTCHFP.TFCONGPGSM * CLTCH.TCASSALL) /
+        (0.00001 +
+        (RANDOMACC.CNROCNT + RANDOMACC.RAACCFA) * CLTCH.TASSALL),
+        2) <= 99.7
+        and ROUND((CELTCHF.TFTRALACC + CELTCHH.THTRALACC) /
+        (CELTCHH.THNSCAN * CLTCH.TNUCHCNT + 0.00001),
+        2) >= 0.1   ]]>
+            order by 17 asc
+        </foreach>
+         ) as wirelessAccess
+         SET ANSI_WARNINGS on SET ARITHABORT on SET ARITHIGNORE off
+    </select>
+
+    <select id="selectWirelessAccess" parameterType="map" resultType="java.util.LinkedHashMap">
+        SET ANSI_WARNINGS off SET ARITHABORT off SET ARITHIGNORE on
+        <foreach collection="stss" item="sts" index="index" separator="union">
+        select  ${topX} RANDOMACC.Date as '日期',
+        RANDOMACC.Time as '时间',
+        RANDOMACC.BSC as 'BSC',
+        RANDOMACC.ObjectID as 'CELL',
+            isnull(GSM_CELL.中文名,'nulled')   as '中文名',
+            isnull(GSM_CELL.县区,'nulled')  as '县区',
+            isnull(GSM_CELL.代维,'nulled')  as '代维' ,
+            isnull(GSM_CELL.覆盖类型,'nulled')  as '覆盖场景',
+            isnull(GSM_CELL.小区类型,'nulled')  as '是否VIP小区',
+        CELTCHFP.TFCONGPGSM as '分子TFCONGPGSM',
+        CLTCH.TCASSALL as '分子TCASSALL',
+        RANDOMACC.CNROCNT as '分母CNROCNT',
+        RANDOMACC.RAACCFA as '分母RAACCFA',
+        CLTCH.TASSALL as '分母TASSALL',
+        CELTCHFP.TFCONGPGSM * CLTCH.TCASSALL as '无线分子',
+        (RANDOMACC.CNROCNT + RANDOMACC.RAACCFA) * CLTCH.TASSALL as '无线分母',
+        ROUND(100 * (CELTCHFP.TFCONGPGSM * CLTCH.TCASSALL) /
+        (0.00001 +
+        (RANDOMACC.CNROCNT + RANDOMACC.RAACCFA) * CLTCH.TASSALL),
+        2) as '无线接入性',
+        ROUND((CELTCHF.TFTRALACC + CELTCHH.THTRALACC) /
+        (CELTCHH.THNSCAN * CLTCH.TNUCHCNT + 0.00001),
+        2) as '每线话务量'
+        from (select * from temp${sts}_RANDOMACC) RANDOMACC
+        Left Join (select * from temp${sts}_CELTCHFP) CELTCHFP
+        on RANDOMACC.ObjectID = CELTCHFP.ObjectID
+        and RANDOMACC.DATE = CELTCHFP.DATE
+        and RANDOMACC.TIME = CELTCHFP.TIME
+        and RANDOMACC.BSC = CELTCHFP.BSC
+        Left Join (select * from temp${sts}_CLTCH) CLTCH
+        on RANDOMACC.ObjectID = CLTCH.ObjectID
+        and RANDOMACC.DATE = CLTCH.DATE
+        and RANDOMACC.TIME = CLTCH.TIME
+        and RANDOMACC.BSC = CLTCH.BSC
+        Left Join (select * from temp${sts}_CELTCHF) CELTCHF
+        on RANDOMACC.ObjectID = CELTCHF.ObjectID
+        and RANDOMACC.DATE = CELTCHF.DATE
+        and RANDOMACC.TIME = CELTCHF.TIME
+        and RANDOMACC.BSC = CELTCHF.BSC
+        Left Join (select * from temp${sts}_CELTCHH) CELTCHH
+        on RANDOMACC.ObjectID = CELTCHH.ObjectID
+        and RANDOMACC.DATE = CELTCHH.DATE
+        and RANDOMACC.TIME = CELTCHH.TIME
+        and RANDOMACC.BSC = CELTCHH.BSC
+        Left Join sts_GSM_CELL GSM_CELL
+        on RANDOMACC.ObjectID = GSM_CELL.ObjectID
+         <![CDATA[  where ROUND(100 * (CELTCHFP.TFCONGPGSM * CLTCH.TCASSALL) /
+        (0.00001 +
+        (RANDOMACC.CNROCNT + RANDOMACC.RAACCFA) * CLTCH.TASSALL),
+        2) <= 99.7
+        and ROUND((CELTCHF.TFTRALACC + CELTCHH.THTRALACC) /
+        (CELTCHH.THNSCAN * CLTCH.TNUCHCNT + 0.00001),
+        2) >= 0.1   ]]>
+        order by 17 asc
+        </foreach>
+        SET ANSI_WARNINGS on SET ARITHABORT on SET ARITHIGNORE off
+    </select>
+
+    <select id="selectWirelessAccessByPage" parameterType="map" resultType="java.util.LinkedHashMap">
+         SET ANSI_WARNINGS off SET ARITHABORT off SET ARITHIGNORE on
+         select top ${cnt}
+        日期,时间,BSC,CELL,中文名,县区,代维,覆盖场景,是否VIP小区,分子TFCONGPGSM,分母CNROCNT,
+        分母RAACCFA,分母TASSALL,无线分子,无线分母,无线接入性,每线话务量
+        from (select row_number() over(order by A.无线接入性 asc) as rownumber,*
+              from (
+        <foreach collection="stss" item="sts" index="index" separator="union">
+            select ${topX} RANDOMACC.Date as '日期',
+            RANDOMACC.Time as '时间',
+            RANDOMACC.BSC as 'BSC',
+            RANDOMACC.ObjectID as 'CELL',
+            isnull(GSM_CELL.中文名,'nulled')   as '中文名',
+            isnull(GSM_CELL.县区,'nulled')  as '县区',
+            isnull(GSM_CELL.代维,'nulled')  as '代维' ,
+            isnull(GSM_CELL.覆盖类型,'nulled')  as '覆盖场景',
+            isnull(GSM_CELL.小区类型,'nulled')  as '是否VIP小区',
+            CELTCHFP.TFCONGPGSM as '分子TFCONGPGSM',
+            CLTCH.TCASSALL as '分子TCASSALL',
+            RANDOMACC.CNROCNT as '分母CNROCNT',
+            RANDOMACC.RAACCFA as '分母RAACCFA',
+            CLTCH.TASSALL as '分母TASSALL',
+            CELTCHFP.TFCONGPGSM * CLTCH.TCASSALL as '无线分子',
+            (RANDOMACC.CNROCNT + RANDOMACC.RAACCFA) * CLTCH.TASSALL as '无线分母',
+            ROUND(100 * (CELTCHFP.TFCONGPGSM * CLTCH.TCASSALL) /
+            (0.00001 +
+            (RANDOMACC.CNROCNT + RANDOMACC.RAACCFA) * CLTCH.TASSALL),
+            2) as '无线接入性',
+            ROUND((CELTCHF.TFTRALACC + CELTCHH.THTRALACC) /
+            (CELTCHH.THNSCAN * CLTCH.TNUCHCNT + 0.00001),
+            2) as '每线话务量'
+            from (select * from temp${sts}_RANDOMACC) RANDOMACC
+            Left Join (select * from temp${sts}_CELTCHFP) CELTCHFP
+            on RANDOMACC.ObjectID = CELTCHFP.ObjectID
+            and RANDOMACC.DATE = CELTCHFP.DATE
+            and RANDOMACC.TIME = CELTCHFP.TIME
+            and RANDOMACC.BSC = CELTCHFP.BSC
+            Left Join (select * from temp${sts}_CLTCH) CLTCH
+            on RANDOMACC.ObjectID = CLTCH.ObjectID
+            and RANDOMACC.DATE = CLTCH.DATE
+            and RANDOMACC.TIME = CLTCH.TIME
+            and RANDOMACC.BSC = CLTCH.BSC
+            Left Join (select * from temp${sts}_CELTCHF) CELTCHF
+            on RANDOMACC.ObjectID = CELTCHF.ObjectID
+            and RANDOMACC.DATE = CELTCHF.DATE
+            and RANDOMACC.TIME = CELTCHF.TIME
+            and RANDOMACC.BSC = CELTCHF.BSC
+            Left Join (select * from temp${sts}_CELTCHH) CELTCHH
+            on RANDOMACC.ObjectID = CELTCHH.ObjectID
+            and RANDOMACC.DATE = CELTCHH.DATE
+            and RANDOMACC.TIME = CELTCHH.TIME
+            and RANDOMACC.BSC = CELTCHH.BSC
+            Left Join sts_GSM_CELL GSM_CELL
+            on RANDOMACC.ObjectID = GSM_CELL.ObjectID
+            <![CDATA[  where ROUND(100 * (CELTCHFP.TFCONGPGSM * CLTCH.TCASSALL) /
+        (0.00001 +
+        (RANDOMACC.CNROCNT + RANDOMACC.RAACCFA) * CLTCH.TASSALL),
+        2) <= 99.7
+        and ROUND((CELTCHF.TFTRALACC + CELTCHH.THTRALACC) /
+        (CELTCHH.THNSCAN * CLTCH.TNUCHCNT + 0.00001),
+        2) >= 0.1   ]]>
+            order by 17 asc
+        </foreach>
+              ) A) B
+        where B.rownumber &gt;${startIndex}
+        SET ANSI_WARNINGS on SET ARITHABORT on SET ARITHIGNORE off
+    </select>
+
+    <select id="selectChannelWellRateCount" parameterType="map" resultType="long">
+         SET ANSI_WARNINGS off SET ARITHABORT off SET ARITHIGNORE on
+         select count(*) from (
+        <foreach collection="stss" item="sts" index="index" separator="union">
+            select  ${topX} CLTCH.Date as '日期',
+            CLTCH.Time as '时间',
+            CLTCH.BSC as 'BSC',
+            CLTCH.ObjectID as 'CELL',
+            isnull(GSM_CELL.中文名,'nulled')   as '中文名',
+            isnull(GSM_CELL.县区,'nulled')  as '县区',
+            isnull(GSM_CELL.代维,'nulled')  as '代维' ,
+            isnull(GSM_CELL.覆盖类型,'nulled')  as '覆盖场景',
+            isnull(GSM_CELL.小区类型,'nulled')  as '是否VIP小区',
+            Round((8 * CLTCH.TNUCHCNT + 9 + CLSDCCH.CNUCHCNT) / 64, 0) as '载波数',
+            CLTCH.TNUCHCNT as '定义信道',
+            ROUND(CLTCH.TAVAACC / (0.00001 + CLTCH.TAVASCAN), 2) as '可用信道',
+            ROUND(100 * CLTCH.TAVAACC /
+            (0.00001 + CLTCH.TAVASCAN * CLTCH.TNUCHCNT),
+            2) as '信道完好率'
+            from (select * from temp${sts}_CLTCH) CLTCH
+            Left Join (select * from temp${sts}_CLSDCCH) CLSDCCH
+            on CLTCH.ObjectID = CLSDCCH.ObjectID
+            and CLTCH.DATE = CLSDCCH.DATE
+            and CLTCH.TIME = CLSDCCH.TIME
+            and CLTCH.BSC = CLSDCCH.BSC
+            Left Join sts_GSM_CELL GSM_CELL
+            on CLTCH.ObjectID = GSM_CELL.ObjectID
+            <![CDATA[  where ROUND(100 * CLTCH.TAVAACC /
+        (0.00001 + CLTCH.TAVASCAN * CLTCH.TNUCHCNT),
+        2) <= 70  ]]>
+            order by 13 asc
+        </foreach>
+         ) as chanWell
+         SET ANSI_WARNINGS on SET ARITHABORT on SET ARITHIGNORE off
+    </select>
+
+    <select id="selectChannelWellRate" parameterType="map" resultType="java.util.LinkedHashMap">
+        SET ANSI_WARNINGS off SET ARITHABORT off SET ARITHIGNORE on
+        <foreach collection="stss" item="sts" index="index" separator="union">
+        select  ${topX} CLTCH.Date as '日期',
+        CLTCH.Time as '时间',
+        CLTCH.BSC as 'BSC',
+        CLTCH.ObjectID as 'CELL',
+        isnull(GSM_CELL.中文名,'nulled')   as '中文名',
+        isnull(GSM_CELL.县区,'nulled')  as '县区',
+        isnull(GSM_CELL.代维,'nulled')  as '代维' ,
+        isnull(GSM_CELL.覆盖类型,'nulled')  as '覆盖场景',
+        isnull(GSM_CELL.小区类型,'nulled')  as '是否VIP小区',
+        Round((8 * CLTCH.TNUCHCNT + 9 + CLSDCCH.CNUCHCNT) / 64, 0) as '载波数',
+        CLTCH.TNUCHCNT as '定义信道',
+        ROUND(CLTCH.TAVAACC / (0.00001 + CLTCH.TAVASCAN), 2) as '可用信道',
+        ROUND(100 * CLTCH.TAVAACC /
+        (0.00001 + CLTCH.TAVASCAN * CLTCH.TNUCHCNT),
+        2) as '信道完好率'
+        from (select * from temp${sts}_CLTCH) CLTCH
+        Left Join (select * from temp${sts}_CLSDCCH) CLSDCCH
+        on CLTCH.ObjectID = CLSDCCH.ObjectID
+        and CLTCH.DATE = CLSDCCH.DATE
+        and CLTCH.TIME = CLSDCCH.TIME
+        and CLTCH.BSC = CLSDCCH.BSC
+        Left Join sts_GSM_CELL GSM_CELL
+        on CLTCH.ObjectID = GSM_CELL.ObjectID
+         <![CDATA[  where ROUND(100 * CLTCH.TAVAACC /
+        (0.00001 + CLTCH.TAVASCAN * CLTCH.TNUCHCNT),
+        2) <= 70  ]]>
+        order by 13 asc
+        </foreach>
+        SET ANSI_WARNINGS on SET ARITHABORT on SET ARITHIGNORE off
+    </select>
+
+    <select id="selectChannelWellRateByPage" parameterType="map" resultType="java.util.LinkedHashMap">
+         SET ANSI_WARNINGS off SET ARITHABORT off SET ARITHIGNORE on
+         select top ${cnt} 日期,时间,BSC,CELL,中文名,县区,代维,覆盖场景,是否VIP小区,载波数,定义信道,可用信道,信道完好率
+        from (select row_number() over(order by A.信道完好率 asc) as rownumber,*
+              from (
+        <foreach collection="stss" item="sts" index="index" separator="union">
+            select  ${topX} CLTCH.Date as '日期',
+            CLTCH.Time as '时间',
+            CLTCH.BSC as 'BSC',
+            CLTCH.ObjectID as 'CELL',
+            isnull(GSM_CELL.中文名,'nulled')   as '中文名',
+            isnull(GSM_CELL.县区,'nulled')  as '县区',
+            isnull(GSM_CELL.代维,'nulled')  as '代维' ,
+            isnull(GSM_CELL.覆盖类型,'nulled')  as '覆盖场景',
+            isnull(GSM_CELL.小区类型,'nulled')  as '是否VIP小区',
+            Round((8 * CLTCH.TNUCHCNT + 9 + CLSDCCH.CNUCHCNT) / 64, 0) as '载波数',
+            CLTCH.TNUCHCNT as '定义信道',
+            ROUND(CLTCH.TAVAACC / (0.00001 + CLTCH.TAVASCAN), 2) as '可用信道',
+            ROUND(100 * CLTCH.TAVAACC /
+            (0.00001 + CLTCH.TAVASCAN * CLTCH.TNUCHCNT),
+            2) as '信道完好率'
+            from (select * from temp${sts}_CLTCH) CLTCH
+            Left Join (select * from temp${sts}_CLSDCCH) CLSDCCH
+            on CLTCH.ObjectID = CLSDCCH.ObjectID
+            and CLTCH.DATE = CLSDCCH.DATE
+            and CLTCH.TIME = CLSDCCH.TIME
+            and CLTCH.BSC = CLSDCCH.BSC
+            Left Join sts_GSM_CELL GSM_CELL
+            on CLTCH.ObjectID = GSM_CELL.ObjectID
+            <![CDATA[  where ROUND(100 * CLTCH.TAVAACC /
+        (0.00001 + CLTCH.TAVASCAN * CLTCH.TNUCHCNT),
+        2) <= 70  ]]>
+            order by 13 asc
+        </foreach>
+              ) A) B
+        where B.rownumber &gt;${startIndex}
+        SET ANSI_WARNINGS on SET ARITHABORT on SET ARITHIGNORE off
+    </select>
+
+    <select id="selectZeroTeleTrafficCount" parameterType="map" resultType="long">
+          SET ANSI_WARNINGS off SET ARITHABORT off SET ARITHIGNORE on
+         select count(*) from (
+        <foreach collection="stss" item="sts" index="index" separator="union">
+            select  ${topX} CELTCHF.Date as '日期',
+            CELTCHF.Time as '时间',
+            CELTCHF.BSC as 'BSC',
+            CELTCHF.ObjectID as 'CELL',
+            isnull(GSM_CELL.中文名,'nulled')   as '中文名',
+            isnull(GSM_CELL.县区,'nulled')  as '县区',
+            isnull(GSM_CELL.代维,'nulled')  as '代维' ,
+            isnull(GSM_CELL.覆盖类型,'nulled')  as '覆盖场景',
+            isnull(GSM_CELL.小区类型,'nulled')  as '是否VIP小区',
+            ROUND((8 * CLTCH.TNUCHCNT + 9 + CLSDCCH.CNUCHCNT) / 64, 0) as '载波数',
+            ROUND((CELTCHF.TFTRALACC + CELTCHH.THTRALACC) / CELTCHH.THNSCAN, 2) as '总话务',
+            CELTCHF.TFCALLS + CELTCHH.THCALLS as '申请数',
+            CELTCHF.TFMSESTB + CELTCHH.THMSESTB as '指配数'
+            from (select * from temp${sts}_CELTCHF) CELTCHF
+            Left Join (select * from temp${sts}_CLTCH) CLTCH
+            on CELTCHF.ObjectID = CLTCH.ObjectID
+            and CELTCHF.DATE = CLTCH.DATE
+            and CELTCHF.TIME = CLTCH.TIME
+            and CELTCHF.BSC = CLTCH.BSC
+            Left Join (select * from temp${sts}_CLSDCCH) CLSDCCH
+            on CELTCHF.ObjectID = CLSDCCH.ObjectID
+            and CELTCHF.DATE = CLSDCCH.DATE
+            and CELTCHF.TIME = CLSDCCH.TIME
+            and CELTCHF.BSC = CLSDCCH.BSC
+            Left Join (select * from temp${sts}_CELTCHH) CELTCHH
+            on CELTCHF.ObjectID = CELTCHH.ObjectID
+            and CELTCHF.DATE = CELTCHH.DATE
+            and CELTCHF.TIME = CELTCHH.TIME
+            and CELTCHF.BSC = CELTCHH.BSC
+            Left Join sts_GSM_CELL GSM_CELL
+            on CELTCHF.ObjectID = GSM_CELL.ObjectID
+            <![CDATA[  where ROUND((CELTCHF.TFTRALACC + CELTCHH.THTRALACC) / CELTCHH.THNSCAN, 2) <= 0  ]]>
+            order by 11 asc
+        </foreach>
+         ) as teleTraffic
+         SET ANSI_WARNINGS on SET ARITHABORT on SET ARITHIGNORE off
+    </select>
+
+    <select id="selectZeroTeleTraffic" parameterType="map" resultType="java.util.LinkedHashMap">
+        SET ANSI_WARNINGS off SET ARITHABORT off SET ARITHIGNORE on
+        <foreach collection="stss" item="sts" index="index" separator="union">
+        select  ${topX} CELTCHF.Date as '日期',
+        CELTCHF.Time as '时间',
+        CELTCHF.BSC as 'BSC',
+        CELTCHF.ObjectID as 'CELL',
+            isnull(GSM_CELL.中文名,'nulled')   as '中文名',
+            isnull(GSM_CELL.县区,'nulled')  as '县区',
+            isnull(GSM_CELL.代维,'nulled')  as '代维' ,
+            isnull(GSM_CELL.覆盖类型,'nulled')  as '覆盖场景',
+            isnull(GSM_CELL.小区类型,'nulled')  as '是否VIP小区',
+        ROUND((8 * CLTCH.TNUCHCNT + 9 + CLSDCCH.CNUCHCNT) / 64, 0) as '载波数',
+        ROUND((CELTCHF.TFTRALACC + CELTCHH.THTRALACC) / CELTCHH.THNSCAN, 2) as '总话务',
+        CELTCHF.TFCALLS + CELTCHH.THCALLS as '申请数',
+        CELTCHF.TFMSESTB + CELTCHH.THMSESTB as '指配数'
+        from (select * from temp${sts}_CELTCHF) CELTCHF
+        Left Join (select * from temp${sts}_CLTCH) CLTCH
+        on CELTCHF.ObjectID = CLTCH.ObjectID
+        and CELTCHF.DATE = CLTCH.DATE
+        and CELTCHF.TIME = CLTCH.TIME
+        and CELTCHF.BSC = CLTCH.BSC
+        Left Join (select * from temp${sts}_CLSDCCH) CLSDCCH
+        on CELTCHF.ObjectID = CLSDCCH.ObjectID
+        and CELTCHF.DATE = CLSDCCH.DATE
+        and CELTCHF.TIME = CLSDCCH.TIME
+        and CELTCHF.BSC = CLSDCCH.BSC
+        Left Join (select * from temp${sts}_CELTCHH) CELTCHH
+        on CELTCHF.ObjectID = CELTCHH.ObjectID
+        and CELTCHF.DATE = CELTCHH.DATE
+        and CELTCHF.TIME = CELTCHH.TIME
+        and CELTCHF.BSC = CELTCHH.BSC
+        Left Join sts_GSM_CELL GSM_CELL
+        on CELTCHF.ObjectID = GSM_CELL.ObjectID
+        <![CDATA[  where ROUND((CELTCHF.TFTRALACC + CELTCHH.THTRALACC) / CELTCHH.THNSCAN, 2) <= 0  ]]>
+        order by 11 asc
+        </foreach>
+        SET ANSI_WARNINGS on SET ARITHABORT on SET ARITHIGNORE off
+    </select>
+
+    <select id="selectZeroTeleTrafficByPage" parameterType="map" resultType="java.util.LinkedHashMap">
+         SET ANSI_WARNINGS off SET ARITHABORT off SET ARITHIGNORE on
+         select top ${cnt} 日期,时间,BSC,CELL,中文名,县区,代维,覆盖场景,是否VIP小区,载波数,总话务,申请数,指配数
+        from (select row_number() over(order by A.总话务) as rownumber,*
+              from (
+        <foreach collection="stss" item="sts" index="index" separator="union">
+            select  ${topX} CELTCHF.Date as '日期',
+            CELTCHF.Time as '时间',
+            CELTCHF.BSC as 'BSC',
+            CELTCHF.ObjectID as 'CELL',
+            isnull(GSM_CELL.中文名,'nulled')   as '中文名',
+             isnull(GSM_CELL.县区,'nulled')  as '县区',
+             isnull(GSM_CELL.代维,'nulled')  as '代维' ,
+             isnull(GSM_CELL.覆盖类型,'nulled')  as '覆盖场景',
+             isnull(GSM_CELL.小区类型,'nulled')  as '是否VIP小区',
+            ROUND((8 * CLTCH.TNUCHCNT + 9 + CLSDCCH.CNUCHCNT) / 64, 0) as '载波数',
+            ROUND((CELTCHF.TFTRALACC + CELTCHH.THTRALACC) / CELTCHH.THNSCAN, 2) as '总话务',
+            CELTCHF.TFCALLS + CELTCHH.THCALLS as '申请数',
+            CELTCHF.TFMSESTB + CELTCHH.THMSESTB as '指配数'
+            from (select * from temp${sts}_CELTCHF) CELTCHF
+            Left Join (select * from temp${sts}_CLTCH) CLTCH
+            on CELTCHF.ObjectID = CLTCH.ObjectID
+            and CELTCHF.DATE = CLTCH.DATE
+            and CELTCHF.TIME = CLTCH.TIME
+            and CELTCHF.BSC = CLTCH.BSC
+            Left Join (select * from temp${sts}_CLSDCCH) CLSDCCH
+            on CELTCHF.ObjectID = CLSDCCH.ObjectID
+            and CELTCHF.DATE = CLSDCCH.DATE
+            and CELTCHF.TIME = CLSDCCH.TIME
+            and CELTCHF.BSC = CLSDCCH.BSC
+            Left Join (select * from temp${sts}_CELTCHH) CELTCHH
+            on CELTCHF.ObjectID = CELTCHH.ObjectID
+            and CELTCHF.DATE = CELTCHH.DATE
+            and CELTCHF.TIME = CELTCHH.TIME
+            and CELTCHF.BSC = CELTCHH.BSC
+            Left Join sts_GSM_CELL GSM_CELL
+            on CELTCHF.ObjectID = GSM_CELL.ObjectID
+            <![CDATA[  where ROUND((CELTCHF.TFTRALACC + CELTCHH.THTRALACC) / CELTCHH.THNSCAN, 2) <= 0  ]]>
+            order by 11 asc
+        </foreach>
+              ) A) B
+        where B.rownumber &gt;${startIndex}
+        SET ANSI_WARNINGS on SET ARITHABORT on SET ARITHIGNORE off
+    </select>
+
+    <select id="selectZeroFlowCount" parameterType="map" resultType="long">
+         SET ANSI_WARNINGS off SET ARITHABORT off SET ARITHIGNORE on
+         select count(*) from (
+        <foreach collection="stss" item="sts" index="index" separator="union">
+            select  ${topX} CELLQOSG.Date as '日期',
+            CELLQOSG.Time as '时间',
+            CELLQOSG.BSC as 'BSC',
+            CELLQOSG.ObjectID as 'CELL',
+            isnull(GSM_CELL.中文名,'nulled')   as '中文名',
+            isnull(GSM_CELL.县区,'nulled')  as '县区',
+            isnull(GSM_CELL.代维,'nulled')  as '代维' ,
+            isnull(GSM_CELL.覆盖类型,'nulled')  as '覆盖场景',
+            isnull(GSM_CELL.小区类型,'nulled')  as '是否VIP小区',
+            ROUND((CELLQOSG.DLBGGDATA + CELLQOSG.DLTHP1GDATA +
+            CELLQOSG.DLTHP2GDATA + CELLQOSG.DLTHP3GDATA) / (8 * 1024),
+            2) as 'GPRS下行流量',
+            ROUND((CELLQOSG.ULBGGDATA + CELLQOSG.ULTHP1GDATA +
+            CELLQOSG.ULTHP2GDATA + CELLQOSG.ULTHP3GDATA) / (8 * 1024),
+            2) as 'GPRS上行流量',
+            ROUND((CELLQOSEG.DLTHP3EGDATA + CELLQOSEG.DLTHP2EGDATA +
+            CELLQOSEG.DLTHP1EGDATA + CELLQOSEG.DLBGEGDATA) / (8 * 1024),
+            2) as 'EDGE下行流量',
+            ROUND((CELLQOSEG.ULTHP3EGDATA + CELLQOSEG.ULTHP2EGDATA +
+            CELLQOSEG.ULTHP1EGDATA + CELLQOSEG.ULBGEGDATA) / (8 * 1024),
+            2) as 'EDGE上行流量',
+            ROUND((CELTCHF.TFTRALACC + CELTCHH.THTRALACC) / CELTCHH.THNSCAN, 2) as '总话务'
+            from (select * from temp${sts}_CELLQOSG) CELLQOSG
+            Left Join (select * from temp${sts}_CELLQOSEG) CELLQOSEG
+            on CELLQOSG.ObjectID = CELLQOSEG.ObjectID
+            and CELLQOSG.DATE = CELLQOSEG.DATE
+            and CELLQOSG.TIME = CELLQOSEG.TIME
+            and CELLQOSG.BSC = CELLQOSEG.BSC
+            Left Join (select * from temp${sts}_CELTCHF) CELTCHF
+            on CELLQOSG.ObjectID = CELTCHF.ObjectID
+            and CELLQOSG.DATE = CELTCHF.DATE
+            and CELLQOSG.TIME = CELTCHF.TIME
+            and CELLQOSG.BSC = CELTCHF.BSC
+            Left Join (select * from temp${sts}_CELTCHH) CELTCHH
+            on CELLQOSG.ObjectID = CELTCHH.ObjectID
+            and CELLQOSG.DATE = CELTCHH.DATE
+            and CELLQOSG.TIME = CELTCHH.TIME
+            and CELLQOSG.BSC = CELTCHH.BSC
+            Left Join sts_GSM_CELL GSM_CELL
+            on CELLQOSG.ObjectID = GSM_CELL.ObjectID
+            <![CDATA[  where ROUND((CELLQOSEG.DLTHP3EGDATA + CELLQOSEG.DLTHP2EGDATA +
+        CELLQOSEG.DLTHP1EGDATA + CELLQOSEG.DLBGEGDATA) / (8 * 1024),
+        2) <= 0 ]]>
+            order by 12 asc
+        </foreach>
+         ) as zeroFlow
+         SET ANSI_WARNINGS on SET ARITHABORT on SET ARITHIGNORE off
+    </select>
+
+    <select id="selectZeroFlow" parameterType="map" resultType="java.util.LinkedHashMap">
+        SET ANSI_WARNINGS off SET ARITHABORT off SET ARITHIGNORE on
+        <foreach collection="stss" item="sts" index="index" separator="union">
+        select  ${topX} CELLQOSG.Date as '日期',
+        CELLQOSG.Time as '时间',
+        CELLQOSG.BSC as 'BSC',
+        CELLQOSG.ObjectID as 'CELL',
+            isnull(GSM_CELL.中文名,'nulled')   as '中文名',
+            isnull(GSM_CELL.县区,'nulled')  as '县区',
+            isnull(GSM_CELL.代维,'nulled')  as '代维' ,
+            isnull(GSM_CELL.覆盖类型,'nulled')  as '覆盖场景',
+            isnull(GSM_CELL.小区类型,'nulled')  as '是否VIP小区',
+        ROUND((CELLQOSG.DLBGGDATA + CELLQOSG.DLTHP1GDATA +
+        CELLQOSG.DLTHP2GDATA + CELLQOSG.DLTHP3GDATA) / (8 * 1024),
+        2) as 'GPRS下行流量',
+        ROUND((CELLQOSG.ULBGGDATA + CELLQOSG.ULTHP1GDATA +
+        CELLQOSG.ULTHP2GDATA + CELLQOSG.ULTHP3GDATA) / (8 * 1024),
+        2) as 'GPRS上行流量',
+        ROUND((CELLQOSEG.DLTHP3EGDATA + CELLQOSEG.DLTHP2EGDATA +
+        CELLQOSEG.DLTHP1EGDATA + CELLQOSEG.DLBGEGDATA) / (8 * 1024),
+        2) as 'EDGE下行流量',
+        ROUND((CELLQOSEG.ULTHP3EGDATA + CELLQOSEG.ULTHP2EGDATA +
+        CELLQOSEG.ULTHP1EGDATA + CELLQOSEG.ULBGEGDATA) / (8 * 1024),
+        2) as 'EDGE上行流量',
+        ROUND((CELTCHF.TFTRALACC + CELTCHH.THTRALACC) / CELTCHH.THNSCAN, 2) as '总话务'
+        from (select * from temp${sts}_CELLQOSG) CELLQOSG
+        Left Join (select * from temp${sts}_CELLQOSEG) CELLQOSEG
+        on CELLQOSG.ObjectID = CELLQOSEG.ObjectID
+        and CELLQOSG.DATE = CELLQOSEG.DATE
+        and CELLQOSG.TIME = CELLQOSEG.TIME
+        and CELLQOSG.BSC = CELLQOSEG.BSC
+        Left Join (select * from temp${sts}_CELTCHF) CELTCHF
+        on CELLQOSG.ObjectID = CELTCHF.ObjectID
+        and CELLQOSG.DATE = CELTCHF.DATE
+        and CELLQOSG.TIME = CELTCHF.TIME
+        and CELLQOSG.BSC = CELTCHF.BSC
+        Left Join (select * from temp${sts}_CELTCHH) CELTCHH
+        on CELLQOSG.ObjectID = CELTCHH.ObjectID
+        and CELLQOSG.DATE = CELTCHH.DATE
+        and CELLQOSG.TIME = CELTCHH.TIME
+        and CELLQOSG.BSC = CELTCHH.BSC
+        Left Join sts_GSM_CELL GSM_CELL
+        on CELLQOSG.ObjectID = GSM_CELL.ObjectID
+       <![CDATA[  where ROUND((CELLQOSEG.DLTHP3EGDATA + CELLQOSEG.DLTHP2EGDATA +
+        CELLQOSEG.DLTHP1EGDATA + CELLQOSEG.DLBGEGDATA) / (8 * 1024),
+        2) <= 0 ]]>
+        order by 12 asc
+        </foreach>
+        SET ANSI_WARNINGS on SET ARITHABORT on SET ARITHIGNORE off
+    </select>
+
+    <select id="selectZeroFlowByPage" parameterType="map" resultType="java.util.LinkedHashMap">
+         SET ANSI_WARNINGS off SET ARITHABORT off SET ARITHIGNORE on
+         select top ${cnt} 日期,时间,BSC,CELL,中文名,县区,覆盖场景,是否VIP小区,GPRS下行流量,GPRS上行流量,EDGE下行流量,总话务
+        from (select row_number() over(order by A.EDGE下行流量 asc) as rownumber,*
+              from (
+        <foreach collection="stss" item="sts" index="index" separator="union">
+            select  ${topX} CELLQOSG.Date as '日期',
+            CELLQOSG.Time as '时间',
+            CELLQOSG.BSC as 'BSC',
+            CELLQOSG.ObjectID as 'CELL',
+            isnull(GSM_CELL.中文名,'nulled')   as '中文名',
+            isnull(GSM_CELL.县区,'nulled')  as '县区',
+            isnull(GSM_CELL.代维,'nulled')  as '代维' ,
+            isnull(GSM_CELL.覆盖类型,'nulled')  as '覆盖场景',
+            isnull(GSM_CELL.小区类型,'nulled')  as '是否VIP小区',
+            ROUND((CELLQOSG.DLBGGDATA + CELLQOSG.DLTHP1GDATA +
+            CELLQOSG.DLTHP2GDATA + CELLQOSG.DLTHP3GDATA) / (8 * 1024),
+            2) as 'GPRS下行流量',
+            ROUND((CELLQOSG.ULBGGDATA + CELLQOSG.ULTHP1GDATA +
+            CELLQOSG.ULTHP2GDATA + CELLQOSG.ULTHP3GDATA) / (8 * 1024),
+            2) as 'GPRS上行流量',
+            ROUND((CELLQOSEG.DLTHP3EGDATA + CELLQOSEG.DLTHP2EGDATA +
+            CELLQOSEG.DLTHP1EGDATA + CELLQOSEG.DLBGEGDATA) / (8 * 1024),
+            2) as 'EDGE下行流量',
+            ROUND((CELLQOSEG.ULTHP3EGDATA + CELLQOSEG.ULTHP2EGDATA +
+            CELLQOSEG.ULTHP1EGDATA + CELLQOSEG.ULBGEGDATA) / (8 * 1024),
+            2) as 'EDGE上行流量',
+            ROUND((CELTCHF.TFTRALACC + CELTCHH.THTRALACC) / CELTCHH.THNSCAN, 2) as '总话务'
+            from (select * from temp${sts}_CELLQOSG) CELLQOSG
+            Left Join (select * from temp${sts}_CELLQOSEG) CELLQOSEG
+            on CELLQOSG.ObjectID = CELLQOSEG.ObjectID
+            and CELLQOSG.DATE = CELLQOSEG.DATE
+            and CELLQOSG.TIME = CELLQOSEG.TIME
+            and CELLQOSG.BSC = CELLQOSEG.BSC
+            Left Join (select * from temp${sts}_CELTCHF) CELTCHF
+            on CELLQOSG.ObjectID = CELTCHF.ObjectID
+            and CELLQOSG.DATE = CELTCHF.DATE
+            and CELLQOSG.TIME = CELTCHF.TIME
+            and CELLQOSG.BSC = CELTCHF.BSC
+            Left Join (select * from temp${sts}_CELTCHH) CELTCHH
+            on CELLQOSG.ObjectID = CELTCHH.ObjectID
+            and CELLQOSG.DATE = CELTCHH.DATE
+            and CELLQOSG.TIME = CELTCHH.TIME
+            and CELLQOSG.BSC = CELTCHH.BSC
+            Left Join sts_GSM_CELL GSM_CELL
+            on CELLQOSG.ObjectID = GSM_CELL.ObjectID
+            <![CDATA[  where ROUND((CELLQOSEG.DLTHP3EGDATA + CELLQOSEG.DLTHP2EGDATA +
+        CELLQOSEG.DLTHP1EGDATA + CELLQOSEG.DLBGEGDATA) / (8 * 1024),
+        2) <= 0 ]]>
+            order by 12 asc
+        </foreach>
+              ) A) B
+        where B.rownumber &gt;${startIndex}
+        SET ANSI_WARNINGS on SET ARITHABORT on SET ARITHIGNORE off
+    </select>
+
+    <select id="selectPitchingInCount" parameterType="map" resultType="long">
+          SET ANSI_WARNINGS off SET ARITHABORT off SET ARITHIGNORE on
+         select count(*) from (
+        <foreach collection="stss" item="sts" index="index" separator="union">
+            select ${topX} Ho.Date as '日期',
+            Ho.Time as '时间',
+            Ho.BSC as 'BSC',
+            Ho.ObjectID as 'CELL',
+            isnull(GSM_CELL.中文名,'nulled')   as '中文名',
+            isnull(GSM_CELL.县区,'nulled')  as '县区',
+            isnull(GSM_CELL.代维,'nulled')  as '代维' ,
+            isnull(GSM_CELL.覆盖类型,'nulled')  as '覆盖场景',
+            isnull(GSM_CELL.小区类型,'nulled')  as '是否VIP小区',
+            round(sumIntHOVERSUC / (sumIntHOVERCNT + 0.00001) * 100, 2) as '切入成功率',
+            sumIntHOVERCNT as '切入申请',
+            sumIntHOVERSUC as '切入成功'
+            from (select * from temp${sts}_Ho) Ho
+            Left Join sts_GSM_CELL GSM_CELL
+            on Ho.ObjectID = GSM_CELL.ObjectID
+            <![CDATA[     where round(sumIntHOVERSUC / (sumIntHOVERCNT + 0.00001) * 100, 2) <= 80
+            and sumIntHOVERCNT >= 5  ]]>
+            order by 10 asc
+        </foreach>
+         ) as pitchIn
+         SET ANSI_WARNINGS on SET ARITHABORT on SET ARITHIGNORE off
+    </select>
+
+    <select id="selectPitchingIn" parameterType="map" resultType="java.util.LinkedHashMap">
+        SET ANSI_WARNINGS off SET ARITHABORT off SET ARITHIGNORE on
+        <foreach collection="stss" item="sts" index="index" separator="union">
+        select  ${topX} Ho.Date as '日期',
+            Ho.Time as '时间',
+            Ho.BSC as 'BSC',
+            Ho.ObjectID as 'CELL',
+            isnull(GSM_CELL.中文名,'nulled')   as '中文名',
+            isnull(GSM_CELL.县区,'nulled')  as '县区',
+            isnull(GSM_CELL.代维,'nulled')  as '代维' ,
+            isnull(GSM_CELL.覆盖类型,'nulled')  as '覆盖场景',
+            isnull(GSM_CELL.小区类型,'nulled')  as '是否VIP小区',
+            round(sumIntHOVERSUC / (sumIntHOVERCNT + 0.00001) * 100, 2) as '切入成功率',
+            sumIntHOVERCNT as '切入申请',
+            sumIntHOVERSUC as '切入成功'
+            from (select * from temp${sts}_Ho) Ho
+            Left Join sts_GSM_CELL GSM_CELL
+            on Ho.ObjectID = GSM_CELL.ObjectID
+         <![CDATA[     where round(sumIntHOVERSUC / (sumIntHOVERCNT + 0.00001) * 100, 2) <= 80
+            and sumIntHOVERCNT >= 5  ]]>
+            order by 10 asc
+        </foreach>
+        SET ANSI_WARNINGS on SET ARITHABORT on SET ARITHIGNORE off
+
+    </select>
+
+    <select id="selectPitchingInByPage" parameterType="map" resultType="java.util.LinkedHashMap">
+          SET ANSI_WARNINGS off SET ARITHABORT off SET ARITHIGNORE on
+         select top ${cnt} 日期,时间,BSC,CELL,中文名,县区,代维,覆盖场景,是否VIP小区,切入成功率,切入申请,切入成功
+        from (select row_number() over(order by A.切入成功率 asc) as rownumber,*
+              from (
+        <foreach collection="stss" item="sts" index="index" separator="union">
+            select  ${topX} Ho.Date as '日期',
+            Ho.Time as '时间',
+            Ho.BSC as 'BSC',
+            Ho.ObjectID as 'CELL',
+            isnull(GSM_CELL.中文名,'nulled')   as '中文名',
+            isnull(GSM_CELL.县区,'nulled')  as '县区',
+            isnull(GSM_CELL.代维,'nulled')  as '代维' ,
+            isnull(GSM_CELL.覆盖类型,'nulled')  as '覆盖场景',
+            isnull(GSM_CELL.小区类型,'nulled')  as '是否VIP小区',
+            round(sumIntHOVERSUC / (sumIntHOVERCNT + 0.00001) * 100, 2) as '切入成功率',
+            sumIntHOVERCNT as '切入申请',
+            sumIntHOVERSUC as '切入成功'
+            from (select * from temp${sts}_Ho) Ho
+            Left Join sts_GSM_CELL GSM_CELL
+            on Ho.ObjectID = GSM_CELL.ObjectID
+            <![CDATA[     where round(sumIntHOVERSUC / (sumIntHOVERCNT + 0.00001) * 100, 2) <= 80
+            and sumIntHOVERCNT >= 5  ]]>
+            order by 10 asc
+        </foreach>
+              ) A) B
+        where B.rownumber &gt;${startIndex}
+        SET ANSI_WARNINGS on SET ARITHABORT on SET ARITHIGNORE off
+    </select>
+
+    <select id="selectPitchingOutCount" parameterType="map" resultType="long">
+          SET ANSI_WARNINGS off SET ARITHABORT off SET ARITHIGNORE on
+         select count(*) from (
+        <foreach collection="stss" item="sts" index="index" separator="union">
+            select  ${topX} Ho.Date as '日期',
+            Ho.Time as '时间',
+            Ho.BSC as 'BSC',
+            Ho.ObjectID as 'CELL',
+            isnull(GSM_CELL.中文名,'nulled')   as '中文名',
+            isnull(GSM_CELL.县区,'nulled')  as '县区',
+            isnull(GSM_CELL.代维,'nulled')  as '代维' ,
+            isnull(GSM_CELL.覆盖类型,'nulled')  as '覆盖场景',
+            isnull(GSM_CELL.小区类型,'nulled')  as '是否VIP小区',
+            round(sumOutHOVERSUC / (sumOutHOVERCNT + 0.00001) * 100, 2) as '切出成功率',
+            sumOutHOVERCNT as '切出申请',
+            sumOutHOVERSUC as '切出成功'
+            from (select * from temp${sts}_Ho) Ho
+            Left Join sts_GSM_CELL GSM_CELL
+            on Ho.ObjectID = GSM_CELL.ObjectID
+            <![CDATA[   where round(sumOutHOVERSUC / (sumOutHOVERCNT + 0.00001) * 100, 2) <= 80
+        and sumOutHOVERCNT >= 5 ]]>
+            order by 10 asc
+        </foreach>
+         ) as pitchOut
+         SET ANSI_WARNINGS on SET ARITHABORT on SET ARITHIGNORE off
+    </select>
+
+    <select id="selectPitchingOut" parameterType="map" resultType="java.util.LinkedHashMap">
+        SET ANSI_WARNINGS off SET ARITHABORT off SET ARITHIGNORE on
+        <foreach collection="stss" item="sts" index="index" separator="union">
+        select  ${topX} Ho.Date as '日期',
+        Ho.Time as '时间',
+        Ho.BSC as 'BSC',
+        Ho.ObjectID as 'CELL',
+            isnull(GSM_CELL.中文名,'nulled')   as '中文名',
+            isnull(GSM_CELL.县区,'nulled')  as '县区',
+            isnull(GSM_CELL.代维,'nulled')  as '代维' ,
+            isnull(GSM_CELL.覆盖类型,'nulled')  as '覆盖场景',
+            isnull(GSM_CELL.小区类型,'nulled')  as '是否VIP小区',
+        round(sumOutHOVERSUC / (sumOutHOVERCNT + 0.00001) * 100, 2) as '切出成功率',
+        sumOutHOVERCNT as '切出申请',
+        sumOutHOVERSUC as '切出成功'
+        from (select * from temp${sts}_Ho) Ho
+        Left Join sts_GSM_CELL GSM_CELL
+        on Ho.ObjectID = GSM_CELL.ObjectID
+        <![CDATA[   where round(sumOutHOVERSUC / (sumOutHOVERCNT + 0.00001) * 100, 2) <= 80
+        and sumOutHOVERCNT >= 5 ]]>
+        order by 10 asc
+        </foreach>
+        SET ANSI_WARNINGS on SET ARITHABORT on SET ARITHIGNORE off
+    </select>
+
+    <select id="selectPitchingOutByPage" parameterType="map" resultType="java.util.LinkedHashMap">
+         SET ANSI_WARNINGS off SET ARITHABORT off SET ARITHIGNORE on
+         select top ${cnt} 日期,时间,BSC,CELL,中文名,县区,代维,覆盖场景,是否VIP小区,切出成功率,切出申请,切出成功
+        from (select row_number() over(order by A.切出成功率 asc) as rownumber,*
+              from (
+        <foreach collection="stss" item="sts" index="index" separator="union">
+            select  ${topX} Ho.Date as '日期',
+            Ho.Time as '时间',
+            Ho.BSC as 'BSC',
+            Ho.ObjectID as 'CELL',
+            isnull(GSM_CELL.中文名,'nulled')   as '中文名',
+            isnull(GSM_CELL.县区,'nulled')  as '县区',
+            isnull(GSM_CELL.代维,'nulled')  as '代维' ,
+            isnull(GSM_CELL.覆盖类型,'nulled')  as '覆盖场景',
+            isnull(GSM_CELL.小区类型,'nulled')  as '是否VIP小区',
+            round(sumOutHOVERSUC / (sumOutHOVERCNT + 0.00001) * 100, 2) as '切出成功率',
+            sumOutHOVERCNT as '切出申请',
+            sumOutHOVERSUC as '切出成功'
+            from (select * from temp${sts}_Ho) Ho
+            Left Join sts_GSM_CELL GSM_CELL
+            on Ho.ObjectID = GSM_CELL.ObjectID
+            <![CDATA[   where round(sumOutHOVERSUC / (sumOutHOVERCNT + 0.00001) * 100, 2) <= 80
+        and sumOutHOVERCNT >= 5 ]]>
+            order by 10 asc
+        </foreach>
+              ) A) B
+        where B.rownumber &gt;${startIndex}
+        SET ANSI_WARNINGS on SET ARITHABORT on SET ARITHIGNORE off
+    </select>
+
+    <select id="selectVoiceQualityCount" parameterType="map" resultType="long">
+          SET ANSI_WARNINGS off SET ARITHABORT off SET ARITHIGNORE on
+         select count(*) from (
+        <foreach collection="stss" item="sts" index="index" separator="union">
+            select  ${topX} CLRXQUAL.Date as '日期',
+            CLRXQUAL.Time as '时间',
+            CLRXQUAL.BSC as 'BSC',
+            CLRXQUAL.ObjectID as 'CELL',
+            isnull(GSM_CELL.中文名,'nulled')   as '中文名',
+            isnull(GSM_CELL.县区,'nulled')  as '县区',
+            isnull(GSM_CELL.代维,'nulled')  as '代维' ,
+            isnull(GSM_CELL.覆盖类型,'nulled')  as '覆盖场景',
+            isnull(GSM_CELL.小区类型,'nulled')  as '是否VIP小区',
+            ROUND((CLRXQUAL.QUAL00UL + CLRXQUAL.QUAL10UL + CLRXQUAL.QUAL20UL +
+            CLRXQUAL.QUAL30UL + CLRXQUAL.QUAL40UL + CLRXQUAL.QUAL50UL) /
+            (CLRXQUAL.QUAL00UL + CLRXQUAL.QUAL10UL + CLRXQUAL.QUAL20UL +
+            CLRXQUAL.QUAL30UL + CLRXQUAL.QUAL40UL + CLRXQUAL.QUAL50UL +
+            CLRXQUAL.QUAL60UL + CLRXQUAL.QUAL70UL + 0.00001) * 100,
+            2) as '上行语音质量',
+            ROUND((CLRXQUAL.QUAL00DL + CLRXQUAL.QUAL10DL + CLRXQUAL.QUAL20DL +
+            CLRXQUAL.QUAL30DL + CLRXQUAL.QUAL40DL + CLRXQUAL.QUAL50DL) /
+            (CLRXQUAL.QUAL00DL + CLRXQUAL.QUAL10DL + CLRXQUAL.QUAL20DL +
+            CLRXQUAL.QUAL30DL + CLRXQUAL.QUAL40DL + CLRXQUAL.QUAL50DL +
+            CLRXQUAL.QUAL60DL + CLRXQUAL.QUAL70DL + 0.00001) * 100,
+            2) as '下行语音质量',
+            CLRXQUAL.QUAL00DL + CLRXQUAL.QUAL10DL + CLRXQUAL.QUAL20DL +
+            CLRXQUAL.QUAL30DL + CLRXQUAL.QUAL40DL + CLRXQUAL.QUAL50DL +
+            CLRXQUAL.QUAL60DL + CLRXQUAL.QUAL70DL as '下行总采样点'
+            from (select * from temp${sts}_CLRXQUAL) CLRXQUAL
+            Left Join sts_GSM_CELL GSM_CELL
+            on CLRXQUAL.ObjectID = GSM_CELL.ObjectID
+            <![CDATA[  where ROUND((CLRXQUAL.QUAL00DL + CLRXQUAL.QUAL10DL + CLRXQUAL.QUAL20DL +
+        CLRXQUAL.QUAL30DL + CLRXQUAL.QUAL40DL + CLRXQUAL.QUAL50DL) /
+        (CLRXQUAL.QUAL00DL + CLRXQUAL.QUAL10DL + CLRXQUAL.QUAL20DL +
+        CLRXQUAL.QUAL30DL + CLRXQUAL.QUAL40DL + CLRXQUAL.QUAL50DL +
+        CLRXQUAL.QUAL60DL + CLRXQUAL.QUAL70DL + 0.00001) * 100,
+        2) <= 80
+        and CLRXQUAL.QUAL00DL + CLRXQUAL.QUAL10DL + CLRXQUAL.QUAL20DL +
+        CLRXQUAL.QUAL30DL + CLRXQUAL.QUAL40DL + CLRXQUAL.QUAL50DL +
+        CLRXQUAL.QUAL60DL + CLRXQUAL.QUAL70DL >= 1 ]]>
+            order by 11 asc
+        </foreach>
+         ) as voiceQual
+         SET ANSI_WARNINGS on SET ARITHABORT on SET ARITHIGNORE off
+    </select>
+
+    <select id="selectVoiceQuality" parameterType="map" resultType="java.util.LinkedHashMap">
+        SET ANSI_WARNINGS off SET ARITHABORT off SET ARITHIGNORE on
+        <foreach collection="stss" item="sts" index="index" separator="union">
+        select  ${topX} CLRXQUAL.Date as '日期',
+        CLRXQUAL.Time as '时间',
+        CLRXQUAL.BSC as 'BSC',
+        CLRXQUAL.ObjectID as 'CELL',
+            isnull(GSM_CELL.中文名,'nulled')   as '中文名',
+            isnull(GSM_CELL.县区,'nulled')  as '县区',
+            isnull(GSM_CELL.代维,'nulled')  as '代维' ,
+            isnull(GSM_CELL.覆盖类型,'nulled')  as '覆盖场景',
+            isnull(GSM_CELL.小区类型,'nulled')  as '是否VIP小区',
+        ROUND((CLRXQUAL.QUAL00UL + CLRXQUAL.QUAL10UL + CLRXQUAL.QUAL20UL +
+        CLRXQUAL.QUAL30UL + CLRXQUAL.QUAL40UL + CLRXQUAL.QUAL50UL) /
+        (CLRXQUAL.QUAL00UL + CLRXQUAL.QUAL10UL + CLRXQUAL.QUAL20UL +
+        CLRXQUAL.QUAL30UL + CLRXQUAL.QUAL40UL + CLRXQUAL.QUAL50UL +
+        CLRXQUAL.QUAL60UL + CLRXQUAL.QUAL70UL + 0.00001) * 100,
+        2) as '上行语音质量',
+        ROUND((CLRXQUAL.QUAL00DL + CLRXQUAL.QUAL10DL + CLRXQUAL.QUAL20DL +
+        CLRXQUAL.QUAL30DL + CLRXQUAL.QUAL40DL + CLRXQUAL.QUAL50DL) /
+        (CLRXQUAL.QUAL00DL + CLRXQUAL.QUAL10DL + CLRXQUAL.QUAL20DL +
+        CLRXQUAL.QUAL30DL + CLRXQUAL.QUAL40DL + CLRXQUAL.QUAL50DL +
+        CLRXQUAL.QUAL60DL + CLRXQUAL.QUAL70DL + 0.00001) * 100,
+        2) as '下行语音质量',
+        CLRXQUAL.QUAL00DL + CLRXQUAL.QUAL10DL + CLRXQUAL.QUAL20DL +
+        CLRXQUAL.QUAL30DL + CLRXQUAL.QUAL40DL + CLRXQUAL.QUAL50DL +
+        CLRXQUAL.QUAL60DL + CLRXQUAL.QUAL70DL as '下行总采样点'
+        from (select * from temp${sts}_CLRXQUAL) CLRXQUAL
+        Left Join sts_GSM_CELL GSM_CELL
+        on CLRXQUAL.ObjectID = GSM_CELL.ObjectID
+        <![CDATA[  where ROUND((CLRXQUAL.QUAL00DL + CLRXQUAL.QUAL10DL + CLRXQUAL.QUAL20DL +
+        CLRXQUAL.QUAL30DL + CLRXQUAL.QUAL40DL + CLRXQUAL.QUAL50DL) /
+        (CLRXQUAL.QUAL00DL + CLRXQUAL.QUAL10DL + CLRXQUAL.QUAL20DL +
+        CLRXQUAL.QUAL30DL + CLRXQUAL.QUAL40DL + CLRXQUAL.QUAL50DL +
+        CLRXQUAL.QUAL60DL + CLRXQUAL.QUAL70DL + 0.00001) * 100,
+        2) <= 80
+        and CLRXQUAL.QUAL00DL + CLRXQUAL.QUAL10DL + CLRXQUAL.QUAL20DL +
+        CLRXQUAL.QUAL30DL + CLRXQUAL.QUAL40DL + CLRXQUAL.QUAL50DL +
+        CLRXQUAL.QUAL60DL + CLRXQUAL.QUAL70DL >= 1 ]]>
+        order by 11 asc
+        </foreach>
+        SET ANSI_WARNINGS on SET ARITHABORT on SET ARITHIGNORE off
+    </select>
+
+    <select id="selectVoiceQualityByPage" parameterType="map" resultType="java.util.LinkedHashMap">
+          SET ANSI_WARNINGS off SET ARITHABORT off SET ARITHIGNORE on
+         select top ${cnt} 日期,时间,BSC,CELL,中文名,县区,代维,覆盖场景,是否VIP小区,上行语音质量,下行语音质量,下行总采样点
+        from (select row_number() over(order by A.下行语音质量 asc) as rownumber,*
+              from (
+        <foreach collection="stss" item="sts" index="index" separator="union">
+            select  ${topX} CLRXQUAL.Date as '日期',
+            CLRXQUAL.Time as '时间',
+            CLRXQUAL.BSC as 'BSC',
+            CLRXQUAL.ObjectID as 'CELL',
+            isnull(GSM_CELL.中文名,'nulled')   as '中文名',
+            isnull(GSM_CELL.县区,'nulled')  as '县区',
+            isnull(GSM_CELL.代维,'nulled')  as '代维' ,
+            isnull(GSM_CELL.覆盖类型,'nulled')  as '覆盖场景',
+            isnull(GSM_CELL.小区类型,'nulled')  as '是否VIP小区',
+            ROUND((CLRXQUAL.QUAL00UL + CLRXQUAL.QUAL10UL + CLRXQUAL.QUAL20UL +
+            CLRXQUAL.QUAL30UL + CLRXQUAL.QUAL40UL + CLRXQUAL.QUAL50UL) /
+            (CLRXQUAL.QUAL00UL + CLRXQUAL.QUAL10UL + CLRXQUAL.QUAL20UL +
+            CLRXQUAL.QUAL30UL + CLRXQUAL.QUAL40UL + CLRXQUAL.QUAL50UL +
+            CLRXQUAL.QUAL60UL + CLRXQUAL.QUAL70UL + 0.00001) * 100,
+            2) as '上行语音质量',
+            ROUND((CLRXQUAL.QUAL00DL + CLRXQUAL.QUAL10DL + CLRXQUAL.QUAL20DL +
+            CLRXQUAL.QUAL30DL + CLRXQUAL.QUAL40DL + CLRXQUAL.QUAL50DL) /
+            (CLRXQUAL.QUAL00DL + CLRXQUAL.QUAL10DL + CLRXQUAL.QUAL20DL +
+            CLRXQUAL.QUAL30DL + CLRXQUAL.QUAL40DL + CLRXQUAL.QUAL50DL +
+            CLRXQUAL.QUAL60DL + CLRXQUAL.QUAL70DL + 0.00001) * 100,
+            2) as '下行语音质量',
+            CLRXQUAL.QUAL00DL + CLRXQUAL.QUAL10DL + CLRXQUAL.QUAL20DL +
+            CLRXQUAL.QUAL30DL + CLRXQUAL.QUAL40DL + CLRXQUAL.QUAL50DL +
+            CLRXQUAL.QUAL60DL + CLRXQUAL.QUAL70DL as '下行总采样点'
+            from (select * from temp${sts}_CLRXQUAL) CLRXQUAL
+            Left Join sts_GSM_CELL GSM_CELL
+            on CLRXQUAL.ObjectID = GSM_CELL.ObjectID
+            <![CDATA[  where ROUND((CLRXQUAL.QUAL00DL + CLRXQUAL.QUAL10DL + CLRXQUAL.QUAL20DL +
+        CLRXQUAL.QUAL30DL + CLRXQUAL.QUAL40DL + CLRXQUAL.QUAL50DL) /
+        (CLRXQUAL.QUAL00DL + CLRXQUAL.QUAL10DL + CLRXQUAL.QUAL20DL +
+        CLRXQUAL.QUAL30DL + CLRXQUAL.QUAL40DL + CLRXQUAL.QUAL50DL +
+        CLRXQUAL.QUAL60DL + CLRXQUAL.QUAL70DL + 0.00001) * 100,
+        2) <= 80
+        and CLRXQUAL.QUAL00DL + CLRXQUAL.QUAL10DL + CLRXQUAL.QUAL20DL +
+        CLRXQUAL.QUAL30DL + CLRXQUAL.QUAL40DL + CLRXQUAL.QUAL50DL +
+        CLRXQUAL.QUAL60DL + CLRXQUAL.QUAL70DL >= 1 ]]>
+            order by 11 asc
+        </foreach>
+              ) A) B
+        where B.rownumber &gt;${startIndex}
+        SET ANSI_WARNINGS on SET ARITHABORT on SET ARITHIGNORE off
+    </select>
+    <select id="selectTbfEstablishCount" parameterType="map" resultType="long">
+         SET ANSI_WARNINGS off SET ARITHABORT off SET ARITHIGNORE on
+         select count(*) from (
+        <foreach collection="stss" item="sts" index="index" separator="union">
+        select ${topX} CELLGPRS.Date as '日期',
+        CELLGPRS.Time as '时间',
+        CELLGPRS.BSC as 'BSC',
+        CELLGPRS.ObjectID as 'CELL',
+            isnull(GSM_CELL.中文名,'nulled')   as '中文名',
+            isnull(GSM_CELL.县区,'nulled')  as '县区',
+            isnull(GSM_CELL.代维,'nulled')  as '代维' ,
+            isnull(GSM_CELL.覆盖类型,'nulled')  as '覆盖场景',
+            isnull(GSM_CELL.小区类型,'nulled')  as '是否VIP小区',
+        100 -
+        round(100 * CELLGPRS.FAILDLTBFEST / (CELLGPRS.DLTBFEST + 0.00001), 2) as 'TBF建立成功率',
+        ROUND((CELLQOSEG.DLTHP3EGDATA + CELLQOSEG.DLTHP2EGDATA +
+        CELLQOSEG.DLTHP1EGDATA + CELLQOSEG.DLBGEGDATA +
+        CELLQOSG.DLBGGDATA + CELLQOSG.DLTHP1GDATA +
+        CELLQOSG.DLTHP2GDATA + CELLQOSG.DLTHP3GDATA) / (8 * 1024),
+        2) as '下行总流量'
+        from (select * from temp${sts}_CELLGPRS) CELLGPRS
+        Left Join (select * from temp${sts}_CELLQOSEG) CELLQOSEG
+        on CELLGPRS.ObjectID = CELLQOSEG.ObjectID
+        and CELLGPRS.DATE = CELLQOSEG.DATE
+        and CELLGPRS.TIME = CELLQOSEG.TIME
+        and CELLGPRS.BSC = CELLQOSEG.BSC
+        Left Join (select * from temp${sts}_CELLQOSG) CELLQOSG
+        on CELLGPRS.ObjectID = CELLQOSG.ObjectID
+        and CELLGPRS.DATE = CELLQOSG.DATE
+        and CELLGPRS.TIME = CELLQOSG.TIME
+        and CELLGPRS.BSC = CELLQOSG.BSC
+        Left Join sts_GSM_CELL GSM_CELL
+        on CELLGPRS.ObjectID = GSM_CELL.ObjectID
+            <![CDATA[ where 100 -
+        round(100 * CELLGPRS.FAILDLTBFEST / (CELLGPRS.DLTBFEST + 0.00001), 2) <= 90
+        and ROUND((CELLQOSEG.DLTHP3EGDATA + CELLQOSEG.DLTHP2EGDATA +
+        CELLQOSEG.DLTHP1EGDATA + CELLQOSEG.DLBGEGDATA +
+        CELLQOSG.DLBGGDATA + CELLQOSG.DLTHP1GDATA +
+        CELLQOSG.DLTHP2GDATA + CELLQOSG.DLTHP3GDATA) / (8 * 1024),
+        2) >= 5 ]]>
+        order by 10 asc
+        </foreach>
+         ) as tbf
+         SET ANSI_WARNINGS on SET ARITHABORT on SET ARITHIGNORE off
+    </select>
+    <select id="selectTbfEstablish" parameterType="map" resultType="java.util.LinkedHashMap">
+        SET ANSI_WARNINGS off SET ARITHABORT off SET ARITHIGNORE on
+        <foreach collection="stss" item="sts" index="index" separator="union">
+            select ${topX} CELLGPRS.Date as '日期',
+            CELLGPRS.Time as '时间',
+            CELLGPRS.BSC as 'BSC',
+            CELLGPRS.ObjectID as 'CELL',
+            isnull(GSM_CELL.中文名,'nulled')   as '中文名',
+            isnull(GSM_CELL.县区,'nulled')  as '县区',
+            isnull(GSM_CELL.代维,'nulled')  as '代维' ,
+            isnull(GSM_CELL.覆盖类型,'nulled')  as '覆盖场景',
+            isnull(GSM_CELL.小区类型,'nulled')  as '是否VIP小区',
+            100 -
+            round(100 * CELLGPRS.FAILDLTBFEST / (CELLGPRS.DLTBFEST + 0.00001), 2) as 'TBF建立成功率',
+            ROUND((CELLQOSEG.DLTHP3EGDATA + CELLQOSEG.DLTHP2EGDATA +
+            CELLQOSEG.DLTHP1EGDATA + CELLQOSEG.DLBGEGDATA +
+            CELLQOSG.DLBGGDATA + CELLQOSG.DLTHP1GDATA +
+            CELLQOSG.DLTHP2GDATA + CELLQOSG.DLTHP3GDATA) / (8 * 1024),
+            2) as '下行总流量'
+            from (select * from temp${sts}_CELLGPRS) CELLGPRS
+            Left Join (select * from temp${sts}_CELLQOSEG) CELLQOSEG
+            on CELLGPRS.ObjectID = CELLQOSEG.ObjectID
+            and CELLGPRS.DATE = CELLQOSEG.DATE
+            and CELLGPRS.TIME = CELLQOSEG.TIME
+            and CELLGPRS.BSC = CELLQOSEG.BSC
+            Left Join (select * from temp${sts}_CELLQOSG) CELLQOSG
+            on CELLGPRS.ObjectID = CELLQOSG.ObjectID
+            and CELLGPRS.DATE = CELLQOSG.DATE
+            and CELLGPRS.TIME = CELLQOSG.TIME
+            and CELLGPRS.BSC = CELLQOSG.BSC
+            Left Join sts_GSM_CELL GSM_CELL
+            on CELLGPRS.ObjectID = GSM_CELL.ObjectID
+            <![CDATA[ where 100 -
+            round(100 * CELLGPRS.FAILDLTBFEST / (CELLGPRS.DLTBFEST + 0.00001), 2) <= 90
+            and ROUND((CELLQOSEG.DLTHP3EGDATA + CELLQOSEG.DLTHP2EGDATA +
+            CELLQOSEG.DLTHP1EGDATA + CELLQOSEG.DLBGEGDATA +
+            CELLQOSG.DLBGGDATA + CELLQOSG.DLTHP1GDATA +
+            CELLQOSG.DLTHP2GDATA + CELLQOSG.DLTHP3GDATA) / (8 * 1024),
+            2) >= 5 ]]>
+            order by 10 asc
+        </foreach>
+        SET ANSI_WARNINGS on SET ARITHABORT on SET ARITHIGNORE off
+    </select>
+    <select id="selectTbfEstablishByPage" parameterType="map" resultType="java.util.LinkedHashMap">
+         SET ANSI_WARNINGS off SET ARITHABORT off SET ARITHIGNORE on
+  select top ${cnt} 日期,时间,BSC,CELL,中文名,县区,代维,覆盖场景,是否VIP小区,TBF建立成功率,下行总流量
+        from (select row_number() over(order by A.TBF建立成功率 asc) as rownumber,*
+              from (
+        <foreach collection="stss" item="sts" index="index" separator="union">
+            select ${topX} CELLGPRS.Date as '日期',
+            CELLGPRS.Time as '时间',
+            CELLGPRS.BSC as 'BSC',
+            CELLGPRS.ObjectID as 'CELL',
+            isnull(GSM_CELL.中文名,'nulled')   as '中文名',
+            isnull(GSM_CELL.县区,'nulled')  as '县区',
+            isnull(GSM_CELL.代维,'nulled')  as '代维' ,
+            isnull(GSM_CELL.覆盖类型,'nulled')  as '覆盖场景',
+            isnull(GSM_CELL.小区类型,'nulled')  as '是否VIP小区',
+            100 -
+            round(100 * CELLGPRS.FAILDLTBFEST / (CELLGPRS.DLTBFEST + 0.00001), 2) as 'TBF建立成功率',
+            ROUND((CELLQOSEG.DLTHP3EGDATA + CELLQOSEG.DLTHP2EGDATA +
+            CELLQOSEG.DLTHP1EGDATA + CELLQOSEG.DLBGEGDATA +
+            CELLQOSG.DLBGGDATA + CELLQOSG.DLTHP1GDATA +
+            CELLQOSG.DLTHP2GDATA + CELLQOSG.DLTHP3GDATA) / (8 * 1024),
+            2) as '下行总流量'
+            from (select * from temp${sts}_CELLGPRS) CELLGPRS
+            Left Join (select * from temp${sts}_CELLQOSEG) CELLQOSEG
+            on CELLGPRS.ObjectID = CELLQOSEG.ObjectID
+            and CELLGPRS.DATE = CELLQOSEG.DATE
+            and CELLGPRS.TIME = CELLQOSEG.TIME
+            and CELLGPRS.BSC = CELLQOSEG.BSC
+            Left Join (select * from temp${sts}_CELLQOSG) CELLQOSG
+            on CELLGPRS.ObjectID = CELLQOSG.ObjectID
+            and CELLGPRS.DATE = CELLQOSG.DATE
+            and CELLGPRS.TIME = CELLQOSG.TIME
+            and CELLGPRS.BSC = CELLQOSG.BSC
+            Left Join sts_GSM_CELL GSM_CELL
+            on CELLGPRS.ObjectID = GSM_CELL.ObjectID
+            <![CDATA[ where 100 -
+            round(100 * CELLGPRS.FAILDLTBFEST / (CELLGPRS.DLTBFEST + 0.00001), 2) <= 90
+            and ROUND((CELLQOSEG.DLTHP3EGDATA + CELLQOSEG.DLTHP2EGDATA +
+            CELLQOSEG.DLTHP1EGDATA + CELLQOSEG.DLBGEGDATA +
+            CELLQOSG.DLBGGDATA + CELLQOSG.DLTHP1GDATA +
+            CELLQOSG.DLTHP2GDATA + CELLQOSG.DLTHP3GDATA) / (8 * 1024),
+            2) >= 5 ]]>
+            order by 10 asc
+        </foreach>
+              ) A) B
+        where B.rownumber &gt;${startIndex}
+        SET ANSI_WARNINGS on SET ARITHABORT on SET ARITHIGNORE off
+    </select>
+    <select id="selectTransportChainScissionCount" parameterType="map" resultType="long">
+         SET ANSI_WARNINGS off SET ARITHABORT off SET ARITHIGNORE on
+         select count(*) from (
+        <foreach collection="stss" item="sts" index="index" separator="union">
+            select ${topX} Date as '日期',
+                   Time + '00' as '时间',
+                   temp${sts}_chuanShu.BSC,
+                   CELL,
+            isnull(sts_GSM_CELL.中文名,'nulled')   as '中文名',
+            isnull(sts_GSM_CELL.县区,'nulled')  as '县区',
+            isnull(sts_GSM_CELL.代维,'nulled')  as '代维' ,
+            isnull(sts_GSM_CELL.覆盖类型,'nulled')  as '覆盖场景',
+            isnull(sts_GSM_CELL.小区类型,'nulled')  as '是否VIP小区',
+                   MO,
+                   DIP,
+                   STATE
+              from temp${sts}_chuanShu
+              LEFT join sts_GSM_CELL
+                on sts_GSM_CELL.ObjectID = temp${sts}_chuanShu.CELL
+        </foreach>
+         ) as tbf
+         SET ANSI_WARNINGS on SET ARITHABORT on SET ARITHIGNORE off
+    </select>
+    <select id="selectTransportChainScission" parameterType="map" resultType="java.util.LinkedHashMap">
+         SET ANSI_WARNINGS off SET ARITHABORT off SET ARITHIGNORE on
+        <foreach collection="stss" item="sts" index="index" separator="union">
+            select ${topX} Date as '日期',
+            Time + '00' as '时间',
+            temp${sts}_chuanShu.BSC,
+            CELL,
+            isnull(sts_GSM_CELL.中文名,'nulled')   as '中文名',
+            isnull(sts_GSM_CELL.县区,'nulled')  as '县区',
+            isnull(sts_GSM_CELL.代维,'nulled')  as '代维' ,
+            isnull(sts_GSM_CELL.覆盖类型,'nulled')  as '覆盖场景',
+            isnull(sts_GSM_CELL.小区类型,'nulled')  as '是否VIP小区',
+            MO,
+            DIP,
+            STATE
+            from temp${sts}_chuanShu
+            LEFT join sts_GSM_CELL
+            on sts_GSM_CELL.ObjectID = temp${sts}_chuanShu.CELL
+        </foreach>
+        SET ANSI_WARNINGS on SET ARITHABORT on SET ARITHIGNORE off
+    </select>
+    <select id="selectTransportChainScissionByPage" parameterType="map" resultType="java.util.LinkedHashMap">
+         SET ANSI_WARNINGS off SET ARITHABORT off SET ARITHIGNORE on
+        select top ${cnt} 日期,时间,BSC,CELL,中文名,县区,代维,覆盖场景,是否VIP小区,MO,DIP,STATE
+        from (select row_number() over(order by A.DIP asc) as rownumber,*
+        from (
+        <foreach collection="stss" item="sts" index="index" separator="union">
+            select ${topX} Date as '日期',
+            Time + '00' as '时间',
+            temp${sts}_chuanShu.BSC,
+            CELL,
+            isnull(sts_GSM_CELL.中文名,'nulled')   as '中文名',
+            isnull(sts_GSM_CELL.县区,'nulled')  as '县区',
+            isnull(sts_GSM_CELL.代维,'nulled')  as '代维' ,
+            isnull(sts_GSM_CELL.覆盖类型,'nulled')  as '覆盖场景',
+            isnull(sts_GSM_CELL.小区类型,'nulled')  as '是否VIP小区',
+            MO,
+            DIP,
+            STATE
+            from temp${sts}_chuanShu
+            LEFT join sts_GSM_CELL
+            on sts_GSM_CELL.ObjectID = temp${sts}_chuanShu.CELL
+        </foreach> ) A) B
+        where B.rownumber &gt;${startIndex}
+        SET ANSI_WARNINGS on SET ARITHABORT on SET ARITHIGNORE off
+    </select>
+    <select id="selectErrorSlideCodeCount" parameterType="map" resultType="long">
+         SET ANSI_WARNINGS off SET ARITHABORT off SET ARITHIGNORE on
+         select count(*) from (
+        <foreach collection="stss" item="sts" index="index" separator="union">
+            select ${topX} Date as '日期',
+                   Time + '00' as '时间',
+                   temp${sts}_chuanShuWuMaHuaMa.BSC,
+                   CELL,
+            isnull(sts_GSM_CELL.中文名,'nulled')   as '中文名',
+            isnull(sts_GSM_CELL.县区,'nulled')  as '县区',
+            isnull(sts_GSM_CELL.代维,'nulled')  as '代维' ,
+            isnull(sts_GSM_CELL.覆盖类型,'nulled')  as '覆盖场景',
+            isnull(sts_GSM_CELL.小区类型,'nulled')  as '是否VIP小区',
+                   DIP,
+                   T1,
+                   T2,
+                   SLIP,
+                   SLIP2,
+                   ESV_or_NES,
+                   SESV_or_FES,
+                   SFV,
+                   ES2V_or_NES2,
+                   SES2V_or_FES2
+              from temp${sts}_chuanShuWuMaHuaMa
+              LEFT join sts_GSM_CELL
+                on sts_GSM_CELL.ObjectID = temp${sts}_chuanShuWuMaHuaMa.CELL
+        </foreach>
+        ) as tbf
+         SET ANSI_WARNINGS on SET ARITHABORT on SET ARITHIGNORE off
+    </select>
+    <select id="selectErrorSlideCode" parameterType="map" resultType="java.util.LinkedHashMap">
+         SET ANSI_WARNINGS off SET ARITHABORT off SET ARITHIGNORE on
+        <foreach collection="stss" item="sts" index="index" separator="union">
+            select ${topX} Date as '日期',
+            Time + '00' as '时间',
+            temp${sts}_chuanShuWuMaHuaMa.BSC,
+            CELL,
+            isnull(sts_GSM_CELL.中文名,'nulled')   as '中文名',
+            isnull(sts_GSM_CELL.县区,'nulled')  as '县区',
+            isnull(sts_GSM_CELL.代维,'nulled')  as '代维' ,
+            isnull(sts_GSM_CELL.覆盖类型,'nulled')  as '覆盖场景',
+            isnull(sts_GSM_CELL.小区类型,'nulled')  as '是否VIP小区',
+            DIP,
+            T1,
+            T2,
+            SLIP,
+            SLIP2,
+            ESV_or_NES,
+            SESV_or_FES,
+            SFV,
+            ES2V_or_NES2,
+            SES2V_or_FES2
+            from temp${sts}_chuanShuWuMaHuaMa
+            LEFT join sts_GSM_CELL
+            on sts_GSM_CELL.ObjectID = temp${sts}_chuanShuWuMaHuaMa.CELL
+        </foreach>
+        SET ANSI_WARNINGS on SET ARITHABORT on SET ARITHIGNORE off
+    </select>
+    <select id="selectErrorSlideCodeByPage" parameterType="map" resultType="java.util.LinkedHashMap">
+         SET ANSI_WARNINGS off SET ARITHABORT off SET ARITHIGNORE on
+         select top ${cnt} 日期,时间,BSC,CELL,中文名,县区,代维,覆盖场景,是否VIP小区,DIP,T1,T2,SLIP,SLIP2,ESV_or_NES,SESV_or_FES,SFV,ES2V_or_NES2,SES2V_or_FES2
+                from (select row_number() over(order by A.SLIP asc) as rownumber,*
+                from (
+        <foreach collection="stss" item="sts" index="index" separator="union">
+            select ${topX} Date as '日期',
+            Time + '00' as '时间',
+            temp${sts}_chuanShuWuMaHuaMa.BSC,
+            CELL,
+            isnull(sts_GSM_CELL.中文名,'nulled')   as '中文名',
+            isnull(sts_GSM_CELL.县区,'nulled')  as '县区',
+            isnull(sts_GSM_CELL.代维,'nulled')  as '代维' ,
+            isnull(sts_GSM_CELL.覆盖类型,'nulled')  as '覆盖场景',
+            isnull(sts_GSM_CELL.小区类型,'nulled')  as '是否VIP小区',
+            DIP,
+            T1,
+            T2,
+            SLIP,
+            SLIP2,
+            ESV_or_NES,
+            SESV_or_FES,
+            SFV,
+            ES2V_or_NES2,
+            SES2V_or_FES2
+            from temp${sts}_chuanShuWuMaHuaMa
+            LEFT join sts_GSM_CELL
+            on sts_GSM_CELL.ObjectID = temp${sts}_chuanShuWuMaHuaMa.CELL
+        </foreach>
+                ) A) B
+        where B.rownumber &gt;${startIndex}
+        SET ANSI_WARNINGS on SET ARITHABORT on SET ARITHIGNORE off
+    </select>
+    <select id="selectBcchCount" parameterType="map" resultType="long">
+         SET ANSI_WARNINGS off SET ARITHABORT off SET ARITHIGNORE on
+         select count(*) from (
+        <foreach collection="stss" item="sts" index="index" separator="union">
+              select ${topX} Date as '日期',
+                   Time + '00' as '时间',
+                   temp${sts}_RLCRP.BSC,
+                   CELL,
+            isnull(sts_GSM_CELL.中文名,'nulled')   as '中文名',
+            isnull(sts_GSM_CELL.县区,'nulled')  as '县区',
+            isnull(sts_GSM_CELL.代维,'nulled')  as '代维' ,
+            isnull(sts_GSM_CELL.覆盖类型,'nulled')  as '覆盖场景',
+            isnull(sts_GSM_CELL.小区类型,'nulled')  as '是否VIP小区',
+                   temp${sts}_RLCRP.BCCH,
+                   STATE
+              from temp${sts}_RLCRP
+              LEFT join sts_GSM_CELL
+                on sts_GSM_CELL.ObjectID = temp${sts}_RLCRP.CELL
+        </foreach>
+         ) as tbf
+         SET ANSI_WARNINGS on SET ARITHABORT on SET ARITHIGNORE off
+    </select>
+    <select id="selectBcch" parameterType="map" resultType="java.util.LinkedHashMap">
+         SET ANSI_WARNINGS off SET ARITHABORT off SET ARITHIGNORE on
+        <foreach collection="stss" item="sts" index="index" separator="union">
+            select ${topX} Date as '日期',
+            Time + '00' as '时间',
+            temp${sts}_RLCRP.BSC,
+            CELL,
+            isnull(sts_GSM_CELL.中文名,'nulled')   as '中文名',
+            isnull(sts_GSM_CELL.县区,'nulled')  as '县区',
+            isnull(sts_GSM_CELL.代维,'nulled')  as '代维' ,
+            isnull(sts_GSM_CELL.覆盖类型,'nulled')  as '覆盖场景',
+            isnull(sts_GSM_CELL.小区类型,'nulled')  as '是否VIP小区',
+            temp${sts}_RLCRP.BCCH,
+            STATE
+            from temp${sts}_RLCRP
+            LEFT join sts_GSM_CELL
+            on sts_GSM_CELL.ObjectID = temp${sts}_RLCRP.CELL
+        </foreach>
+        SET ANSI_WARNINGS on SET ARITHABORT on SET ARITHIGNORE off
+    </select>
+    <select id="selectBcchByPage" parameterType="map" resultType="java.util.LinkedHashMap">
+         SET ANSI_WARNINGS off SET ARITHABORT off SET ARITHIGNORE on
+        select top ${cnt} 日期,时间,BSC,CELL,中文名,县区,代维,覆盖场景,是否VIP小区,BCCH,STATE
+                from (select row_number() over(order by A.BCCH asc) as rownumber,*
+                from (
+        <foreach collection="stss" item="sts" index="index" separator="union">
+            select ${topX} Date as '日期',
+            Time + '00' as '时间',
+            temp${sts}_RLCRP.BSC,
+            CELL,
+            isnull(sts_GSM_CELL.中文名,'nulled')   as '中文名',
+            isnull(sts_GSM_CELL.县区,'nulled')  as '县区',
+            isnull(sts_GSM_CELL.代维,'nulled')  as '代维' ,
+            isnull(sts_GSM_CELL.覆盖类型,'nulled')  as '覆盖场景',
+            isnull(sts_GSM_CELL.小区类型,'nulled')  as '是否VIP小区',
+            temp${sts}_RLCRP.BCCH,
+            isnull(STATE,'nulled') as STATE
+            from temp${sts}_RLCRP
+            LEFT join sts_GSM_CELL
+            on sts_GSM_CELL.ObjectID = temp${sts}_RLCRP.CELL
+        </foreach>
+                ) A) B
+        where B.rownumber &gt;${startIndex}
+        SET ANSI_WARNINGS on SET ARITHABORT on SET ARITHIGNORE off
+    </select>
+    <select id="selectA1A2Count" parameterType="map" resultType="long">
+         SET ANSI_WARNINGS off SET ARITHABORT off SET ARITHIGNORE on
+         select count(*) from (
+        <foreach collection="stss" item="sts" index="index" separator="union">
+          select ${topX} substring(temp${sts}_A1A2.Date, 1, 8) as 日期,
+                  substring(temp${sts}_A1A2.Date, 9, 2) + '00' as 时间,
+                   temp${sts}_A1A2.BSC,
+                   temp${sts}_A1A2.RSITE,
+                   temp${sts}_A1A2.类型,
+                   A1A2.告警名称,
+                   temp${sts}_A1A2.MO,
+                   temp${sts}_A1A2.ALARM
+          from temp${sts}_A1A2
+          left join A1A2
+          on temp${sts}_A1A2.ALARM = A1A2.ALARM
+        </foreach>
+        ) as tbf
+         SET ANSI_WARNINGS on SET ARITHABORT on SET ARITHIGNORE off
+    </select>
+    <select id="selectA1A2" parameterType="map" resultType="java.util.LinkedHashMap">
+         SET ANSI_WARNINGS off SET ARITHABORT off SET ARITHIGNORE on
+        <foreach collection="stss" item="sts" index="index" separator="union">
+            select ${topX} substring(temp${sts}_A1A2.Date, 1, 8) as 日期,
+            substring(temp${sts}_A1A2.Date, 9, 2) + '00' as 时间,
+            temp${sts}_A1A2.BSC,
+            temp${sts}_A1A2.RSITE,
+            temp${sts}_A1A2.类型,
+            A1A2.告警名称,
+            temp${sts}_A1A2.MO,
+            temp${sts}_A1A2.ALARM
+            from temp${sts}_A1A2
+            left join A1A2
+            on temp${sts}_A1A2.ALARM = A1A2.ALARM
+        </foreach>
+        SET ANSI_WARNINGS on SET ARITHABORT on SET ARITHIGNORE off
+    </select>
+    <select id="selectA1A2ByPage" parameterType="map" resultType="java.util.LinkedHashMap">
+         SET ANSI_WARNINGS off SET ARITHABORT off SET ARITHIGNORE on
+        select top ${cnt} 日期,时间,BSC,RSITE,类型,告警名称,MO,ALARM
+                from (select row_number() over(order by A.MO asc) as rownumber,*
+                from (
+        <foreach collection="stss" item="sts" index="index" separator="union">
+            select ${topX} substring(temp${sts}_A1A2.Date, 1, 8) as 日期,
+            substring(temp${sts}_A1A2.Date, 9, 2) + '00' as 时间,
+            temp${sts}_A1A2.BSC,
+            temp${sts}_A1A2.RSITE,
+            temp${sts}_A1A2.类型,
+            A1A2.告警名称,
+            temp${sts}_A1A2.MO,
+            temp${sts}_A1A2.ALARM
+            from temp${sts}_A1A2
+            left join A1A2
+            on temp${sts}_A1A2.ALARM = A1A2.ALARM
+        </foreach>
+                ) A) B
+        where B.rownumber &gt;${startIndex}
+        SET ANSI_WARNINGS on SET ARITHABORT on SET ARITHIGNORE off
+    </select>
+    <select id="selectRxmfpCount" parameterType="map" resultType="long">
+         SET ANSI_WARNINGS off SET ARITHABORT off SET ARITHIGNORE on
+         select count(*) from (
+        <foreach collection="stss" item="sts" index="index" separator="union">
+            select ${topX} substring(temp${sts}_RXMFP.Date, 1, 8) as 日期,
+            substring(temp${sts}_RXMFP.Date, 9, 2) + '00' as 时间,
+            temp${sts}_RXMFP.BSC,
+            temp${sts}_RXMFP.STATE as 状态,
+            temp${sts}_RXMFP.类型,
+            temp${sts}_RXMFP.告警名称,
+            temp${sts}_RXMFP.MO,
+            temp${sts}_RXMFP.Fault_Codes,
+            temp${sts}_RXMFP.Datas
+            from temp${sts}_RXMFP
+        </foreach>
+         ) as tbf
+         SET ANSI_WARNINGS on SET ARITHABORT on SET ARITHIGNORE off
+    </select>
+    <select id="selectRxmfp" parameterType="map" resultType="java.util.LinkedHashMap">
+         SET ANSI_WARNINGS off SET ARITHABORT off SET ARITHIGNORE on
+        <foreach collection="stss" item="sts" index="index" separator="union">
+            select ${topX} substring(temp${sts}_RXMFP.Date, 1, 8) as 日期,
+            substring(temp${sts}_RXMFP.Date, 9, 2) + '00' as 时间,
+            temp${sts}_RXMFP.BSC,
+            temp${sts}_RXMFP.STATE as 状态,
+            temp${sts}_RXMFP.类型,
+            temp${sts}_RXMFP.告警名称,
+            temp${sts}_RXMFP.MO,
+            temp${sts}_RXMFP.Fault_Codes,
+            temp${sts}_RXMFP.Datas
+            from temp${sts}_RXMFP
+        </foreach>
+        SET ANSI_WARNINGS on SET ARITHABORT on SET ARITHIGNORE off
+    </select>
+    <select id="selectRxmfpByPage" parameterType="map" resultType="java.util.LinkedHashMap">
+         SET ANSI_WARNINGS off SET ARITHABORT off SET ARITHIGNORE on
+          select top ${cnt} 日期,时间,BSC,状态,告警名称,MO,Fault_Codes,Datas
+                from (select row_number() over(order by A.状态 asc) as rownumber,*
+                from (
+        <foreach collection="stss" item="sts" index="index" separator="union">
+            select substring(temp${sts}_RXMFP.Date, 1, 8) as 日期,
+            substring(temp${sts}_RXMFP.Date, 9, 2) + '00' as 时间,
+            temp${sts}_RXMFP.BSC,
+            temp${sts}_RXMFP.STATE as 状态,
+            temp${sts}_RXMFP.类型,
+            temp${sts}_RXMFP.告警名称,
+            temp${sts}_RXMFP.MO,
+            temp${sts}_RXMFP.Fault_Codes,
+            temp${sts}_RXMFP.Datas
+            from temp${sts}_RXMFP
+        </foreach>
+                ) A) B
+        where B.rownumber &gt;${startIndex}
+        SET ANSI_WARNINGS on SET ARITHABORT on SET ARITHIGNORE off
+    </select>
+    <select id="selectPagingCrowdCount" parameterType="map" resultType="long">
+        select count(*) from (
+        <foreach collection="stss" item="sts" index="index" separator="union">
+         select ${topX} CELLPAG.Date as '日期',
+        CELLPAG.Time as '时间',
+        CELLPAG.BSC as 'BSC',
+        CELLPAG.ObjectID as 'CELL',
+        GSM_CELL.中文名 as '中文名',
+        GSM_CELL.县区 as '县区',
+        GSM_CELL.代维 as '代维',
+        GSM_CELL.覆盖类型 as '覆盖场景',
+        GSM_CELL.小区类型 as '是否VIP小区',
+        CELLPAG.PAGETOOOLD+CELLPAG.PAGPCHCONG as '寻呼拥塞'
+        from (select * from temp${sts}_CELLPAG)CELLPAG
+        Left Join sts_GSM_CELL GSM_CELL on CELLPAG.ObjectID=GSM_CELL.ObjectID
+        where CELLPAG.PAGETOOOLD+CELLPAG.PAGPCHCONG>=500
+        order by 10 desc
+        </foreach>
+        ) as paging
+    </select>
+    <select id="selectPagingCrowd" parameterType="map" resultType="java.util.LinkedHashMap">
+        SET ANSI_WARNINGS off SET ARITHABORT off SET ARITHIGNORE on
+        <foreach collection="stss" item="sts" index="index" separator="union">
+        select ${topX} CELLPAG.Date as '日期',
+        CELLPAG.Time as '时间',
+        CELLPAG.BSC as 'BSC',
+        CELLPAG.ObjectID as 'CELL',
+        GSM_CELL.中文名 as '中文名',
+        GSM_CELL.县区 as '县区',
+        GSM_CELL.代维 as '代维',
+        GSM_CELL.覆盖类型 as '覆盖场景',
+        GSM_CELL.小区类型 as '是否VIP小区',
+        CELLPAG.PAGETOOOLD+CELLPAG.PAGPCHCONG as '寻呼拥塞'
+        from (select * from temp${sts}_CELLPAG)CELLPAG
+        Left Join sts_GSM_CELL GSM_CELL on CELLPAG.ObjectID=GSM_CELL.ObjectID
+        where CELLPAG.PAGETOOOLD+CELLPAG.PAGPCHCONG>=500
+        order by 10 desc
+        </foreach>
+        SET ANSI_WARNINGS on SET ARITHABORT on SET ARITHIGNORE off
+    </select>
+    <select id="selectPagingCrowdByPage" parameterType="map" resultType="java.util.LinkedHashMap">
+        SET ANSI_WARNINGS off SET ARITHABORT off SET ARITHIGNORE on
+         select top ${cnt} 日期,时间,BSC,CELL,中文名,县区,代维,覆盖场景,是否VIP小区,寻呼拥塞
+                from (select row_number() over(order by A.寻呼拥塞 asc) as rownumber,*
+                from (
+        <foreach collection="stss" item="sts" index="index" separator="union">
+        select ${topX} CELLPAG.Date as '日期',
+        CELLPAG.Time as '时间',
+        CELLPAG.BSC as 'BSC',
+        CELLPAG.ObjectID as 'CELL',
+        GSM_CELL.中文名 as '中文名',
+        GSM_CELL.县区 as '县区',
+        GSM_CELL.代维 as '代维',
+        GSM_CELL.覆盖类型 as '覆盖场景',
+        GSM_CELL.小区类型 as '是否VIP小区',
+        CELLPAG.PAGETOOOLD+CELLPAG.PAGPCHCONG as '寻呼拥塞'
+        from (select * from temp${sts}_CELLPAG)CELLPAG
+        Left Join sts_GSM_CELL GSM_CELL on CELLPAG.ObjectID=GSM_CELL.ObjectID
+        where CELLPAG.PAGETOOOLD+CELLPAG.PAGPCHCONG>=500
+        order by 10 desc
+        </foreach>
+        ) A) B
+        where B.rownumber &gt;${startIndex}
+        SET ANSI_WARNINGS on SET ARITHABORT on SET ARITHIGNORE off
+    </select>
+
+</mapper>

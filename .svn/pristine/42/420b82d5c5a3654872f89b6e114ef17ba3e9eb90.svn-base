@@ -1,0 +1,4 @@
+server.port=8086
+
+spring.http.multipart.location=/tmp/indicator
+server.context-path=/m

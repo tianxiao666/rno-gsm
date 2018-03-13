@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="base :: common_header(~{::title},~{::link},~{::meta},~{::script})">
+    <title>结构指数</title>
+    <!--自定义-->
+    <script src="/static/js/optimize/structureIndex.js" th:src="@{/js/optimize/structureIndex.js}"></script>
+    <script src="/static/js/common.js" th:src="@{/js/common.js}"></script>
+    <link>
+</head>
+<body>
+<div id="loading" class="loading" style="display:none">加载中...</div>
+<div id="info" class="info-style" style="display:none"></div>
+<div class="bs-callout bs-callout-danger" id="callout-tables-striped-ie8">
+    <form id="structureIndexForm">
+        <input type="hidden" id="hiddenPageSize" name="hiddenPageSize" value="25"/>
+        <input type="hidden" id="hiddenCurrentPage" name="hiddenCurrentPage" value="1"/>
+        <input type="hidden" id="hiddenTotalPageCnt" name="hiddenTotalPageCnt"/>
+        <input type="hidden" id="hiddenTotalCnt" name="hiddenTotalCnt"/>
+        <table>
+            <tr>
+                <td class="td-style">
+                    <label class="label-style" for="dateSelect">日期<font class="star-style"> *</font>：</label>
+                    <select class="form-control" id="dateSelect" name="dateSelect"
+                            style="width: 150px; display: inline-block">
+                        <option value="-1"></option>
+                        <!--/*@thymesVar id="date" type="list"*/-->
+                        <option th:each="oneDate:${date}" th:value="${oneDate}" th:text="${oneDate}"></option>
+                    </select>
+                    <input type="hidden" id="dates" value=""/>
+                </td>
+                <td class="td-style td-space">
+                    <button type="button" class=" btn btn-default" id="dateButton" data-toggle="modal"
+                            data-target="#myModal">
+                        <i class="glyphicon glyphicon-forward"></i></button>
+                </td>
+                <td class="td-style">
+                    <label class="label-style" for="bscSelect"> 网元<font class="star-style"> *</font>：</label>
+                    <select class="form-control" id="bscSelect" name="bscSelect"
+                            style="width: 150px; display: inline-block">
+                        <option value="-1"></option>
+                        <!--/*@thymesVar id="bsc" type="List"*/-->
+                        <option th:each="oneBsc:${bsc}" th:value="${oneBsc}" th:text="${oneBsc}"></option>
+                    </select>
+                    <input type="hidden" id="bscs" value=""/>
+                </td>
+                <td class="td-style td-space">
+                    <button type="button" class="form-control btn btn-default" id="bscButton" data-toggle="modal"
+                            data-target="#myModal">
+                        <i class="glyphicon glyphicon-forward"></i></button>
+                </td>
+
+                <td class="td-style td-space">
+                    <div style="float: left">
+                        <label class="label-style" for="gsm900Select">
+                            <div>GSM900</div>
+                            <div style="margin-left: 3px">频点数：</div>
+                        </label>
+                    </div>
+                    <select class="form-control" id="gsm900Select" name="gsm900Select"
+                            style="width: 75px; display: inline-block;margin-left:10px;float: left">
+
+                        <option>30</option>
+                        <option>94</option>
+                        <option selected="selected">95</option>
+                        <option>125</option>
+                    </select>
+                </td>
+                <td class="td-style td-space">
+                    <div style="float: left">
+                        <label class="label-style" for="gsm1800Select">
+                            <div>GSM1800</div>
+                            <div style="margin-left: 7px">频点数：</div>
+                        </label>
+                    </div>
+                    <select class="form-control" id="gsm1800Select" name="gsm1800Select"
+                            style="width: 75px; display: inline-block;margin-left: 10px;float: left">
+
+                        <option>100</option>
+                        <option selected="selected">125</option>
+                        <option>238</option>
+                    </select>
+                </td>
+                <td class="td-style">
+                    <button type="button" id="searchBtn" class="btn btn-default btn-width">查询</button>
+                    <button type="button" id="exportBtn" class="btn btn-default btn-width">导出</button>
+                </td>
+            </tr>
+        </table>
+    </form>
+</div>
+<!--多选弹出框开始-->
+<div class="row style-select modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+     aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title" id="myModalLabel"></h4>
+            </div>
+            <div class="modal-body" style="margin-top: 1px">
+                <div class="row">
+                    <div class="col-xs-5">
+                        <h5 class="modal-title" id="myModalLabel1"></h5>
+                    </div>
+                    <div class="col-xs-2"></div>
+                    <div class="col-xs-5">
+                        <h5 class="modal-title" id="myModalLabel2"></h5>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-5">
+                        <select name="from[]" id="search" class="form-control" size="16" multiple="multiple"
+                                style="height: 280px; width: 220px; overflow: auto;"></select>
+                    </div>
+
+                    <div class="col-xs-2">
+                        <br>
+                        <button type="button" id="search_rightSelected" class="btn btn-block">
+                            <i class="glyphicon glyphicon-chevron-right"></i>
+                        </button>
+                        <br>
+                        <button type="button" id="search_rightAll" class="btn btn-block">
+                            <i class="glyphicon glyphicon-forward"></i>
+                        </button>
+                        <br> <br> <br>
+                        <button type="button" id="search_leftAll" class="btn btn-block">
+                            <i class="glyphicon glyphicon-backward"></i>
+                        </button>
+                        <br>
+                        <button type="button" id="search_leftSelected" class="btn btn-block">
+                            <i class="glyphicon glyphicon-chevron-left"></i>
+                        </button>
+                    </div>
+
+                    <div class="col-xs-5">
+                        <select name="to[]" id="search_to" class="form-control" size="16" multiple="multiple"
+                                style="height: 280px; width: 220px; overflow: auto;"></select>
+                    </div>
+                </div>
+
+            </div>
+            <div class="modal-footer">
+                <div style="float: left; margin-top: -10px; margin-bottom: -20px">
+                    <p id="searching"></p>
+                </div>
+                <div style="float: right; margin-top: -10px; margin-bottom: -20px">
+                    <div class="form-group form-inline">
+                        <input type="button" id=ensure class="form-control  btn btn-success" value="确定"/>
+                        <input type="button" id=cancle class="form-control  btn btn-info" data-dismiss="modal"
+                               value="取消"/>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!--多选弹出框结束-->
+<div class="bs-example form-bottom-style" data-example-id="striped-table">
+    <table id="strucIndexTable" class="table table-hover"></table>
+</div>
+
+<nav aria-label="...">
+    <ul class="pagination page-style" style="margin-top: 0px;margin-bottom: 20px" id="structureIndexDiv">
+        <li><a href="javascript:return false;" style="cursor: default">记录数：<span id="emTotalCnt">0</span> 条</a></li>
+        <li><a href="javascript:return false;" style="cursor: default">共 <span id="emTotalPageCnt">0</span> 页</a></li>
+        <li><a ondragstart="return false" href="javascript:void(0);" style="cursor: pointer"
+               onclick="showListViewByPage('first',sumbitCondition,'structureIndexForm','structureIndexDiv')">首页</a>
+        </li>
+
+        <li><a ondragstart="return false" href="javascript:void(0);" style="cursor: pointer"
+               onclick="showListViewByPage('back',sumbitCondition,'structureIndexForm','structureIndexDiv')"
+               aria-label="Previous">
+            <span aria-hidden="true">上一页</span></a></li>
+
+        <li><a disabled="true">第 <input type="text" id="showCurrentPage" class="paging_input_text form-control"
+                                        value="0"/> 页</a></li>
+        <li><a ondragstart="return false" href="javascript:void(0);" style="cursor: pointer"
+               onclick="showListViewByPage('num',sumbitCondition,'structureIndexForm','structureIndexDiv')">GO</a></li>
+
+        <li><a ondragstart="return false" href="javascript:void(0);" style="cursor: pointer"
+               onclick="showListViewByPage('next',sumbitCondition,'structureIndexForm','structureIndexDiv')"
+               aria-label="Next">
+            <span aria-hidden="true">下一页</span></a></li>
+
+        <li><a ondragstart="return false" href="javascript:void(0);" style="cursor: pointer"
+               onclick="showListViewByPage('last',sumbitCondition,'structureIndexForm','structureIndexDiv')">末页</a></li>
+    </ul>
+</nav>
+
+</body>
+</html>

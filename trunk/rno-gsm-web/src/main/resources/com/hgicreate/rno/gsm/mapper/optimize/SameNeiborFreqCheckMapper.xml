@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hgicreate.rno.gsm.mapper.optimize.SameNeiborFreqCheckMapper">
+    <select id="querySnf" parameterType="map" resultType="map">
+		select * from cdd_tongLinPinJianCha where 日期=${date}
+        <if test="bsc!=null">
+			   and BSC in 
+			   <foreach collection="bsc" item="bsc" index="index" open="(" close=")" separator=",">
+			      '${bsc}'
+			   </foreach>
+		</if>
+		<if test="cell!=null">
+			   and CELL in 
+			   <foreach collection="cell" item="cell" index="index" open="(" close=")" separator=",">
+			     '${cell}'
+			   </foreach>
+		</if>
+		order by CELL
+    </select>
+	
+	<select id="getCheckCellInfo" parameterType="map" resultType="map">
+	   select Distinct CELL,BSC from cdd_RLCFP_${date} where 1=1  
+	   <if test="bsc!=null">
+			   and BSC in 
+			   <foreach collection="bsc" item="bsc" index="index" open="(" close=")" separator=",">
+			      '${bsc}'
+			   </foreach>
+		</if>
+		<if test="cell!=null">
+			   and CELL in 
+			   <foreach collection="cell" item="cell" index="index" open="(" close=")" separator=",">
+			     '${cell}'
+			   </foreach>
+		</if>
+	</select>
+	
+	<select id="get3KMCell" parameterType="string" resultType="java.util.LinkedHashMap">
+	    select juLi.RCELL as CELLR,
+       juLi.RBSC as CELLR_BSC,
+       juLi.CELL,
+       juLi.BSC,
+       convert(decimal(18,2),111.12 *
+             ACOS((SIN(juLi.R纬度 * PI() / 180) *
+                  SIN(convert(float, juLi.纬度) * PI() / 180) +
+                  COS(juLi.R纬度 * PI() / 180) *
+                  COS(convert(float, juLi.纬度) * PI() / 180) *
+                  COS((convert(float, juLi.R经度) - juLi.经度) * PI() / 180))) * 180 / PI()) as 距离
+  from (select Distinct sts_GSM_CELL.经度,
+                        sts_GSM_CELL.纬度,
+                        cdd_RLCFP.cell   as CELL,
+                        cdd_RLCFP.bsc    as BSC,
+                        CELLR.CELL        AS RCELL,
+                        CELLR.BSC         AS RBSC,
+                        CELLR.经度        as R经度,
+                        CELLR.纬度        as R纬度
+          from cdd_RLCFP_${date} cdd_RLCFP,
+               sts_GSM_CELL,
+               (select Distinct cdd_RLCFP_${date}.CELL,
+                                cdd_RLCFP_${date}.BSC,
+                                sts_GSM_CELL.经度,
+                                sts_GSM_CELL.纬度
+                  from cdd_RLCFP_${date}, sts_GSM_CELL
+                 where cell != '${cell}'
+                   and sts_GSM_CELL.ObjectID = cdd_RLCFP_${date}.CELL) CELLR
+         where cdd_RLCFP.cell = '${cell}'
+            <if test="bsc!=null">
+			   and cdd_RLCFP.BSC in 
+			   <foreach collection="bsc" item="bsc" index="index" open="(" close=")" separator=",">
+			      '${bsc}'
+			   </foreach>
+		    </if> 
+           and sts_GSM_CELL.ObjectID = cdd_RLCFP.CELL) juLi
+ where 111.12 *
+       ACOS((SIN(juLi.R纬度 * PI() / 180) *
+            SIN(convert(float, juLi.纬度) * PI() / 180) +
+            COS(juLi.R纬度 * PI() / 180) *
+            COS(convert(float, juLi.纬度) * PI() / 180) *
+            COS((convert(float, juLi.R经度) - juLi.经度) * PI() / 180))) * 180 / PI() &lt; 3
+   and not (经度 = R经度 and 纬度 = R纬度)    
+	</select>
+	
+	<select id="getDchno" parameterType="string" resultType="string">
+	    select dchno from cdd_RLCFP_${date} where cell='${cell}'
+	</select>
+	
+</mapper>

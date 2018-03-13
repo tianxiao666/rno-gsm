@@ -1,0 +1,348 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hgicreate.rno.gsm.mapper.query.WorkOrderClosedCycleMapper">
+    <select id="selectWorkOrderCount" parameterType="map" resultType="long">
+        select count(*) from (
+        select a.*, COALESCE(r.handler,' ') as review处理人, COALESCE(r.treatment,' ') as review处理方法,
+        COALESCE(r.treat_result,' ') as 处理结果, COALESCE(r.handle_count,' ') as 处理次数,coalesce(r.status,' ') as 工单状态,
+        coalesce(r.administrator,' ') as 管理员
+        from (
+        <foreach collection="dates" separator="union" item="date">
+            select h.工单       as 工单,
+            h.日期                as 日期,
+            h.BSC                 as BSC,
+            h.CELL                as CELL,
+            COALESCE(h.中文名,' ')        as 中文名,
+            COALESCE(h.县区 ,' ')             as 县区,
+            COALESCE(h.代维,' ') as 代维,
+            COALESCE(h.覆盖场景,' ')      as 覆盖场景,
+            COALESCE(h.是否VIP小区,' ')         as 是否VIP小区,
+            h.指标名          as 指标名,
+            h.指标值           as 指标值,
+            h.当天出现的次数           as 当天出现的次数,
+            COALESCE(h.处理人,' ')             as 处理人,
+            COALESCE(h.处理方法,' ')           as 处理方法
+            from sts_gongDanChuLi_${date} h
+        </foreach>
+        )a
+        left join rno_gsm_work_order_review r
+        on r.work_order_id = a.工单
+        where 1=1
+        <if test="maintains !=null">
+            and a.代维 IN
+            <foreach collection="maintains" item="maintain" open="(" close=")" separator=",">
+                '${maintain}'
+            </foreach>
+        </if>
+        <if test="indicators !=null">
+            and a.指标名 IN
+            <foreach collection="indicators" item="indicator" open="(" close=")" separator=",">
+                '${indicator}'
+            </foreach>
+        </if>
+        <if test="cells !=null">
+            and a.CELL in
+            <foreach collection="cells" item="cell" open="(" close=")" separator=",">
+                '${cell}'
+            </foreach>
+        </if>
+        <if test="order !=null">
+            and a.工单='${order}'
+        </if>
+        <if test="statuses !=null">
+            and (r.status IN
+            <foreach collection="statuses" item="status" open="(" close=")" separator=",">
+                '${status}'
+            </foreach>
+            <if test="stat!=null">
+                or r.status is null
+            </if>)
+        </if>
+
+        ) as work
+    </select>
+    <select id="selectWorkOrderAdmin" parameterType="map" resultType="java.util.LinkedHashMap">
+        select a.*, COALESCE(r.handler,' ') as 处理人, COALESCE(r.treatment,' ') as 处理方法,
+        COALESCE(r.treat_result,' ') as 处理结果, COALESCE(r.handle_count,' ') as 退单次数,coalesce(r.status,' ') as 工单状态,
+        coalesce(r.administrator,' ') as 管理员
+        from(
+        <foreach collection="dates" separator="union" item="date">
+            select h.工单       as 工单,
+            h.日期                as 日期,
+            h.BSC                 as BSC,
+            h.CELL                as CELL,
+            COALESCE(h.中文名,' ')        as 中文名,
+            COALESCE(h.县区 ,' ')             as 县区,
+            COALESCE(h.代维,' ') as 代维,
+            COALESCE(h.覆盖场景,' ')      as 覆盖场景,
+            COALESCE(h.是否VIP小区,' ')         as 是否VIP小区,
+            h.指标名          as 指标名,
+            h.指标值           as 指标值,
+            h.当天出现的次数           as 当天出现的次数
+            from sts_gongDanChuLi_${date} h
+        </foreach>
+        )a
+        left join rno_gsm_work_order_review r
+        on r.work_order_id = a.工单
+        where 1=1
+        <if test="maintains !=null">
+            and a.代维 IN
+            <foreach collection="maintains" item="maintain" open="(" close=")" separator=",">
+                '${maintain}'
+            </foreach>
+        </if>
+        <if test="indicators !=null">
+            and a.指标名 IN
+            <foreach collection="indicators" item="indicator" open="(" close=")" separator=",">
+                '${indicator}'
+            </foreach>
+        </if>
+        <if test="cells !=null">
+            and a.CELL in
+            <foreach collection="cells" item="cell" open="(" close=")" separator=",">
+                '${cell}'
+            </foreach>
+        </if>
+        <if test="order !=null">
+            and a.工单='${order}'
+        </if>
+        <if test="statuses !=null">
+            and (r.status IN
+            <foreach collection="statuses" item="status" open="(" close=")" separator=",">
+                '${status}'
+            </foreach>
+            <if test="stat!=null">
+                or r.status is null
+            </if>)
+        </if>
+
+        order by 处理人
+    </select>
+    <select id="selectWorkOrderUser" parameterType="map" resultType="java.util.LinkedHashMap">
+        select a.*, COALESCE(r.handler,' ') as 处理人, COALESCE(r.treatment,' ') as 处理方法,
+        COALESCE(r.treat_result,' ') as 处理结果,
+        coalesce(r.administrator,' ') as 管理员
+        from(
+        <foreach collection="dates" separator="union" item="date">
+            select h.工单       as 工单,
+            h.日期                as 日期,
+            h.BSC                 as BSC,
+            h.CELL                as CELL,
+            COALESCE(h.中文名,' ')        as 中文名,
+            COALESCE(h.县区 ,' ')             as 县区,
+            COALESCE(h.代维,' ') as 代维,
+            COALESCE(h.覆盖场景,' ')      as 覆盖场景,
+            COALESCE(h.是否VIP小区,' ')         as 是否VIP小区,
+            h.指标名          as 指标名,
+            h.指标值           as 指标值,
+            h.当天出现的次数           as 当天出现的次数
+            from sts_gongDanChuLi_${date} h
+        </foreach>
+        )a
+        left join rno_gsm_work_order_review r
+        on r.work_order_id = a.工单
+        where 1=1
+        <if test="maintains !=null">
+            and a.代维 IN
+            <foreach collection="maintains" item="maintain" open="(" close=")" separator=",">
+                '${maintain}'
+            </foreach>
+        </if>
+        <if test="indicators !=null">
+            and a.指标名 IN
+            <foreach collection="indicators" item="indicator" open="(" close=")" separator=",">
+                '${indicator}'
+            </foreach>
+        </if>
+        <if test="cells !=null">
+            and a.CELL in
+            <foreach collection="cells" item="cell" open="(" close=")" separator=",">
+                '${cell}'
+            </foreach>
+        </if>
+        <if test="order !=null">
+            and a.工单='${order}'
+        </if>
+        <if test="statuses !=null">
+            and (r.status IN
+            <foreach collection="statuses" item="status" open="(" close=")" separator=",">
+                '${status}'
+            </foreach>
+            <if test="stat!=null">
+                or r.status is null
+            </if>)
+        </if>
+        order by 指标名
+    </select>
+    <select id="selectWorkOrderByPage" parameterType="map" resultType="java.util.LinkedHashMap">
+        select top ${cnt} 工单,日期,BSC,CELL,中文名,县区,代维,覆盖场景,是否VIP小区,指标名,
+        指标值,当天出现的次数,review处理人,review处理方法,处理人,处理方法,处理结果,处理次数,工单状态,管理员
+        from (select row_number() over(order by A.日期 desc) as rownumber,*
+              from (
+        select a.*, COALESCE(r.handler,' ') as review处理人, COALESCE(r.treatment,' ') as review处理方法,
+        COALESCE(r.treat_result,' ') as 处理结果, COALESCE(r.handle_count,' ') as 处理次数,coalesce(r.status,' ') as 工单状态,
+        coalesce(r.administrator,' ') as 管理员
+        from(
+        <foreach collection="dates" separator="union" item="date">
+            select h.工单       as 工单,
+            h.日期                as 日期,
+            h.BSC                 as BSC,
+            h.CELL                as CELL,
+            COALESCE(h.中文名,' ')        as 中文名,
+            COALESCE(h.县区 ,' ')             as 县区,
+            COALESCE(h.代维,' ') as 代维,
+            COALESCE(h.覆盖场景,' ')      as 覆盖场景,
+            COALESCE(h.是否VIP小区,' ')         as 是否VIP小区,
+            h.指标名          as 指标名,
+            h.指标值           as 指标值,
+            h.当天出现的次数           as 当天出现的次数,
+            COALESCE(h.处理人,' ')             as 处理人,
+            COALESCE(h.处理方法,' ')           as 处理方法
+            from sts_gongDanChuLi_${date} h
+        </foreach>
+        )a
+        left join rno_gsm_work_order_review r
+        on r.work_order_id = a.工单
+        where 1=1
+        <if test="maintains !=null">
+            and a.代维 IN
+            <foreach collection="maintains" item="maintain" open="(" close=")" separator=",">
+                '${maintain}'
+            </foreach>
+        </if>
+        <if test="indicators !=null">
+            and a.指标名 IN
+            <foreach collection="indicators" item="indicator" open="(" close=")" separator=",">
+                '${indicator}'
+            </foreach>
+        </if>
+        <if test="cells !=null">
+            and a.CELL in
+            <foreach collection="cells" item="cell" open="(" close=")" separator=",">
+                '${cell}'
+            </foreach>
+        </if>
+        <if test="order !=null">
+            and a.工单='${order}'
+        </if>
+        <if test="statuses !=null">
+            and (r.status IN
+            <foreach collection="statuses" item="status" open="(" close=")" separator=",">
+                '${status}'
+            </foreach>
+            <if test="stat!=null">
+                or r.status is null
+            </if>)
+        </if>
+                   ) A) B
+        where B.rownumber &gt;${startIndex}
+    </select>
+    <update id="updateWorkOrderReview" parameterType="string">
+        update rno_gsm_work_order_review set
+            <if test="handler !=null">
+                handler='${handler}',
+            </if>
+            <if test="handleMethod !=null">
+                treatment='${handleMethod}',
+            </if>
+            <if test="handleResult !=null">
+                treat_result='${handleResult}',
+            </if>
+            <if test="status !=null">
+                status='${status}',
+            </if>
+            <if test="admin !=null">
+                administrator='${admin}',
+            </if>
+            handle_count='${handleCount}'
+        where work_order_id='${order}'
+    </update>
+    <update id="updateWorkOrderDate" parameterType="string">
+        UPDATE sts_gongDanChuLi_${date} set 处理人='${handler}',处理方法='${handleMethod}'
+        where 工单='${order}'
+    </update>
+    <insert id="insertWorkOrderReview" parameterType="string">
+        insert into rno_gsm_work_order_review (work_order_id,handler,treatment,treat_result,handle_count,status,administrator)
+        VALUES ('${order}','${handler}','${handleMethod}','${handleResult}','${handleCount}','${status}','${admin}')
+    </insert>
+    <update id="updateHangUpWorkOrder" parameterType="string">
+        update rno_gsm_work_order_review set
+        handler='${handler}',treatment='${handleMethod}',treat_result='${handleResult}',status='${status}',administrator='${admin}'
+        where work_order_id='${order}'
+    </update>
+    <insert id="insertHangUpWorkOrder" parameterType="string">
+        insert into rno_gsm_work_order_review (work_order_id,handler,treatment,treat_result,status,administrator)
+        VALUES ('${order}','${handler}','${handleMethod}','${handleResult}','${status}','${admin}')
+    </insert>
+    <select id="existWorkOrderTable" parameterType="string" resultType="String">
+        select name
+        from sysobjects
+        where name='sts_gongDanChuLi_'+'${date}'
+    </select>
+    <select id="statisticCount" parameterType="map" resultType="long">
+        select count(*) from (
+            select work_order_id from rno_gsm_work_order_review r
+                where r.work_order_id in
+        (<foreach collection="dates" item="date" separator="union">
+              select 工单 from sts_gongDanChuLi_${date} s
+            <if test="indicator !=null">
+              where s.指标名='${indicator}'
+            </if>
+        </foreach>)
+        <if test="status !=null">
+            and r.status='${status}'
+        </if>
+            ) as cn
+    </select>
+    <select id="selectIndicator" parameterType="string" resultType="string">
+        select DISTINCT 指标名 from sts_gongDanChuLi_${date}
+    </select>
+    <select id="selectIndicators" parameterType="map" resultType="string">
+        <foreach collection="dates" item="date" separator="union">
+            select DISTINCT 指标名 from sts_gongDanChuLi_${date}
+        </foreach>
+    </select>
+    <select id="selectTop5Cell" parameterType="map" resultType="string">
+        <foreach collection="dates" item="date" separator="union">
+            select top 5 CELL from sts_gongDanChuLi_${date}
+        </foreach>
+    </select>
+    <select id="selectWorkOrderIds" parameterType="map" resultType="string">
+        <foreach collection="dates" item="date" separator="union">
+        select 工单 from sts_gongDanChuLi_${date}
+        </foreach>
+    </select>
+    <update id="updateOverTime" parameterType="map">
+        update rno_gsm_work_order_review set status='超时' where work_order_id in (
+        <foreach collection="dates" item="date" separator="union">
+            select 工单 from sts_gongDanChuLi_${date} where 1=1 and
+            cast(datediff(DD,convert(date,日期),convert(date,convert(varchar(12),getdate(),112) ) ) as int)-1 <![CDATA[ > ]]> 0
+        </foreach>
+        ) and (treat_result ='待处理' or treat_result is NULL)
+    </update>
+    <insert id="insertWorkOrder" parameterType="map">
+        insert into rno_gsm_work_order_review (work_order_id)
+        <foreach collection="dates" item="date" separator="union">
+            select DISTINCT 工单 from sts_gongDanChuLi_${date}
+            where 工单 not in (select work_order_id from rno_gsm_work_order_review)
+        </foreach>
+
+    </insert>
+    <update id="updateWorkOrderStatusById" parameterType="string">
+        update rno_gsm_work_order_review set status='${status}',handler='${handler}'  where work_order_id='${order}'
+    </update>
+    <update id="giveBackOrder" parameterType="string">
+        update rno_gsm_work_order_review set status='${status}',handler='${handler}',handle_count='${handleCount}'  where work_order_id='${order}'
+    </update>
+    <update id="updateWorkOrderHandler" parameterType="map">
+        UPDATE rno_gsm_work_order_review set handler='${handler}' where work_order_id IN
+        (
+        <foreach collection="dates" item="date" separator="union">
+        select 工单 from sts_gongDanChuLi_${date} where 代维 ='${maintain}'
+        </foreach>
+        )
+    </update>
+</mapper>

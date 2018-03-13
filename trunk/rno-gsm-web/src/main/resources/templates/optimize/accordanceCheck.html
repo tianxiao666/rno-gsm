@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="base :: common_header(~{::title},~{::link},~{::meta},~{::script})">
+    <title>一致性检查</title>
+    <!--自定义-->
+    <script src="/static/js/common.js" th:src="@{/js/common.js}"></script>
+    <script src="/static/js/optimize/accordanceCheck.js" th:src="@{/js/optimize/accordanceCheck.js}"></script>
+    <link>
+</head>
+<body>
+<div id="loading" class="loading" style="display:none">加载中...</div>
+<div id="info" class="info-style" style="display:none;width:250px"></div>
+<div class="bs-callout bs-callout-danger" id="callout-tables-striped-ie8">
+    <form id="accordanceForm"  action="exportAccordanceCheck" method="post">
+        <!--/*@thymesVar id="linage" type="java"*/-->
+        <input type="hidden" id="linage" name="linage" th:value="${linage}"/>
+
+        <table>
+            <tr>
+                <td class="td-style td-space">
+                    <label class="label-style" for="dateSelect">日期<font class="star-style"> *</font>：</label>
+                    <select class="form-control" id="dateSelect" name="dateSelect"
+                            style="width: 150px; display: inline-block">
+                        <option value="-1"></option>
+
+                        <!--/*@thymesVar id="dates" type="java"*/-->
+                        <option th:each="oneDate:${dates}" th:value="${oneDate}" th:text="${oneDate}"></option>
+                    </select>
+                    <input type="hidden" id="saveDate"/>
+                </td>
+                <td class="td-style">
+                    <label class="label-style" style="width:100px" for="conditionSelect">检查选项<font class="star-style">
+                        *</font>：</label>
+                    <select class="form-control" id="conditionSelect" name="conditionSelect"
+                            style="width: 150px; display: inline-block">
+                        <option value="-1"></option>
+                        <option >CB=YES</option>
+                        <option >ECSC=NO</option>
+                        <option >GPRSSUP=NO</option>
+                        <option  >内外局异常</option>
+                        <option >TX定义异常</option>
+                        <option >TRX定义异常</option>
+                        <option >传输定义异常</option>
+                        <option >BA表 >= 26 和 <= 3</option>
+                        <option  >邻区 >=26 和 <=3</option>
+                        <option >测量频点漏定义</option>
+                        <option >跳频与CDU不匹配</option>
+                        <option >BSPWRT不等于BSPWRB</option>
+                    </select>
+                    <input type="hidden" id="saveCond"/>
+                </td>
+                <td class="td-style td-space">
+                    <button type="button" id="conditionBtn" class="btn btn-default" data-toggle="modal"
+                            data-target="#myModal">
+                        <i class="glyphicon glyphicon-forward"></i>
+                    </button>
+                </td>
+                <td class="td-style">
+                    <button type="button" id="searchBtn" class="btn-width btn btn-default">查询</button>
+                    <button type="button" id="calculateBtn" class="btn-width btn btn-default">计算</button>
+                    <button type="button" id="exportBtn" class="btn-width btn btn-default">导出</button>
+                </td>
+            <tr>
+
+        </table>
+        <input type="hidden" name="exportCond" id="exportCond">
+    </form>
+</div>
+<!--多选弹出框开始-->
+<div class="row style-select modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+     aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title" id="myModalLabel"></h4>
+            </div>
+            <div class="modal-body" style="margin-top: 1px">
+                <div class="row">
+                    <div class="col-xs-5">
+                        <h5 class="modal-title" id="myModalLabel1"></h5>
+                    </div>
+                    <div class="col-xs-2"></div>
+                    <div class="col-xs-5">
+                        <h5 class="modal-title" id="myModalLabel2"></h5>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-5">
+                        <select name="from[]" id="search" class="form-control" size="16" multiple="multiple"
+                                style="height: 280px; width: 220px; overflow: auto;"></select>
+                    </div>
+
+                    <div class="col-xs-2">
+                        <br>
+                        <button type="button" id="search_rightSelected" class="btn btn-block">
+                            <i class="glyphicon glyphicon-chevron-right"></i>
+                        </button>
+                        <br>
+                        <button type="button" id="search_rightAll" class="btn btn-block">
+                            <i class="glyphicon glyphicon-forward"></i>
+                        </button>
+                        <br> <br> <br>
+                        <button type="button" id="search_leftAll" class="btn btn-block">
+                            <i class="glyphicon glyphicon-backward"></i>
+                        </button>
+                        <br>
+                        <button type="button" id="search_leftSelected" class="btn btn-block">
+                            <i class="glyphicon glyphicon-chevron-left"></i>
+                        </button>
+                    </div>
+
+                    <div class="col-xs-5">
+                        <select name="to[]" id="search_to" class="form-control" size="16" multiple="multiple"
+                                style="height: 280px; width: 220px; overflow: auto;"></select>
+                    </div>
+                </div>
+
+            </div>
+            <div class="modal-footer">
+                <div style="float: left; margin-top: -10px; margin-bottom: -20px">
+                    <p id="searching"></p>
+                </div>
+                <div style="float: right; margin-top: -10px; margin-bottom: -20px">
+                    <div class="form-group form-inline">
+                        <input type="button" id=ensure class="form-control  btn btn-success" value="确定"/>
+                        <input type="button" id=cancle class="form-control  btn btn-info" data-dismiss="modal"
+                               value="取消"/>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!--多选弹出框结束-->
+<!--多个表格一同展示开始-->
+<div class="span12" id="frame">
+    <div class="tabbable" id="tabs">
+        <ul class="nav nav-tabs" style="margin-top: -15px" id="ul-tab">
+
+        </ul>
+        <div class="tab-content">
+
+        </div>
+    </div>
+</div>
+<!--多个表格一同展示结束-->
+
+
+</body>
+</html>

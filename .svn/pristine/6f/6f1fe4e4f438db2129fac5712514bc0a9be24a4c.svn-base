@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head  th:replace="base :: common_header(~{::title},~{::link},~{::meta},~{::script})">
+    <title>用户管理</title>
+    <!-- lib -->
+    <script src="/static/lib/md5/md5.min.js" th:src="@{/lib/md5/md5.min.js}"></script>
+    <!-- custom -->
+    <script src="/static/js/common.js" th:src="@{/js/common.js}"></script>
+    <script src="/static/js/usermanage/userManager.js" th:src="@{/js/usermanage/userManager.js}"></script>
+    <link>
+</head>
+<body>
+
+<div id="loading" class="loading" style="display:none">加载中...</div>
+<div id="info" class="info-style" style="display:none;height: auto;line-height: 50px"></div>
+<div>
+    <div class="bs-callout bs-callout-danger" id="callout-tables-striped-ie8">
+        <form id="userForm">
+        <table>
+            <tr> <input type="hidden" id="linage" name="linage" th:value="${linage}"/>
+                    <input type="hidden" id="hiddenPageSize" name="hiddenPageSize" value="25"/>
+                    <input type="hidden" id="hiddenCurrentPage" name="hiddenCurrentPage" value="1"/>
+                    <input type="hidden" id="hiddenTotalPageCnt" name="hiddenTotalPageCnt" />
+                    <input type="hidden" id="hiddenTotalCnt" name="hiddenTotalCnt"/>
+                <td class="td-style td-space form-inline">
+                    <label class="label-style" >中文名：</label>
+                    <input type="text" class="form-control" name="chineseName" id="searchByChineseName" placeholder="请输入中文名" onblur="replaceSpace(this)"/>
+                </td>
+                <td class="td-style td-space">
+                    <button type="button" id="searchBtn" class="btn btn-default btn-width">查询</button>
+                </td>
+
+                <td class="td-style">
+                    <a class="btn btn-success" data-toggle="modal" data-target="#newUserModal">
+                        <i class="fa fa-user-plus" aria-hidden="true"></i> 新增用户
+                    </a>
+                </td>
+            </tr>
+        </table>
+        </form>
+    </div>
+    <div class="bs-example form-bottom-style" data-example-id="striped-table">
+    <table class="table table-hover table-striped" id="userTable">
+        <thead>
+        <tr>
+            <th>用户名</th>
+            <th>中文名</th>
+            <th>邮箱</th>
+            <th>负责区域</th>
+            <th>所属代维</th>
+            <th>是否激活</th>
+            <th>创建时间</th>
+            <th>更新时间</th>
+            <th>权限角色</th>
+            <th>操作</th>
+        </tr>
+        </thead>
+        <tbody id="userTbody">
+        <!--/*@thymesVar id="user" type="java.lang.Object"*/-->
+        <tr th:each="user:${users}">
+            <td><span th:text="${user.username}" id="name">rnodev</span></td>
+            <td><span th:text="${user.chineseName}" id="chinese">湛江移动网优</span></td>
+            <td><span th:text="${user.email}" id="ema">rnodev@qq.com</span></td>
+            <td><span th:text="${user.district}" id="dist">湛江</span></td>
+            <td><span th:text="${user.unit}" id="maintain">鼎力</span></td>
+            <td><span th:text="*{user.enabled == 1}?'是':'否'" id="enable" value="1">是</span></td>
+            <td><span th:text="${#dates.format(user.createTime, 'yyyy-MM-dd HH:mm')}" id="createDate"></span></td>
+            <td><span th:text="${#dates.format(user.updateTime, 'yyyy-MM-dd HH:mm')}" id="updateDate"></span></td>
+            <td><span th:text="*{user.auth.authority=='ROLE_ADMIN'}?'系统管理员':'普通用户'" id="autho">普通用户</span></td>
+            <td>
+                <button class="btn btn-info btn-sm btn-width" data-toggle="modal" data-target="#updateUserModal" th:value="${user.id}">修改</button>
+                &nbsp;&nbsp;
+                <button class="btn btn-danger btn-sm btn-width" th:value="'{id:' + ${user.id} + ',name:\'' + ${user.username} + '\'}'">删除</button>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+    </div>
+    <nav aria-label="...">
+        <ul class="pagination page-style" style="margin-top: 0px;margin-bottom: 20px" id="userDiv">
+            <li><a href="javascript:return false;" style="cursor: default">记录数：
+                <span id="emTotalCnt" th:text="${page.totalCnt}">0</span> 条</a></li>
+            <li><a href="javascript:return false;" style="cursor: default">共
+                <span id="emTotalPageCnt"  th:text="${page.totalPageCnt}">0</span> 页</a></li>
+            <li><a ondragstart="return false" href="javascript:void(0);" style="cursor: pointer"
+                   onclick="showListViewByPage('first',submitCondition,'userForm','userDiv')">首页</a></li>
+
+            <li><a ondragstart="return false" href="javascript:void(0);" style="cursor: pointer"
+                   onclick="showListViewByPage('back',submitCondition,'userForm','userDiv')" aria-label="Previous">
+                <span aria-hidden="true">上一页</span></a></li>
+
+            <li><a disabled="true">第 <input type="text" id="showCurrentPage" class="paging_input_text form-control"
+                                            value="0" th:value="${page.currentPage}"/> 页</a></li>
+            <li><a ondragstart="return false" href="javascript:void(0);" style="cursor: pointer"
+                   onclick="showListViewByPage('num',submitCondition,'userForm','userDiv')">GO</a></li>
+
+            <li><a ondragstart="return false" href="javascript:void(0);" style="cursor: pointer"
+                   onclick="showListViewByPage('next',submitCondition,'userForm','userDiv')" aria-label="Next">
+                <span aria-hidden="true">下一页</span></a></li>
+
+            <li><a ondragstart="return false" href="javascript:void(0);" style="cursor: pointer"
+                   onclick="showListViewByPage('last',submitCondition,'userForm','userDiv')">末页</a></li>
+        </ul>
+    </nav>
+</div>
+
+<!-- 新增用户 Modal -->
+<div class="modal fade" id="newUserModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">新用户</h4>
+            </div>
+            <form role="form" id="newUserForm">
+                <div class="modal-body">
+                    <div class="form-group input-group">
+                        <span class="input-group-addon" style="width: 94px">用户名：</span>
+                        <input type="text" class="form-control" style="width: 473px" placeholder="用户名（必填项）" name="username">
+                    </div>
+                    <div class="form-group input-group">
+                        <span class="input-group-addon" style="width: 94px">密码：</span>
+                        <input type="text" class="form-control" style="width: 473px;" placeholder="密码（必填项）" name="password">
+                    </div>
+                    <div class="form-group input-group">
+                        <span class="input-group-addon" style="width: 94px">中文名：</span>
+                        <input type="text" class="form-control" style="width: 473px" placeholder="用户中文全名（必填项）" name="chineseName">
+                    </div>
+                    <div class="form-group input-group">
+                        <span class="input-group-addon" style="width: 94px">邮箱：</span>
+                        <input type="text" class="form-control"  style="width:473px;" placeholder="邮件地址（可选项）" name="email">
+                    </div>
+                    <div class="form-group input-group">
+                        <span class="input-group-addon">负责区域：</span>
+                        <input type="text" class="form-control" placeholder="负责区域（必填项）,多个用“,”隔开" name="district">
+                    </div>
+                    <div class="form-group input-group">
+                        <span class="input-group-addon">所属代维：</span>
+                        <input type="text" class="form-control" placeholder="所属代维（必填项）" name="unit">
+                    </div>
+                    <div class="form-group input-group">
+                        <span class="input-group-addon">是否激活：</span>
+                        <select class="form-control" name="enabled">
+                            <option value="1">是</option>
+                            <option value="0">否</option>
+                        </select>
+                    </div>
+                    <div class="form-group input-group">
+                        <span class="input-group-addon">权限角色：</span>
+                        <select class="form-control" name="authority">
+                            <option value="ROLE_USER">普通用户</option>
+                            <option value="ROLE_ADMIN">系统管理员</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">&nbsp;取消&nbsp;</button>
+                    <button type="button" class="btn btn-primary" id="newUserBtn">&nbsp;保存&nbsp; </button>
+                </div>
+            </form>
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div>
+<!-- /.modal -->
+
+<!-- 修改用户 Modal -->
+<div class="modal fade" id="updateUserModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">修改用户</h4>
+            </div>
+            <form role="form" id="updateForm">
+                <div class="modal-body">
+                    <div class="form-group input-group">
+                        <span class="input-group-addon" style="width: 95px">用户：</span>
+                        <input type="text" class="form-control" style="width: 473px" id="updateUsername" disabled>
+                    </div>
+                    <div class="form-group input-group">
+                        <span class="input-group-addon" style="width: 95px">密码：</span>
+                        <input type="text" class="form-control" id="updatePassword" style="width:473px;" placeholder="留空表示不修改原密码。">
+                    </div>
+                    <div class="form-group input-group">
+                        <span class="input-group-addon" style="width: 95px">中文名：</span>
+                        <input type="text" class="form-control" id="updateChineseName" style="width: 473px" placeholder="用户中文全名（必填项）">
+                    </div>
+                    <div class="form-group input-group">
+                        <span class="input-group-addon" style="width: 95px">邮箱：</span>
+                        <input type="text" class="form-control" id="updateEmail" style="width: 473px" placeholder="邮件地址（可选项）">
+                    </div>
+                    <div class="form-group input-group">
+                        <span class="input-group-addon">负责区域：</span>
+                        <input type="text" class="form-control" id="updateDistrict" placeholder="负责区域（必填项），多个用“,”隔开">
+                    </div>
+                    <div class="form-group input-group">
+                        <span class="input-group-addon">所属代维：</span>
+                        <input type="text" class="form-control" placeholder="所属代维（必填项）" id="updateUnit">
+                    </div>
+                    <div class="form-group input-group">
+                        <span class="input-group-addon">是否激活：</span>
+                        <select class="form-control" id="updateEnabled">
+                            <option value="1">是</option>
+                            <option value="0">否</option>
+                        </select>
+                    </div>
+                    <div class="form-group input-group">
+                        <span class="input-group-addon">权限角色：</span>
+                        <select class="form-control" id="updateRole">
+                            <option value="ROLE_USER">普通用户</option>
+                            <option value="ROLE_ADMIN">系统管理员</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">&nbsp;取消&nbsp;</button>
+                    <button type="button" class="btn btn-primary" id="updateBtn">&nbsp;更新&nbsp; </button>
+                </div>
+            </form>
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div>
+<!-- /.modal -->
+<input type="hidden" id="newUserId">
+<input type="hidden" id="updateUserId">
+</body>
+</html>

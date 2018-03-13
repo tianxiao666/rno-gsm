@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <!-- Required meta tags-->
+    <meta charset="utf-8"/>
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui"/>
+    <meta name="apple-mobile-web-app-capable" content="yes"/>
+    <meta name="apple-mobile-web-app-status-bar-style" content="black"/>
+    <meta name="mobile-web-app-capable" content="yes"/>
+
+    <!-- Your app title -->
+    <title>登录</title>
+    <link rel="stylesheet" th:href="@{/webjars/bootstrap/css/bootstrap.min.css}"/>
+    <!-- Path to Framework7 iOS CSS theme styles-->
+    <link rel="stylesheet" th:href="@{/lib/framework7-1.5.4/css/framework7.ios.min.css}"/>
+    <!-- Path to Framework7 iOS related color styles -->
+    <link rel="stylesheet" th:href="@{/lib/framework7-1.5.4/css/framework7.ios.colors.min.css}"/>
+    <!-- Path to your custom app styles-->
+    <!--<link rel="stylesheet" th:href="@{/css/mobile.css}">-->
+    <link rel="stylesheet" th:href="@{/css/my-app.css}"/>
+    <link rel="apple-touch-icon-precomposed" th:href="@{/img/timg.jpg}"/>
+</head>
+<body>
+<!-- Views -->
+<div class="views">
+    <!-- Your main view, should have "view-main" class -->
+    <div class="view view-main">
+        <div class="page">
+            <!-- Pages container, because we use fixed-through navbar and toolbar, it has additional appropriate classes-->
+            <div class="pages">
+                <div class="page" >
+                    <!--background: linear-gradient(30deg, #66B3FF 10%,#0066CC,#66B3FF);-->
+                    <div class="page-content" style="background-image: url(/img/login-bg.jpg);background-size: 100% 100%;">
+                        <form role="form" action="/login" th:action="@{/login}" method="post" id="loginForm" style="min-width: 200px;width:80%; margin:30% auto 0;vertical-align: middle;">
+                            <div style="width:275px;margin:50px auto;">
+                                <span style="font-family: 微软雅黑;font-size:3em;color: #ffffff">&nbsp;</span><!--此处在不使用bg图片资源时是标题-->
+                            </div>
+                            <!--boostrap风格账号密码--开始-->
+                            <div>
+                                <div class="input-group" style="height: 20px;">
+                                    <span class="input-group-addon"><i class="glyphicon glyphicon-user"></i></span>
+                                    <input type="text" id="username" name="username" imeMode='inactive' class="form-control" placeholder="账号" required >
+                                </div>
+
+                                <div class="input-group" style="margin-top: 15px;">
+                                    <span class="input-group-addon" ><i class="glyphicon glyphicon-lock"></i></span>
+                                    <input type="password" id="password" name="password" imeMode='inactive' class="form-control" placeholder="密码" required>
+                                    <span id="btn_PassWord_Seeable" class="input-group-addon" ><i id="Password_Seeable_Icon" class="glyphicon glyphicon-eye-close"></i></span>
+                                </div>
+                            </div>
+                            <!--boostrap风格账号密码--结束-->
+                            <!--记住我开始-->
+                            <div class="input-group" id="RememberMe" style="margin-top: 10px;width: 100%;float:left;">
+                                <label class="label-checkbox item-content" style="float:left;">
+                                    <!-- Checked by default -->
+                                    <input type="checkbox" id="RememberMeCheckBox"  value="Remember" checked="checked">
+                                    <div class="item-media" style="float:left;vertical-align: middle;border-radius:20px;background: #fff;">
+                                        <i class="icon icon-form-checkbox" ></i>
+                                    </div>
+                                    <div class="item-inner" style="float: left;margin-left: 5px;margin-top:2px;vertical-align: middle;">
+                                        <div class="item-title" style="color: #fff;" >记住我</div>
+                                    </div>
+                                </label>
+                                <div style="float:right;">
+                                    <span id="LoginStatusTip" style="color:#ffff37;visibility: hidden;">账号密码错误</span>
+                                </div>
+                            </div><!-- 记住我结束 -->
+
+                        </form>
+                        <div class="row" style="min-width: 200px;width:80% ;margin: 0 auto;">
+                            <div class="col-md-6" style="padding: 0;">
+                                <img id="imgVerifyCode" alt="验证码" style="height: 50px;" onclick = "this.src='/defaultKaptcha?d='+new Date()*1" src="/defaultKaptcha" height="40px" />
+                            </div>
+                            <form class="col-md-6" method="get" id="verifyCodeForm" style="padding:0;" >
+                                <input type="text" class="form-control" style="width:120px;height: 50px" placeholder="输入验证码" id="vrifyCode" name="vrifyCode" />
+                            </form>
+                        </div>
+                        <div style="margin:15px 0;width: 80%;padding: 0;clear:both;margin: 20px auto 0;">
+                            <button type="submit" id="submitBtn" class="button button-big button-fill color-green" style="width: 100%;">登录</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Path to Framework7 Library JS-->
+<script type="text/javascript" th:src="@{/lib/framework7-1.5.4/js/framework7.min.js}"></script>
+<!-- Path to your app js-->
+<script type="text/javascript" th:src="@{/js/login.js}"></script>
+</body>
+</html>

@@ -1,0 +1,3595 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hgicreate.rno.gsm.mapper.query.TrafficQueryMapper">
+	<select id="getIndexByTemplate" parameterType="string"
+		resultType="string">
+		select 指标 from moBan_${template}
+	</select>
+
+	<select id="showTrafficTemplateTab" parameterType="map"
+		resultType="java.util.LinkedHashMap">
+		SET ANSI_WARNINGS off SET ARITHABORT off SET ARITHIGNORE on
+		<foreach collection="date" item="date" separator="union all">
+			select
+			<choose>
+				<when test="index!=null">
+					<trim prefix="" suffixOverrides=",">
+						<if test="index.contains('日期')">
+							CLTCH.Date as '日期',
+						</if>
+						<if test="index.contains('时间')">
+							CLTCH.Time as '时间',
+						</if>
+						<if test="index.contains('BSC')">
+							CLTCH.BSC as 'BSC',
+						</if>
+						<if test="index.contains('CELL')">
+							CLTCH.ObjectID as 'CELL',
+						</if>
+						<if test="index.contains('中文名')">
+							isnull(GSM_CELL.中文名,'') as '中文名',
+						</if>
+						<if test="index.contains('县区')">
+							isnull(GSM_CELL.县区,'') as '县区',
+						</if>
+						<if test="index.contains('代维')">
+							isnull(GSM_CELL.代维,'') as '代维',
+						</if>
+						<if test="index.contains('载波数')">
+							convert(decimal(18,0),(18 * CLTCH.TNUCHCNT + 9 +
+							CLSDCCH.CNUCHCNT) / 64) as '载波数',
+						</if>
+						<if test="index.contains('定义信道')">
+							CLTCH.TNUCHCNT as '定义信道',
+						</if>
+						<if test="index.contains('可用信道')">
+							convert(decimal(18,0),CLTCH.TAVAACC / (CLTCH.TAVASCAN
+							+
+							0.00001)) as '可用信道',
+						</if>
+						<if test="index.contains('T完好率')">
+							convert(decimal(18,2),100 * CLTCH.TAVAACC /
+							(CLTCH.TAVASCAN * CLTCH.TNUCHCNT)) as 'T完好率',
+						</if>
+						<if test="index.contains('总话务量')">
+							convert(decimal(18,2),(CELTCHF.TFTRALACC +
+							CELTCHH.THTRALACC) / CELTCHH.THNSCAN) as '总话务量',
+						</if>
+						<if test="index.contains('每线话务')">
+							convert(decimal(18,2),(CELTCHF.TFTRALACC +
+							CELTCHH.THTRALACC) /
+							(CELTCHH.THNSCAN * CLTCH.TNUCHCNT)) as
+							'每线话务',
+						</if>
+						<if test="index.contains('H话务量')">
+							convert(decimal(18,2),CELTCHH.THTRALACC /
+							CELTCHH.THNSCAN) as 'H话务量',
+						</if>
+						<if test="index.contains('申请数')">
+							CELTCHF.TFCALLS + CELTCHH.THCALLS as '申请数',
+						</if>
+						<if test="index.contains('指配数')">
+							CELTCHF.TFMSESTB + CELTCHH.THMSESTB as '指配数',
+						</if>
+						<if test="index.contains('接通率')">
+							convert(decimal(18,2),100 * (CELTCHF.TFMSESTB +
+							CELTCHH.THMSESTB) /
+							(CELTCHF.TFCALLS + CELTCHH.THCALLS + 0.00001))
+							as '接通率',
+						</if>
+						<if test="index.contains('通话时长')">
+							convert(decimal(18,2),10 * CELTCHF.TFTRALACC /
+							(CELTCHF.TFMSESTB + 0.00001)) as '通话时长',
+						</if>
+						<if test="index.contains('拥塞数')">
+							(CELTCHF.TFCONGSAS + CELTCHF.TFCONGSHO +
+							CELTCHH.THCONGSAS +
+							CELTCHH.THCONGSHO) as '拥塞数',
+						</if>
+						<if test="index.contains('拥塞率')">
+							convert(decimal(18,2),100 * (CELTCHF.TFCONGSAS +
+							CELTCHF.TFCONGSHO + CELTCHH.THCONGSAS +
+							CELTCHH.THCONGSHO) /
+							(CELTCHF.TFCALLS + CELTCHH.THCALLS + 0.00001))
+							as '拥塞率',
+						</if>
+						<if test="index.contains('无线总掉话')">
+							CELTCHF.TFNDROP + CELTCHH.THNDROP as '无线总掉话',
+						</if>
+						<if test="index.contains('掉话率')">
+							convert(decimal(18,2),100 * (CELTCHF.TFNDROP +
+							CELTCHH.THNDROP) /
+							(CELTCHF.TFMSESTB + CELTCHH.THMSESTB +
+							0.00001))
+							as '掉话率',
+						</if>
+						<if test="index.contains('突然掉话')">
+							CLTCHDRF.TFSUDLOS + CLTCHDRH.THSUDLOS as '突然掉话',
+						</if>
+						<if test="index.contains('上信号')">
+							CLTCHDRF.TFDISSUL + CLTCHDRH.THDISSUL as '上信号',
+						</if>
+						<if test="index.contains('上质差')">
+							CLTCHDRF.TFDISQAUL + CLTCHDRH.THDISQAUL as '上质差',
+						</if>
+						<if test="index.contains('下信号')">
+							CLTCHDRF.TFDISSDL + CLTCHDRH.THDISSDL as '下信号',
+						</if>
+						<if test="index.contains('下质差')">
+							CLTCHDRF.TFDISQADL + CLTCHDRH.THDISQADL as '下质差',
+						</if>
+						<if test="index.contains('上下信号')">
+							CLTCHDRF.TFDISSBL + CLTCHDRH.THDISSBL as '上下信号',
+						</if>
+						<if test="index.contains('上下质差')">
+							CLTCHDRF.TFDISQABL + CLTCHDRH.THDISQABL as '上下质差',
+						</if>
+						<if test="index.contains('TA掉话')">
+							CLTCHDRF.TFDISTA + CLTCHDRH.THDISTA as 'TA掉话',
+						</if>
+						<if test="index.contains('ICM1')">
+							convert(decimal(18,2),100 * IDLEUTCHF.ITFUSIB1 /
+							(IDLEUTCHF.ITFUSIB1 + IDLEUTCHF.ITFUSIB2 + IDLEUTCHF.ITFUSIB3 +
+							IDLEUTCHF.ITFUSIB4 + IDLEUTCHF.ITFUSIB5 + 0.00001)) as 'ICM1',
+						</if>
+						<if test="index.contains('ICM2')">
+							convert(decimal(18,2),100 * IDLEUTCHF.ITFUSIB2 /
+							(IDLEUTCHF.ITFUSIB1 + IDLEUTCHF.ITFUSIB2 + IDLEUTCHF.ITFUSIB3 +
+							IDLEUTCHF.ITFUSIB4 + IDLEUTCHF.ITFUSIB5 + 0.00001)) as 'ICM2',
+						</if>
+						<if test="index.contains('ICM3')">
+							convert(decimal(18,2),100 * IDLEUTCHF.ITFUSIB3 /
+							(IDLEUTCHF.ITFUSIB1 + IDLEUTCHF.ITFUSIB2 + IDLEUTCHF.ITFUSIB3 +
+							IDLEUTCHF.ITFUSIB4 + IDLEUTCHF.ITFUSIB5 + 0.00001)) as 'ICM3',
+						</if>
+						<if test="index.contains('ICM4')">
+							convert(decimal(18,2),100 * IDLEUTCHF.ITFUSIB4 /
+							(IDLEUTCHF.ITFUSIB1 + IDLEUTCHF.ITFUSIB2 + IDLEUTCHF.ITFUSIB3 +
+							IDLEUTCHF.ITFUSIB4 + IDLEUTCHF.ITFUSIB5 + 0.00001)) as 'ICM4',
+						</if>
+						<if test="index.contains('ICM5')">
+							convert(decimal(18,2),100 * IDLEUTCHF.ITFUSIB5 /
+							(IDLEUTCHF.ITFUSIB1 + IDLEUTCHF.ITFUSIB2 + IDLEUTCHF.ITFUSIB3 +
+							IDLEUTCHF.ITFUSIB4 + IDLEUTCHF.ITFUSIB5 + 0.00001)) as 'ICM5',
+						</if>
+						<if test="index.contains('接入申请')">
+							100 * (CELLSQI.TSQIGOOD + 0.5 * CELLSQI.TSQIACCPT) /
+							(CELLSQI.TSQIGOOD + CELLSQI.TSQIACCPT + CELLSQI.TSQIBAD +
+							0.00001)
+							as 'SQI',
+							RANDOMACC.CNROCNT + RANDOMACC.RAACCFA as '接入申请',
+						</if>
+						<if test="index.contains('接入失败')">
+							RANDOMACC.RAACCFA as '接入失败',
+						</if>
+						<if test="index.contains('无线接入性')">
+							convert(decimal(18,2),100 * (CELTCHFP.TFCONGPGSM *
+							CLTCH.TCASSALL) /
+							(((RANDOMACC.CNROCNT + RANDOMACC.RAACCFA) *
+							CLTCH.TASSALL) + 0.00001)) as '无线接入性',
+						</if>
+						<if test="index.contains('S定义信道')">
+							CLSDCCH.CNUCHCNT as 'S定义信道',
+						</if>
+						<if test="index.contains('S可用信道')">
+							CLSDCCH.CAVAACC / CLSDCCH.CAVASCAN as 'S可用信道',
+						</if>
+						<if test="index.contains('S话务量')">
+							convert(decimal(18,2),CLSDCCH.CTRALACC /
+							CLSDCCH.CNSCAN)
+							as 'S话务量',
+						</if>
+						<if test="index.contains('S每线话务量')">
+							convert(decimal(18,2),CLSDCCH.CTRALACC /
+							((CLSDCCH.CNSCAN * CLSDCCH.CNUCHCNT) + 0.00001)) as 'S每线话务量',
+						</if>
+						<if test="index.contains('S申请数')">
+							CLSDCCH.CCALLS as 'S申请数',
+						</if>
+						<if test="index.contains('S指配数')">
+							CLSDCCH.CMSESTAB as 'S指配数',
+						</if>
+						<if test="index.contains('S接通率')">
+							convert(decimal(18,2),100 * CLSDCCH.CMSESTAB /
+							(CLSDCCH.CCALLS - CLSDCCH.CCONGS + 0.00001))
+							as 'S接通率',
+						</if>
+						<if test="index.contains('位置更新')">
+							RANDOMACC.RAOTHER as '位置更新',
+						</if>
+						<if test="index.contains('S拥塞数')">
+							CLSDCCH.CCONGS as 'S拥塞数',
+						</if>
+						<if test="index.contains('S拥塞率')">
+							convert(decimal(18,2),100 * CLSDCCH.CCONGS /
+							(CLSDCCH.CCALLS + 0.00001)) as 'S拥塞率',
+						</if>
+						<if test="index.contains('S通话时长')">
+							convert(decimal(18,2),2 * CLSDCCH.CTRALACC /
+							(CLSDCCH.CMSESTAB + 0.00001)) as 'S通话时长',
+						</if>
+						<if test="index.contains('S掉话率')">
+							convert(decimal(18,2),100 * CLSDCCH.CNDROP /
+							(CLSDCCH.CMSESTAB + 0.00001)) as 'S掉话率',
+						</if>
+						<if test="index.contains('S掉话')">
+							CLSDCCH.CNDROP as 'S掉话',
+						</if>
+						<if test="index.contains('内切数')">
+							CELEVENTI.HOINDQA + CELEVENTI.HOINUQA +
+							CELEVENTI.HOINBQA as '内切数',
+						</if>
+						<if test="index.contains('上行内切')">
+							CELEVENTI.HOINUQA as '上行内切',
+						</if>
+						<if test="index.contains('下行内切')">
+							CELEVENTI.HOINDQA as '下行内切',
+						</if>
+						<if test="index.contains('寻呼排队拥塞')">
+							CELLPAG.PAGPCHCONG as '寻呼排队拥塞',
+						</if>
+						<if test="index.contains('寻呼超时拥塞')">
+							CELLPAG.PAGETOOOLD as '寻呼超时拥塞'
+						</if>
+					</trim>
+				</when>
+				<otherwise>
+					CLTCH.Date as '日期',
+					CLTCH.Time as '时间',
+					CLTCH.BSC as 'BSC',
+					CLTCH.ObjectID as 'CELL',
+					isnull(GSM_CELL.中文名,'') as '中文名',
+					isnull(GSM_CELL.县区,'') as '县区',
+					isnull(GSM_CELL.代维,'') as '代维',
+					convert(decimal(18,0),(18 * CLTCH.TNUCHCNT + 9
+					+
+					CLSDCCH.CNUCHCNT) / 64) as '载波数',
+					CLTCH.TNUCHCNT as '定义信道',
+					convert(decimal(18,0),CLTCH.TAVAACC / (CLTCH.TAVASCAN + 0.00001))
+					as
+					'可用信道',
+					convert(decimal(18,2),100 * CLTCH.TAVAACC /
+					(CLTCH.TAVASCAN *
+					CLTCH.TNUCHCNT)) as 'T完好率',
+					convert(decimal(18,2),(CELTCHF.TFTRALACC
+					+
+					CELTCHH.THTRALACC) /
+					CELTCHH.THNSCAN) as '总话务量',
+					convert(decimal(18,2),(CELTCHF.TFTRALACC + CELTCHH.THTRALACC) /
+					(CELTCHH.THNSCAN * CLTCH.TNUCHCNT)) as '每线话务',
+					convert(decimal(18,2),CELTCHH.THTRALACC / CELTCHH.THNSCAN) as
+					'H话务量',
+					CELTCHF.TFCALLS + CELTCHH.THCALLS as '申请数',
+					CELTCHF.TFMSESTB
+					+
+					CELTCHH.THMSESTB as '指配数',
+					convert(decimal(18,2),100 *
+					(CELTCHF.TFMSESTB + CELTCHH.THMSESTB) /
+					(CELTCHF.TFCALLS +
+					CELTCHH.THCALLS + 0.00001)) as '接通率',
+					convert(decimal(18,2),10 *
+					CELTCHF.TFTRALACC / (CELTCHF.TFMSESTB + 0.00001)) as '通话时长',
+					(CELTCHF.TFCONGSAS + CELTCHF.TFCONGSHO + CELTCHH.THCONGSAS +
+					CELTCHH.THCONGSHO) as '拥塞数',
+					convert(decimal(18,2),100 *
+					(CELTCHF.TFCONGSAS + CELTCHF.TFCONGSHO + CELTCHH.THCONGSAS +
+					CELTCHH.THCONGSHO) / (CELTCHF.TFCALLS + CELTCHH.THCALLS + 0.00001))
+					as '拥塞率',
+					CELTCHF.TFNDROP + CELTCHH.THNDROP as '无线总掉话',
+					convert(decimal(18,2),100 * (CELTCHF.TFNDROP + CELTCHH.THNDROP) /
+					(CELTCHF.TFMSESTB + CELTCHH.THMSESTB + 0.00001)) as '掉话率',
+					CLTCHDRF.TFSUDLOS + CLTCHDRH.THSUDLOS as '突然掉话',
+					CLTCHDRF.TFDISSUL +
+					CLTCHDRH.THDISSUL as '上信号',
+					CLTCHDRF.TFDISQAUL + CLTCHDRH.THDISQAUL
+					as '上质差',
+					CLTCHDRF.TFDISSDL + CLTCHDRH.THDISSDL as '下信号',
+					CLTCHDRF.TFDISQADL + CLTCHDRH.THDISQADL as '下质差',
+					CLTCHDRF.TFDISSBL
+					+
+					CLTCHDRH.THDISSBL as '上下信号',
+					CLTCHDRF.TFDISQABL +
+					CLTCHDRH.THDISQABL
+					as '上下质差',
+					CLTCHDRF.TFDISTA + CLTCHDRH.THDISTA as
+					'TA掉话',
+					convert(decimal(18,2),100 * IDLEUTCHF.ITFUSIB1 /
+					(IDLEUTCHF.ITFUSIB1 +
+					IDLEUTCHF.ITFUSIB2 + IDLEUTCHF.ITFUSIB3 +
+					IDLEUTCHF.ITFUSIB4 +
+					IDLEUTCHF.ITFUSIB5 + 0.00001)) as 'ICM1',
+					convert(decimal(18,2),100 *
+					IDLEUTCHF.ITFUSIB2 /
+					(IDLEUTCHF.ITFUSIB1
+					+
+					IDLEUTCHF.ITFUSIB2 +
+					IDLEUTCHF.ITFUSIB3 +
+					IDLEUTCHF.ITFUSIB4 +
+					IDLEUTCHF.ITFUSIB5 +
+					0.00001)) as 'ICM2',
+					convert(decimal(18,2),100 *
+					IDLEUTCHF.ITFUSIB3 /
+					(IDLEUTCHF.ITFUSIB1 + IDLEUTCHF.ITFUSIB2 +
+					IDLEUTCHF.ITFUSIB3 +
+					IDLEUTCHF.ITFUSIB4 + IDLEUTCHF.ITFUSIB5 +
+					0.00001)) as 'ICM3',
+					convert(decimal(18,2),100 * IDLEUTCHF.ITFUSIB4
+					/
+					(IDLEUTCHF.ITFUSIB1 +
+					IDLEUTCHF.ITFUSIB2 + IDLEUTCHF.ITFUSIB3 +
+					IDLEUTCHF.ITFUSIB4 +
+					IDLEUTCHF.ITFUSIB5 + 0.00001)) as 'ICM4',
+					convert(decimal(18,2),100 *
+					IDLEUTCHF.ITFUSIB5 /
+					(IDLEUTCHF.ITFUSIB1
+					+
+					IDLEUTCHF.ITFUSIB2 +
+					IDLEUTCHF.ITFUSIB3 +
+					IDLEUTCHF.ITFUSIB4 +
+					IDLEUTCHF.ITFUSIB5 +
+					0.00001)) as 'ICM5',
+					convert(decimal(18,2),100 *
+					(CELLSQI.TSQIGOOD +
+					0.5 * CELLSQI.TSQIACCPT) /
+					(CELLSQI.TSQIGOOD +
+					CELLSQI.TSQIACCPT +
+					CELLSQI.TSQIBAD + 0.00001)) as 'SQI',
+					RANDOMACC.CNROCNT +
+					RANDOMACC.RAACCFA as '接入申请',
+					RANDOMACC.RAACCFA as
+					'接入失败',
+					convert(decimal(18,2),100 * (CELTCHFP.TFCONGPGSM *
+					CLTCH.TCASSALL) /
+					(((RANDOMACC.CNROCNT + RANDOMACC.RAACCFA) *
+					CLTCH.TASSALL) +
+					0.00001)) as '无线接入性',
+					CLSDCCH.CNUCHCNT as 'S定义信道',
+					CLSDCCH.CAVAACC /
+					CLSDCCH.CAVASCAN as 'S可用信道',
+					convert(decimal(18,2),CLSDCCH.CTRALACC /
+					CLSDCCH.CNSCAN) as 'S话务量',
+					convert(decimal(18,2),CLSDCCH.CTRALACC /
+					((CLSDCCH.CNSCAN *
+					CLSDCCH.CNUCHCNT) + 0.00001)) as 'S每线话务量',
+					CLSDCCH.CCALLS as 'S申请数',
+					CLSDCCH.CMSESTAB as 'S指配数',
+					convert(decimal(18,2),100 *
+					CLSDCCH.CMSESTAB / (CLSDCCH.CCALLS -
+					CLSDCCH.CCONGS + 0.00001)) as
+					'S接通率',
+					RANDOMACC.RAOTHER as '位置更新',
+					CLSDCCH.CCONGS as 'S拥塞数',
+					convert(decimal(18,2),100 * CLSDCCH.CCONGS /
+					(CLSDCCH.CCALLS +
+					0.00001)) as 'S拥塞率',
+					convert(decimal(18,2),2 *
+					CLSDCCH.CTRALACC /
+					(CLSDCCH.CMSESTAB + 0.00001)) as 'S通话时长',
+					convert(decimal(18,2),100
+					*
+					CLSDCCH.CNDROP / (CLSDCCH.CMSESTAB +
+					0.00001)) as 'S掉话率',
+					CLSDCCH.CNDROP as 'S掉话',
+					CELEVENTI.HOINDQA +
+					CELEVENTI.HOINUQA +
+					CELEVENTI.HOINBQA as '内切数',
+					CELEVENTI.HOINUQA as
+					'上行内切',
+					CELEVENTI.HOINDQA as '下行内切',
+					CELLPAG.PAGPCHCONG as '寻呼排队拥塞',
+					CELLPAG.PAGETOOOLD as '寻呼超时拥塞'
+				</otherwise>
+			</choose>
+			from (select *
+			from
+			sts${granularity}_CLTCH_${date}
+			where 1 = 1
+			<if test="time!=null">
+				and time in
+				<foreach collection="time" item="time1" open="(" close=")"
+					separator=",">
+					'${time1}'
+				</foreach>
+			</if>
+			<if test="bsc!=null">
+				and bsc in
+				<foreach collection="bsc" item="bsc1" open="(" close=")"
+					separator=",">
+					'${bsc1}'
+				</foreach>
+			</if>
+			<if test="cell!=null">
+				and ObjectID in
+				<foreach collection="cell" item="cell1" open="(" close=")"
+					separator=",">
+					'${cell1}'
+				</foreach>
+			</if>
+			) CLTCH
+			Left Join (select *
+			from
+			sts${granularity}_CLSDCCH_${date}
+			where
+			1 = 1
+			<if test="time!=null">
+				and time in
+				<foreach collection="time" item="time2" open="(" close=")"
+					separator=",">
+					'${time2}'
+				</foreach>
+			</if>
+			<if test="bsc!=null">
+				and bsc in
+				<foreach collection="bsc" item="bsc2" open="(" close=")"
+					separator=",">
+					'${bsc2}'
+				</foreach>
+			</if>
+			<if test="cell!=null">
+				and ObjectID in
+				<foreach collection="cell" item="cell2" open="(" close=")"
+					separator=",">
+					'${cell2}'
+				</foreach>
+			</if>
+			) CLSDCCH
+			on CLTCH.ObjectID = CLSDCCH.ObjectID
+			and CLTCH.DATE =
+			CLSDCCH.DATE
+			and CLTCH.TIME = CLSDCCH.TIME
+			and CLTCH.BSC = CLSDCCH.BSC
+			Left Join (select *
+			from
+			sts${granularity}_CELTCHF_${date}
+			where 1 = 1
+			<if test="time!=null">
+				and time in
+				<foreach collection="time" item="time3" open="(" close=")"
+					separator=",">
+					'${time3}'
+				</foreach>
+			</if>
+			<if test="bsc!=null">
+				and bsc in
+				<foreach collection="bsc" item="bsc3" open="(" close=")"
+					separator=",">
+					'${bsc3}'
+				</foreach>
+			</if>
+			<if test="cell!=null">
+				and ObjectID in
+				<foreach collection="cell" item="cell3" open="(" close=")"
+					separator=",">
+					'${cell3}'
+				</foreach>
+			</if>
+			) CELTCHF
+			on CLTCH.ObjectID = CELTCHF.ObjectID
+			and CLTCH.DATE =
+			CELTCHF.DATE
+			and CLTCH.TIME = CELTCHF.TIME
+			and CLTCH.BSC = CELTCHF.BSC
+			Left Join (select *
+			from
+			sts${granularity}_CELTCHH_${date}
+			where 1 = 1
+			<if test="time!=null">
+				and time in
+				<foreach collection="time" item="time4" open="(" close=")"
+					separator=",">
+					'${time4}'
+				</foreach>
+			</if>
+			<if test="bsc!=null">
+				and bsc in
+				<foreach collection="bsc" item="bsc4" open="(" close=")"
+					separator=",">
+					'${bsc4}'
+				</foreach>
+			</if>
+			<if test="cell!=null">
+				and ObjectID in
+				<foreach collection="cell" item="cell4" open="(" close=")"
+					separator=",">
+					'${cell4}'
+				</foreach>
+			</if>
+			) CELTCHH
+			on CLTCH.ObjectID = CELTCHH.ObjectID
+			and CLTCH.DATE =
+			CELTCHH.DATE
+			and CLTCH.TIME = CELTCHH.TIME
+			and CLTCH.BSC = CELTCHH.BSC
+			Left Join (select *
+			from
+			sts${granularity}_CLTCHDRF_${date}
+			where 1 = 1
+			<if test="time!=null">
+				and time in
+				<foreach collection="time" item="time5" open="(" close=")"
+					separator=",">
+					'${time5}'
+				</foreach>
+			</if>
+			<if test="bsc!=null">
+				and bsc in
+				<foreach collection="bsc" item="bsc5" open="(" close=")"
+					separator=",">
+					'${bsc5}'
+				</foreach>
+			</if>
+			<if test="cell!=null">
+				and ObjectID in
+				<foreach collection="cell" item="cell5" open="(" close=")"
+					separator=",">
+					'${cell5}'
+				</foreach>
+			</if>
+			) CLTCHDRF
+			on CLTCH.ObjectID = CLTCHDRF.ObjectID
+			and CLTCH.DATE =
+			CLTCHDRF.DATE
+			and CLTCH.TIME = CLTCHDRF.TIME
+			and CLTCH.BSC =
+			CLTCHDRF.BSC
+			Left Join (select *
+			from
+			sts${granularity}_CLTCHDRH_${date}
+			where 1 = 1
+			<if test="time!=null">
+				and time in
+				<foreach collection="time" item="time6" open="(" close=")"
+					separator=",">
+					'${time6}'
+				</foreach>
+			</if>
+			<if test="bsc!=null">
+				and bsc in
+				<foreach collection="bsc" item="bsc6" open="(" close=")"
+					separator=",">
+					'${bsc6}'
+				</foreach>
+			</if>
+			<if test="cell!=null">
+				and ObjectID in
+				<foreach collection="cell" item="cell6" open="(" close=")"
+					separator=",">
+					'${cell6}'
+				</foreach>
+			</if>
+			) CLTCHDRH
+			on CLTCH.ObjectID = CLTCHDRH.ObjectID
+			and CLTCH.DATE =
+			CLTCHDRH.DATE
+			and CLTCH.TIME = CLTCHDRH.TIME
+			and CLTCH.BSC =
+			CLTCHDRH.BSC
+			Left Join (select *
+			from
+			sts${granularity}_IDLEUTCHF_${date}
+			where 1 = 1
+			<if test="time!=null">
+				and time in
+				<foreach collection="time" item="time7" open="(" close=")"
+					separator=",">
+					'${time7}'
+				</foreach>
+			</if>
+			<if test="bsc!=null">
+				and bsc in
+				<foreach collection="bsc" item="bsc7" open="(" close=")"
+					separator=",">
+					'${bsc7}'
+				</foreach>
+			</if>
+			<if test="cell!=null">
+				and ObjectID in
+				<foreach collection="cell" item="cell7" open="(" close=")"
+					separator=",">
+					'${cell7}'
+				</foreach>
+			</if>
+			) IDLEUTCHF
+			on CLTCH.ObjectID = IDLEUTCHF.ObjectID
+			and CLTCH.DATE =
+			IDLEUTCHF.DATE
+			and CLTCH.TIME = IDLEUTCHF.TIME
+			and CLTCH.BSC =
+			IDLEUTCHF.BSC
+			Left Join (select *
+			from
+			sts${granularity}_CELLSQI_${date}
+			where 1 = 1
+			<if test="time!=null">
+				and time in
+				<foreach collection="time" item="time8" open="(" close=")"
+					separator=",">
+					'${time8}'
+				</foreach>
+			</if>
+			<if test="bsc!=null">
+				and bsc in
+				<foreach collection="bsc" item="bsc8" open="(" close=")"
+					separator=",">
+					'${bsc8}'
+				</foreach>
+			</if>
+			<if test="cell!=null">
+				and ObjectID in
+				<foreach collection="cell" item="cell8" open="(" close=")"
+					separator=",">
+					'${cell8}'
+				</foreach>
+			</if>
+			) CELLSQI
+			on CLTCH.ObjectID = CELLSQI.ObjectID
+			and CLTCH.DATE =
+			CELLSQI.DATE
+			and CLTCH.TIME = CELLSQI.TIME
+			and CLTCH.BSC = CELLSQI.BSC
+			Left Join (select *
+			from
+			sts${granularity}_RANDOMACC_${date}
+			where 1 = 1
+			<if test="time!=null">
+				and time in
+				<foreach collection="time" item="time9" open="(" close=")"
+					separator=",">
+					'${time9}'
+				</foreach>
+			</if>
+			<if test="bsc!=null">
+				and bsc in
+				<foreach collection="bsc" item="bsc9" open="(" close=")"
+					separator=",">
+					'${bsc9}'
+				</foreach>
+			</if>
+			<if test="cell!=null">
+				and ObjectID in
+				<foreach collection="cell" item="cell9" open="(" close=")"
+					separator=",">
+					'${cell9}'
+				</foreach>
+			</if>
+			) RANDOMACC
+			on CLTCH.ObjectID = RANDOMACC.ObjectID
+			and CLTCH.DATE =
+			RANDOMACC.DATE
+			and CLTCH.TIME = RANDOMACC.TIME
+			and CLTCH.BSC =
+			RANDOMACC.BSC
+			Left Join (select *
+			from
+			sts${granularity}_CELTCHFP_${date}
+			where 1 = 1
+			<if test="time!=null">
+				and time in
+				<foreach collection="time" item="time10" open="(" close=")"
+					separator=",">
+					'${time10}'
+				</foreach>
+			</if>
+			<if test="bsc!=null">
+				and bsc in
+				<foreach collection="bsc" item="bsc10" open="(" close=")"
+					separator=",">
+					'${bsc10}'
+				</foreach>
+			</if>
+			<if test="cell!=null">
+				and ObjectID in
+				<foreach collection="cell" item="cell10" open="(" close=")"
+					separator=",">
+					'${cell10}'
+				</foreach>
+			</if>
+			) CELTCHFP
+			on CLTCH.ObjectID = CELTCHFP.ObjectID
+			and CLTCH.DATE =
+			CELTCHFP.DATE
+			and CLTCH.TIME = CELTCHFP.TIME
+			and CLTCH.BSC =
+			CELTCHFP.BSC
+			Left Join (select *
+			from
+			sts${granularity}_CELEVENTI_${date}
+			where 1 = 1
+			<if test="time!=null">
+				and time in
+				<foreach collection="time" item="time11" open="(" close=")"
+					separator=",">
+					'${time11}'
+				</foreach>
+			</if>
+			<if test="bsc!=null">
+				and bsc in
+				<foreach collection="bsc" item="bsc11" open="(" close=")"
+					separator=",">
+					'${bsc11}'
+				</foreach>
+			</if>
+			<if test="cell!=null">
+				and ObjectID in
+				<foreach collection="cell" item="cell11" open="(" close=")"
+					separator=",">
+					'${cell11}'
+				</foreach>
+			</if>
+			) CELEVENTI
+			on CLTCH.ObjectID = CELEVENTI.ObjectID
+			and CLTCH.DATE =
+			CELEVENTI.DATE
+			and CLTCH.TIME = CELEVENTI.TIME
+			and CLTCH.BSC =
+			CELEVENTI.BSC
+			Left Join (select *
+			from
+			sts${granularity}_CELLPAG_${date}
+			where 1 = 1
+			<if test="time!=null">
+				and time in
+				<foreach collection="time" item="time12" open="(" close=")"
+					separator=",">
+					'${time12}'
+				</foreach>
+			</if>
+			<if test="bsc!=null">
+				and bsc in
+				<foreach collection="bsc" item="bsc12" open="(" close=")"
+					separator=",">
+					'${bsc12}'
+				</foreach>
+			</if>
+			<if test="cell!=null">
+				and ObjectID in
+				<foreach collection="cell" item="cell12" open="(" close=")"
+					separator=",">
+					'${cell12}'
+				</foreach>
+			</if>
+			) CELLPAG
+			on CLTCH.ObjectID = CELLPAG.ObjectID
+			and CLTCH.DATE =
+			CELLPAG.DATE
+			and CLTCH.TIME = CELLPAG.TIME
+			and CLTCH.BSC = CELLPAG.BSC
+			Left Join sts_GSM_CELL GSM_CELL
+			on CLTCH.ObjectID = GSM_CELL.ObjectID
+		</foreach>
+		SET ANSI_WARNINGS on SET ARITHABORT on SET ARITHIGNORE off
+	</select>
+
+	<select id="showDriveInAndOutTemplateTab" parameterType="map"
+		resultType="java.util.LinkedHashMap">
+		SET ANSI_WARNINGS off SET ARITHABORT off SET ARITHIGNORE on
+		<foreach collection="date" item="date" separator="union all">
+			select
+			<choose>
+				<when test="index!=null">
+					<trim prefix="" suffixOverrides=",">
+						<if test="index.contains('日期')">
+							sumHo.Date as '日期',
+						</if>
+						<if test="index.contains('时间')">
+							sumHo.Time as '时间',
+						</if>
+						<if test="index.contains('BSC')">
+							sumHo.BSC as 'BSC',
+						</if>
+						<if test="index.contains('CELL')">
+							sumHo.ObjectID as 'CELL',
+						</if>
+						<if test="index.contains('中文名')">
+							isnull(GSM_CELL.中文名,'')  as '中文名',
+						</if>
+						<if test="index.contains('县区')">
+							isnull(GSM_CELL.县区,'')  as '县区',
+						</if>
+						<if test="index.contains('代维')">
+							isnull(GSM_CELL.代维,'')  as '代维',
+						</if>
+						<if test="index.contains('切出申请')">
+							sumHo.sumOutHOVERCNT as '切出申请',
+						</if>
+						<if test="index.contains('切出成功')">
+							sumHo.sumOutHOVERSUC as '切出成功',
+						</if>
+						<if test="index.contains('切入申请')">
+							sumHo.sumIntHOVERCNT as '切入申请',
+						</if>
+						<if test="index.contains('切入成功')">
+							sumHo.sumIntHOVERSUC as '切入成功'
+						</if>
+					</trim>
+				</when>
+				<otherwise>
+					sumHo.Date as '日期',
+					sumHo.Time as '时间',
+					sumHo.BSC as 'BSC',
+					sumHo.ObjectID as 'CELL',
+					isnull(GSM_CELL.中文名,'')  as '中文名',
+					isnull(GSM_CELL.县区, '')  as '县区',
+					isnull(GSM_CELL.代维 ,'') as '代维',
+					sumHo.sumOutHOVERCNT as '切出申请',
+					sumHo.sumOutHOVERSUC as '切出成功',
+					sumHo.sumIntHOVERCNT as '切入申请',
+					sumHo.sumIntHOVERSUC as '切入成功'
+				</otherwise>
+			</choose>
+			from (select *
+			from
+			sts${granularity}_sumHo_${date}
+			where 1 = 1
+			<if test="time!=null">
+				and time in
+				<foreach collection="time" item="time" open="(" close=")"
+					separator=",">
+					'${time}'
+				</foreach>
+			</if>
+			<if test="bsc!=null">
+				and bsc in
+				<foreach collection="bsc" item="bsc" open="(" close=")"
+					separator=",">
+					'${bsc}'
+				</foreach>
+			</if>
+			<if test="cell!=null">
+				and ObjectID in
+				<foreach collection="cell" item="cell" open="(" close=")"
+					separator=",">
+					'${cell}'
+				</foreach>
+			</if>
+			) sumHo
+			Left Join sts_GSM_CELL GSM_CELL
+			on sumHo.ObjectID =
+			GSM_CELL.ObjectID
+		</foreach>
+		SET ANSI_WARNINGS on SET ARITHABORT on SET
+		ARITHIGNORE off
+	</select>
+
+	<select id="showSwitchPointToPointTemplateTab" parameterType="map"
+		resultType="java.util.LinkedHashMap">
+		SET ANSI_WARNINGS off SET ARITHABORT off SET ARITHIGNORE on
+		<foreach collection="date" item="date" separator="union all">
+			select
+			<choose>
+				<when test="index!=null">
+					<trim prefix="" suffixOverrides=",">
+						<if test="index.contains('日期')">
+							HO.Date as '日期',
+						</if>
+						<if test="index.contains('时间')">
+							HO.Time as '时间',
+						</if>
+						<if test="index.contains('BSC')">
+							HO.BSC as 'BSC',
+						</if>
+						<if test="index.contains('CELL_CELLR')">
+							HO.ObjectID as 'CELL_CELLR',
+						</if>
+						<if test="index.contains('切换申请')">
+							HOVERCNT as '切换申请',
+						</if>
+						<if test="index.contains('切换成功')">
+							HOVERSUC as '切换成功',
+						</if>
+						<if test="index.contains('回切次数')">
+							HORTTOCH as '回切次数'
+						</if>
+					</trim>
+				</when>
+				<otherwise>
+					HO.Date as '日期',
+					HO.Time as '时间',
+					HO.BSC as 'BSC',
+					HO.ObjectID as 'CELL_CELLR',
+					HOVERCNT as '切换申请',
+					HOVERSUC as '切换成功',
+					HORTTOCH as '回切次数'
+				</otherwise>
+			</choose>
+			from (select *
+			from
+			sts${granularity}_HO_${date}
+			where 1 = 1
+			<if test="time!=null">
+				and time in
+				<foreach collection="time" item="time" open="(" close=")"
+					separator=",">
+					'${time}'
+				</foreach>
+			</if>
+			<if test="bsc!=null">
+				and bsc in
+				<foreach collection="bsc" item="bsc" open="(" close=")"
+					separator=",">
+					'${bsc}'
+				</foreach>
+			</if>
+			<if test="cell!=null">
+				and ObjectID in
+				<foreach collection="cell" item="cell" open="(" close=")"
+					separator=",">
+					'${cell}'
+				</foreach>
+			</if>
+			) HO
+		</foreach>
+		SET ANSI_WARNINGS on SET ARITHABORT on SET ARITHIGNORE off
+	</select>
+
+	<select id="showDataTemplateTab" parameterType="map"
+		resultType="java.util.LinkedHashMap">
+		SET ANSI_WARNINGS off SET ARITHABORT off SET ARITHIGNORE on
+		<foreach collection="date" item="date" separator="union all">
+			select
+			<choose>
+				<when test="index!=null">
+					<trim prefix="" suffixOverrides=",">
+						<if test="index.contains('日期')">
+							CLTCH.Date as '日期',
+						</if>
+						<if test="index.contains('时间')">
+							CLTCH.Time as '时间',
+						</if>
+						<if test="index.contains('BSC')">
+							CLTCH.BSC as 'BSC',
+						</if>
+						<if test="index.contains('CELL')">
+							CLTCH.ObjectID as 'CELL',
+						</if>
+						<if test="index.contains('中文名')">
+							isnull(GSM_CELL.中文名,'') as '中文名',
+						</if>
+						<if test="index.contains('县区')">
+							isnull(GSM_CELL.县区,'') as '县区',
+						</if>
+						<if test="index.contains('代维')">
+							isnull(GSM_CELL.代维,'') as '代维',
+						</if>
+						<if test="index.contains('GPRS下行流量')">
+							convert(decimal(18,2),(CELLQOSG.DLBGGDATA +
+							CELLQOSG.DLTHP1GDATA + CELLQOSG.DLTHP2GDATA +
+							CELLQOSG.DLTHP3GDATA) / 8192) as 'GPRS下行流量',
+						</if>
+						<if test="index.contains('GPRS上行流量')">
+							convert(decimal(18,2),(CELLQOSG.ULBGGDATA +
+							CELLQOSG.ULTHP1GDATA + CELLQOSG.ULTHP2GDATA +
+							CELLQOSG.ULTHP3GDATA) / 8192) as 'GPRS上行流量',
+						</if>
+						<if test="index.contains('EDGE下行流量')">
+							convert(decimal(18,2),(CELLQOSEG.DLTHP3EGDATA +
+							CELLQOSEG.DLTHP2EGDATA +
+							CELLQOSEG.DLTHP1EGDATA +
+							CELLQOSEG.DLBGEGDATA) / 8192) as 'EDGE下行流量',
+						</if>
+						<if test="index.contains('EDGE上行流量')">
+							convert(decimal(18,2),(CELLQOSEG.ULTHP3EGDATA +
+							CELLQOSEG.ULTHP2EGDATA +
+							CELLQOSEG.ULTHP1EGDATA +
+							CELLQOSEG.ULBGEGDATA) / 8192) as 'EDGE上行流量',
+						</if>
+						<if test="index.contains('GPRS下行PDCH复用度')">
+							convert(decimal(18,2),(TRAFDLGPRS.DLTBFPBPDCH +
+							TRAFDLGPRS.DLTBFPGPDCH) /
+							(TRAFDLGPRS.DLBPDCH + TRAFDLGPRS.DLGPDCH
+							+ 0.00001)) as 'GPRS下行PDCH复用度',
+						</if>
+						<if test="index.contains('EDGE下行PDCH复用度')">
+							convert(decimal(18,2),TRAFDLGPRS.DLTBFPEPDCH /
+							(TRAFDLGPRS.DLEPDCH + 0.00001)) as 'EDGE下行PDCH复用度',
+						</if>
+						<if test="index.contains('下行TBF建立尝试数')">
+							CELLGPRS.DLTBFEST as '下行TBF建立尝试数',
+						</if>
+						<if test="index.contains('下行TBF建立尝试失败数')">
+							CELLGPRS.FAILDLTBFEST as '下行TBF建立尝试失败数',
+						</if>
+						<if test="index.contains('下行TBF建立成功率')">
+							convert(decimal(18,2),100 * (CELLGPRS.DLTBFEST -
+							CELLGPRS.FAILDLTBFEST) /
+							(CELLGPRS.DLTBFEST + 0.00001)) as
+							'下行TBF建立成功率',
+						</if>
+						<if test="index.contains('PDCH分配尝试数')">
+							CELLGPRS.PCHALLATT as 'PDCH分配尝试数',
+						</if>
+						<if test="index.contains('PDCH分配失败数')">
+							CELLGPRS.PCHALLFAIL as 'PDCH分配失败数',
+						</if>
+						<if test="index.contains('平均分配PDCH数')">
+							convert(decimal(18,2),CELLGPRS.ALLPDCHACC /
+							CELLGPRS.ALLPDCHSCAN) as '平均分配PDCH数',
+						</if>
+						<if test="index.contains('平均占用PDCH数')">
+							convert(decimal(18,2),CELLGPRS.ALLPDCHACTACC /
+							CELLGPRS.ALLPDCHSCAN) as '平均占用PDCH数',
+						</if>
+						<if test="index.contains('PDCH使用率')">
+							convert(decimal(18,2),100 * CELLGPRS.ALLPDCHACTACC /
+							(CELLGPRS.ALLPDCHACC + 0.00001)) as
+							'PDCH使用率',
+						</if>
+						<if test="index.contains('下行EGDG_IP吞吐率')">
+							convert(decimal(18,2),(CELLQOSEG.Dlthp1egthr +
+							CELLQOSEG.Dlthp2egthr +
+							CELLQOSEG.Dlthp3egthr +
+							CELLQOSEG.Dlbgegthr) /
+							(CELLQOSEG.Dlthp3egdata +
+							CELLQOSEG.Dlthp2egdata +
+							CELLQOSEG.Dlthp1egdata +
+							CELLQOSEG.Dlbgegdata + 0.00001)) as '下行EGDG_IP吞吐率',
+						</if>
+						<if test="index.contains('上行EGDG_IP吞吐率')">
+							convert(decimal(18,2),(CELLQOSEG.Ulthp1egthr +
+							CELLQOSEG.Ulthp2egthr +
+							CELLQOSEG.Ulthp3egthr +
+							CELLQOSEG.Ulbgegthr) /
+							(CELLQOSEG.Ulthp3egdata +
+							CELLQOSEG.Ulthp2egdata +
+							CELLQOSEG.Ulthp1egdata +
+							CELLQOSEG.Ulbgegdata + 0.00001)) as '上行EGDG_IP吞吐率'
+						</if>
+					</trim>
+				</when>
+				<otherwise>
+					CLTCH.Date as '日期',
+					CLTCH.Time as '时间',
+					CLTCH.BSC as 'BSC',
+					CLTCH.ObjectID as 'CELL',
+					isnull(GSM_CELL.中文名,'') as '中文名',
+					isnull(GSM_CELL.县区,'') as '县区',
+					isnull(GSM_CELL.代维,'') as '代维',
+					convert(decimal(18,2),(CELLQOSG.DLBGGDATA +
+					CELLQOSG.DLTHP1GDATA + CELLQOSG.DLTHP2GDATA +
+					CELLQOSG.DLTHP3GDATA)
+					/
+					8192) as 'GPRS下行流量',
+					convert(decimal(18,2),(CELLQOSG.ULBGGDATA +
+					CELLQOSG.ULTHP1GDATA + CELLQOSG.ULTHP2GDATA +
+					CELLQOSG.ULTHP3GDATA)
+					/
+					8192) as 'GPRS上行流量',
+					convert(decimal(18,2),(CELLQOSEG.DLTHP3EGDATA
+					+
+					CELLQOSEG.DLTHP2EGDATA +
+					CELLQOSEG.DLTHP1EGDATA +
+					CELLQOSEG.DLBGEGDATA) / 8192) as 'EDGE下行流量',
+					convert(decimal(18,2),(CELLQOSEG.ULTHP3EGDATA +
+					CELLQOSEG.ULTHP2EGDATA +
+					CELLQOSEG.ULTHP1EGDATA +
+					CELLQOSEG.ULBGEGDATA) / 8192) as 'EDGE上行流量',
+					convert(decimal(18,2),(TRAFDLGPRS.DLTBFPBPDCH +
+					TRAFDLGPRS.DLTBFPGPDCH) /
+					(TRAFDLGPRS.DLBPDCH + TRAFDLGPRS.DLGPDCH +
+					0.00001)) as
+					'GPRS下行PDCH复用度',
+					convert(decimal(18,2),TRAFDLGPRS.DLTBFPEPDCH / (TRAFDLGPRS.DLEPDCH
+					+
+					0.00001)) as 'EDGE下行PDCH复用度',
+					CELLGPRS.DLTBFEST as '下行TBF建立尝试数',
+					CELLGPRS.FAILDLTBFEST as '下行TBF建立尝试失败数',
+					convert(decimal(18,2),100 *
+					(CELLGPRS.DLTBFEST - CELLGPRS.FAILDLTBFEST) /
+					(CELLGPRS.DLTBFEST +
+					0.00001)) as '下行TBF建立成功率',
+					CELLGPRS.PCHALLATT as 'PDCH分配尝试数',
+					CELLGPRS.PCHALLFAIL as 'PDCH分配失败数',
+					convert(decimal(18,2),CELLGPRS.ALLPDCHACC / CELLGPRS.ALLPDCHSCAN)
+					as
+					'平均分配PDCH数',
+					convert(decimal(18,2),CELLGPRS.ALLPDCHACTACC /
+					CELLGPRS.ALLPDCHSCAN) as '平均占用PDCH数',
+					convert(decimal(18,2),100 *
+					CELLGPRS.ALLPDCHACTACC / (CELLGPRS.ALLPDCHACC + 0.00001)) as
+					'PDCH使用率',
+					convert(decimal(18,2),(CELLQOSEG.Dlthp1egthr +
+					CELLQOSEG.Dlthp2egthr +
+					CELLQOSEG.Dlthp3egthr + CELLQOSEG.Dlbgegthr)
+					/
+					(CELLQOSEG.Dlthp3egdata + CELLQOSEG.Dlthp2egdata +
+					CELLQOSEG.Dlthp1egdata + CELLQOSEG.Dlbgegdata + 0.00001)) as
+					'下行EGDG_IP吞吐率',
+					convert(decimal(18,2),(CELLQOSEG.Ulthp1egthr +
+					CELLQOSEG.Ulthp2egthr +
+					CELLQOSEG.Ulthp3egthr + CELLQOSEG.Ulbgegthr)
+					/
+					(CELLQOSEG.Ulthp3egdata + CELLQOSEG.Ulthp2egdata +
+					CELLQOSEG.Ulthp1egdata + CELLQOSEG.Ulbgegdata + 0.00001)) as
+					'上行EGDG_IP吞吐率'
+				</otherwise>
+			</choose>
+			from (select *
+			from
+			sts${granularity}_CLTCH_${date}
+			where 1 = 1
+			<if test="time!=null">
+				and time in
+				<foreach collection="time" item="time1" open="(" close=")"
+					separator=",">
+					'${time1}'
+				</foreach>
+			</if>
+			<if test="bsc!=null">
+				and bsc in
+				<foreach collection="bsc" item="bsc1" open="(" close=")"
+					separator=",">
+					'${bsc1}'
+				</foreach>
+			</if>
+			<if test="cell!=null">
+				and ObjectID in
+				<foreach collection="cell" item="cell1" open="(" close=")"
+					separator=",">
+					'${cell1}'
+				</foreach>
+			</if>
+			) CLTCH
+			Left Join (select *
+			from
+			sts${granularity}_CELLQOSG_${date}
+			where 1 = 1
+			<if test="time!=null">
+				and time in
+				<foreach collection="time" item="time2" open="(" close=")"
+					separator=",">
+					'${time2}'
+				</foreach>
+			</if>
+			<if test="bsc!=null">
+				and bsc in
+				<foreach collection="bsc" item="bsc2" open="(" close=")"
+					separator=",">
+					'${bsc2}'
+				</foreach>
+			</if>
+			<if test="cell!=null">
+				and ObjectID in
+				<foreach collection="cell" item="cell2" open="(" close=")"
+					separator=",">
+					'${cell2}'
+				</foreach>
+			</if>
+			) CELLQOSG
+			on CLTCH.ObjectID = CELLQOSG.ObjectID
+			and CLTCH.DATE =
+			CELLQOSG.DATE
+			and CLTCH.TIME = CELLQOSG.TIME
+			and CLTCH.BSC =
+			CELLQOSG.BSC
+			Left Join (select *
+			from
+			sts${granularity}_CELLQOSEG_${date}
+			where 1 = 1
+			<if test="time!=null">
+				and time in
+				<foreach collection="time" item="time3" open="(" close=")"
+					separator=",">
+					'${time3}'
+				</foreach>
+			</if>
+			<if test="bsc!=null">
+				and bsc in
+				<foreach collection="bsc" item="bsc3" open="(" close=")"
+					separator=",">
+					'${bsc3}'
+				</foreach>
+			</if>
+			<if test="cell!=null">
+				and ObjectID in
+				<foreach collection="cell" item="cell3" open="(" close=")"
+					separator=",">
+					'${cell3}'
+				</foreach>
+			</if>
+			) CELLQOSEG
+			on CLTCH.ObjectID = CELLQOSEG.ObjectID
+			and CLTCH.DATE =
+			CELLQOSEG.DATE
+			and CLTCH.TIME = CELLQOSEG.TIME
+			and CLTCH.BSC =
+			CELLQOSEG.BSC
+			Left Join (select *
+			from
+			sts${granularity}_TRAFDLGPRS_${date}
+			where 1 = 1
+			<if test="time!=null">
+				and time in
+				<foreach collection="time" item="time4" open="(" close=")"
+					separator=",">
+					'${time4}'
+				</foreach>
+			</if>
+			<if test="bsc!=null">
+				and bsc in
+				<foreach collection="bsc" item="bsc4" open="(" close=")"
+					separator=",">
+					'${bsc4}'
+				</foreach>
+			</if>
+			<if test="cell!=null">
+				and ObjectID in
+				<foreach collection="cell" item="cell4" open="(" close=")"
+					separator=",">
+					'${cell4}'
+				</foreach>
+			</if>
+			) TRAFDLGPRS
+			on CLTCH.ObjectID = TRAFDLGPRS.ObjectID
+			and CLTCH.DATE =
+			TRAFDLGPRS.DATE
+			and CLTCH.TIME = TRAFDLGPRS.TIME
+			and CLTCH.BSC =
+			TRAFDLGPRS.BSC
+			Left Join (select *
+			from
+			sts${granularity}_CELLGPRS_${date}
+			where 1 = 1
+			<if test="time!=null">
+				and time in
+				<foreach collection="time" item="time5" open="(" close=")"
+					separator=",">
+					'${time5}'
+				</foreach>
+			</if>
+			<if test="bsc!=null">
+				and bsc in
+				<foreach collection="bsc" item="bsc5" open="(" close=")"
+					separator=",">
+					'${bsc5}'
+				</foreach>
+			</if>
+			<if test="cell!=null">
+				and ObjectID in
+				<foreach collection="cell" item="cell5" open="(" close=")"
+					separator=",">
+					'${cell5}'
+				</foreach>
+			</if>
+			) CELLGPRS
+			on CLTCH.ObjectID = CELLGPRS.ObjectID
+			and CLTCH.DATE =
+			CELLGPRS.DATE
+			and CLTCH.TIME = CELLGPRS.TIME
+			and CLTCH.BSC =
+			CELLGPRS.BSC
+			Left Join sts_GSM_CELL GSM_CELL
+			on CLTCH.ObjectID =
+			GSM_CELL.ObjectID
+		</foreach>
+		SET ANSI_WARNINGS on SET ARITHABORT on SET
+		ARITHIGNORE off
+	</select>
+
+	<select id="showWirelessUtilizationTemplateTab" parameterType="map"
+		resultType="java.util.LinkedHashMap">
+		SET ANSI_WARNINGS off SET ARITHABORT off SET ARITHIGNORE on
+		<foreach collection="date" item="date" separator="union all">
+			select
+			<choose>
+				<when test="index!=null">
+					<trim prefix="" suffixOverrides=",">
+						<if test="index.contains('日期')">
+							CLTCH.Date as '日期',
+						</if>
+						<if test="index.contains('时间')">
+							CLTCH.Time as '时间',
+						</if>
+						<if test="index.contains('BSC')">
+							CLTCH.BSC as 'BSC',
+						</if>
+						<if test="index.contains('CELL')">
+							CLTCH.ObjectID as 'CELL',
+						</if>
+						<if test="index.contains('中文名')">
+							isnull(GSM_CELL.中文名,'') as '中文名',
+						</if>
+						<if test="index.contains('县区')">
+							isnull(GSM_CELL.县区,'') as '县区',
+						</if>
+						<if test="index.contains('代维')">
+							isnull(GSM_CELL.代维,'') as '代维',
+						</if>
+						<if test="index.contains('话务量')">
+							convert(decimal(18,2),(CELTCHF.TFTRALACC +
+							CELTCHH.THTRALACC) / CELTCHH.THNSCAN) as '话务量',
+						</if>
+						<if test="index.contains('每线话务量')">
+							convert(decimal(18,2),(CELTCHF.TFTRALACC +
+							CELTCHH.THTRALACC) /
+							(CELTCHH.THNSCAN * CLTCH.TNUCHCNT)) as
+							'每线话务量',
+						</if>
+						<if test="index.contains('半速率比例')">
+							convert(decimal(18,2),100 * CELTCHH.THTRALACC /
+							(CELTCHF.TFTRALACC + CELTCHH.THTRALACC)) as
+							'半速率比例',
+						</if>
+						<if test="index.contains('起呼接通率')">
+							convert(decimal(18,2),100 - 100 *
+							(CELTCHFP.TFESTPGSMSUB) / (CLTCH.TASSALL + 0.0001)) as
+							'起呼接通率',
+						</if>
+						<if test="index.contains('感知拥塞数')">
+							CELTCHFP.TFESTPGSMSUB as '感知拥塞数',
+						</if>
+						<if test="index.contains('掉话率')">
+							convert(decimal(18,2),100 * CELTCHFP.TFCONGPGSMSUB /
+							(CELTCHF.TFMSESTB + CELTCHH.THMSESTB))
+							as '掉话率',
+						</if>
+						<if test="index.contains('数据业务流量MB')">
+							convert(decimal(18,2),(CELLQOSG.DLBGGDATA +
+							CELLQOSG.DLTHP1GDATA + CELLQOSG.DLTHP2GDATA +
+							CELLQOSG.DLTHP3GDATA
+							+ CELLQOSG.ULBGGDATA + CELLQOSG.ULTHP1GDATA +
+							CELLQOSG.ULTHP2GDATA
+							+ CELLQOSG.ULTHP3GDATA +
+							CELLQOSEG.DLTHP3EGDATA +
+							CELLQOSEG.DLTHP2EGDATA +
+							CELLQOSEG.DLTHP1EGDATA +
+							CELLQOSEG.DLBGEGDATA +
+							CELLQOSEG.ULTHP3EGDATA +
+							CELLQOSEG.ULTHP2EGDATA +
+							CELLQOSEG.ULTHP1EGDATA +
+							CELLQOSEG.ULBGEGDATA) / 8192) as
+							'数据业务流量MB',
+						</if>
+						<if test="index.contains('无线利用率')">
+							convert(decimal(18,2),100 * ((CELTCHF.TFTRALACC +
+							CELTCHH.THTRALACC) / CELTCHF.TFNSCAN +
+							CELLGPRS.ALLPDCHACTACC /
+							CELLGPRS.ALLPDCHSCAN) / CLTCH.TNUCHCNT /
+							0.75) as '无线利用率'
+						</if>
+					</trim>
+				</when>
+				<otherwise>
+					CLTCH.Date as '日期',
+					CLTCH.Time as '时间',
+					CLTCH.BSC as 'BSC',
+					CLTCH.ObjectID as 'CELL',
+					isnull(GSM_CELL.中文名,'') as '中文名',
+					isnull(GSM_CELL.县区,'') as '县区',
+					isnull(GSM_CELL.代维,'') as '代维',
+					convert(decimal(18,2),(CELTCHF.TFTRALACC +
+					CELTCHH.THTRALACC) / CELTCHH.THNSCAN) as '话务量',
+					convert(decimal(18,2),(CELTCHF.TFTRALACC + CELTCHH.THTRALACC) /
+					(CELTCHH.THNSCAN * CLTCH.TNUCHCNT)) as '每线话务量',
+					convert(decimal(18,2),100 * CELTCHH.THTRALACC / (CELTCHF.TFTRALACC
+					+
+					CELTCHH.THTRALACC)) as '半速率比例',
+					convert(decimal(18,2),100 - 100 *
+					(CELTCHFP.TFESTPGSMSUB) / (CLTCH.TASSALL + 0.0001)) as
+					'起呼接通率',
+					CELTCHFP.TFESTPGSMSUB as '感知拥塞数',
+					convert(decimal(18,2),100 *
+					CELTCHFP.TFCONGPGSMSUB / (CELTCHF.TFMSESTB + CELTCHH.THMSESTB))
+					as
+					'掉话率',
+					convert(decimal(18,2),(CELLQOSG.DLBGGDATA +
+					CELLQOSG.DLTHP1GDATA + CELLQOSG.DLTHP2GDATA +
+					CELLQOSG.DLTHP3GDATA +
+					CELLQOSG.ULBGGDATA + CELLQOSG.ULTHP1GDATA +
+					CELLQOSG.ULTHP2GDATA +
+					CELLQOSG.ULTHP3GDATA +
+					CELLQOSEG.DLTHP3EGDATA +
+					CELLQOSEG.DLTHP2EGDATA +
+					CELLQOSEG.DLTHP1EGDATA +
+					CELLQOSEG.DLBGEGDATA +
+					CELLQOSEG.ULTHP3EGDATA +
+					CELLQOSEG.ULTHP2EGDATA +
+					CELLQOSEG.ULTHP1EGDATA +
+					CELLQOSEG.ULBGEGDATA) / 8192) as '数据业务流量MB',
+					convert(decimal(18,2),100 * ((CELTCHF.TFTRALACC +
+					CELTCHH.THTRALACC)
+					/ CELTCHF.TFNSCAN +
+					CELLGPRS.ALLPDCHACTACC /
+					CELLGPRS.ALLPDCHSCAN) /
+					CLTCH.TNUCHCNT / 0.75) as '无线利用率'
+				</otherwise>
+			</choose>
+			from (select *
+			from
+			sts${granularity}_CLTCH_${date}
+			where 1 = 1
+			<if test="time!=null">
+				and time in
+				<foreach collection="time" item="time1" open="(" close=")"
+					separator=",">
+					'${time1}'
+				</foreach>
+			</if>
+			<if test="bsc!=null">
+				and bsc in
+				<foreach collection="bsc" item="bsc1" open="(" close=")"
+					separator=",">
+					'${bsc1}'
+				</foreach>
+			</if>
+			<if test="cell!=null">
+				and ObjectID in
+				<foreach collection="cell" item="cell1" open="(" close=")"
+					separator=",">
+					'${cell1}'
+				</foreach>
+			</if>
+			) CLTCH
+			Left Join (select *
+			from
+			sts${granularity}_CELTCHF_${date}
+			where
+			1 = 1
+			<if test="time!=null">
+				and time in
+				<foreach collection="time" item="time2" open="(" close=")"
+					separator=",">
+					'${time2}'
+				</foreach>
+			</if>
+			<if test="bsc!=null">
+				and bsc in
+				<foreach collection="bsc" item="bsc2" open="(" close=")"
+					separator=",">
+					'${bsc2}'
+				</foreach>
+			</if>
+			<if test="cell!=null">
+				and ObjectID in
+				<foreach collection="cell" item="cell2" open="(" close=")"
+					separator=",">
+					'${cell2}'
+				</foreach>
+			</if>
+			) CELTCHF
+			on CLTCH.ObjectID = CELTCHF.ObjectID
+			and CLTCH.DATE =
+			CELTCHF.DATE
+			and CLTCH.TIME = CELTCHF.TIME
+			and CLTCH.BSC = CELTCHF.BSC
+			Left Join (select *
+			from
+			sts${granularity}_CELTCHH_${date}
+			where 1 = 1
+			<if test="time!=null">
+				and time in
+				<foreach collection="time" item="time3" open="(" close=")"
+					separator=",">
+					'${time3}'
+				</foreach>
+			</if>
+			<if test="bsc!=null">
+				and bsc in
+				<foreach collection="bsc" item="bsc3" open="(" close=")"
+					separator=",">
+					'${bsc3}'
+				</foreach>
+			</if>
+			<if test="cell!=null">
+				and ObjectID in
+				<foreach collection="cell" item="cell3" open="(" close=")"
+					separator=",">
+					'${cell3}'
+				</foreach>
+			</if>
+			) CELTCHH
+			on CLTCH.ObjectID = CELTCHH.ObjectID
+			and CLTCH.DATE =
+			CELTCHH.DATE
+			and CLTCH.TIME = CELTCHH.TIME
+			and CLTCH.BSC = CELTCHH.BSC
+			Left Join (select *
+			from
+			sts${granularity}_CELTCHFP_${date}
+			where 1 = 1
+			<if test="time!=null">
+				and time in
+				<foreach collection="time" item="time4" open="(" close=")"
+					separator=",">
+					'${time4}'
+				</foreach>
+			</if>
+			<if test="bsc!=null">
+				and bsc in
+				<foreach collection="bsc" item="bsc4" open="(" close=")"
+					separator=",">
+					'${bsc4}'
+				</foreach>
+			</if>
+			<if test="cell!=null">
+				and ObjectID in
+				<foreach collection="cell" item="cell4" open="(" close=")"
+					separator=",">
+					'${cell4}'
+				</foreach>
+			</if>
+			) CELTCHFP
+			on CLTCH.ObjectID = CELTCHFP.ObjectID
+			and CLTCH.DATE =
+			CELTCHFP.DATE
+			and CLTCH.TIME = CELTCHFP.TIME
+			and CLTCH.BSC =
+			CELTCHFP.BSC
+			Left Join (select *
+			from
+			sts${granularity}_CELLQOSG_${date}
+			where 1 = 1
+			<if test="time!=null">
+				and time in
+				<foreach collection="time" item="time5" open="(" close=")"
+					separator=",">
+					'${time5}'
+				</foreach>
+			</if>
+			<if test="bsc!=null">
+				and bsc in
+				<foreach collection="bsc" item="bsc5" open="(" close=")"
+					separator=",">
+					'${bsc5}'
+				</foreach>
+			</if>
+			<if test="cell!=null">
+				and ObjectID in
+				<foreach collection="cell" item="cell5" open="(" close=")"
+					separator=",">
+					'${cell5}'
+				</foreach>
+			</if>
+			) CELLQOSG
+			on CLTCH.ObjectID = CELLQOSG.ObjectID
+			and CLTCH.DATE =
+			CELLQOSG.DATE
+			and CLTCH.TIME = CELLQOSG.TIME
+			and CLTCH.BSC =
+			CELLQOSG.BSC
+			Left Join (select *
+			from
+			sts${granularity}_CELLQOSEG_${date}
+			where 1 = 1
+			<if test="time!=null">
+				and time in
+				<foreach collection="time" item="time6" open="(" close=")"
+					separator=",">
+					'${time6}'
+				</foreach>
+			</if>
+			<if test="bsc!=null">
+				and bsc in
+				<foreach collection="bsc" item="bsc6" open="(" close=")"
+					separator=",">
+					'${bsc6}'
+				</foreach>
+			</if>
+			<if test="cell!=null">
+				and ObjectID in
+				<foreach collection="cell" item="cell6" open="(" close=")"
+					separator=",">
+					'${cell6}'
+				</foreach>
+			</if>
+			) CELLQOSEG
+			on CLTCH.ObjectID = CELLQOSEG.ObjectID
+			and CLTCH.DATE =
+			CELLQOSEG.DATE
+			and CLTCH.TIME = CELLQOSEG.TIME
+			and CLTCH.BSC =
+			CELLQOSEG.BSC
+			Left Join (select *
+			from
+			sts${granularity}_CELLGPRS_${date}
+			where 1 = 1
+			<if test="time!=null">
+				and time in
+				<foreach collection="time" item="time7" open="(" close=")"
+					separator=",">
+					'${time7}'
+				</foreach>
+			</if>
+			<if test="bsc!=null">
+				and bsc in
+				<foreach collection="bsc" item="bsc7" open="(" close=")"
+					separator=",">
+					'${bsc7}'
+				</foreach>
+			</if>
+			<if test="cell!=null">
+				and ObjectID in
+				<foreach collection="cell" item="cell7" open="(" close=")"
+					separator=",">
+					'${cell7}'
+				</foreach>
+			</if>
+			) CELLGPRS
+			on CLTCH.ObjectID = CELLGPRS.ObjectID
+			and CLTCH.DATE =
+			CELLGPRS.DATE
+			and CLTCH.TIME = CELLGPRS.TIME
+			and CLTCH.BSC =
+			CELLGPRS.BSC
+			Left Join sts_GSM_CELL GSM_CELL
+			on CLTCH.ObjectID =
+			GSM_CELL.ObjectID
+		</foreach>
+		SET ANSI_WARNINGS on SET ARITHABORT
+		on SET ARITHIGNORE
+		off
+	</select>
+
+	<select id="showQualityTemplateTab" parameterType="map"
+		resultType="java.util.LinkedHashMap">
+		SET ANSI_WARNINGS off SET ARITHABORT off SET ARITHIGNORE on
+		<foreach collection="date" item="date" separator="union all">
+			select
+			<choose>
+				<when test="index!=null">
+					<trim prefix="" suffixOverrides=",">
+						<if test="index.contains('日期')">
+							CLTCH.Date as '日期',
+						</if>
+						<if test="index.contains('时间')">
+							CLTCH.Time as '时间',
+						</if>
+						<if test="index.contains('BSC')">
+							CLTCH.BSC as 'BSC',
+						</if>
+						<if test="index.contains('CELL')">
+							CLTCH.ObjectID as 'CELL',
+						</if>
+						<if test="index.contains('中文名')">
+							isnull(GSM_CELL.中文名,'') as '中文名',
+						</if>
+						<if test="index.contains('县区')">
+							isnull(GSM_CELL.县区,'') as '县区',
+						</if>
+						<if test="index.contains('代维')">
+							isnull(GSM_CELL.代维,'') as '代维',
+						</if>
+						<if test="index.contains('UL0')">
+							CLRXQUAL.QUAL00UL as 'UL0',
+						</if>
+						<if test="index.contains('UL1')">
+							CLRXQUAL.QUAL10UL as 'UL1',
+						</if>
+						<if test="index.contains('UL2')">
+							CLRXQUAL.QUAL20UL as 'UL2',
+						</if>
+						<if test="index.contains('UL3')">
+							CLRXQUAL.QUAL30UL as 'UL3',
+						</if>
+						<if test="index.contains('UL4')">
+							CLRXQUAL.QUAL40UL as 'UL4',
+						</if>
+						<if test="index.contains('UL5')">
+							CLRXQUAL.QUAL50UL as 'UL5',
+						</if>
+						<if test="index.contains('UL6')">
+							CLRXQUAL.QUAL60UL as 'UL6',
+						</if>
+						<if test="index.contains('UL7')">
+							CLRXQUAL.QUAL70UL as 'UL7',
+						</if>
+						<if test="index.contains('DL0')">
+							CLRXQUAL.QUAL00DL as 'DL0',
+						</if>
+						<if test="index.contains('DL1')">
+							CLRXQUAL.QUAL10DL as 'DL1',
+						</if>
+						<if test="index.contains('DL2')">
+							CLRXQUAL.QUAL20DL as 'DL2',
+						</if>
+						<if test="index.contains('DL3')">
+							CLRXQUAL.QUAL30DL as 'DL3',
+						</if>
+						<if test="index.contains('DL4')">
+							CLRXQUAL.QUAL40DL as 'DL4',
+						</if>
+						<if test="index.contains('DL5')">
+							CLRXQUAL.QUAL50DL as 'DL5',
+						</if>
+						<if test="index.contains('DL6')">
+							CLRXQUAL.QUAL60DL as 'DL6',
+						</if>
+						<if test="index.contains('DL7')">
+							CLRXQUAL.QUAL70DL as 'DL7',
+						</if>
+						<if test="index.contains('上行质量')">
+							convert(decimal(18,2),(CLRXQUAL.QUAL00UL +
+							CLRXQUAL.QUAL10UL + CLRXQUAL.QUAL20UL +
+							CLRXQUAL.QUAL30UL +
+							CLRXQUAL.QUAL40UL + CLRXQUAL.QUAL50UL) /
+							(CLRXQUAL.QUAL00UL +
+							CLRXQUAL.QUAL10UL + CLRXQUAL.QUAL20UL +
+							CLRXQUAL.QUAL30UL +
+							CLRXQUAL.QUAL40UL + CLRXQUAL.QUAL50UL +
+							CLRXQUAL.QUAL60UL +
+							CLRXQUAL.QUAL70UL + 0.00001) * 100) as '上行质量',
+						</if>
+						<if test="index.contains('下行质量')">
+							convert(decimal(18,2),(CLRXQUAL.QUAL00DL +
+							CLRXQUAL.QUAL10DL + CLRXQUAL.QUAL20DL +
+							CLRXQUAL.QUAL30DL +
+							CLRXQUAL.QUAL40DL + CLRXQUAL.QUAL50DL) /
+							(CLRXQUAL.QUAL00DL +
+							CLRXQUAL.QUAL10DL + CLRXQUAL.QUAL20DL +
+							CLRXQUAL.QUAL30DL +
+							CLRXQUAL.QUAL40DL + CLRXQUAL.QUAL50DL +
+							CLRXQUAL.QUAL60DL +
+							CLRXQUAL.QUAL70DL + 0.00001) * 100) as '下行质量'
+						</if>
+					</trim>
+				</when>
+				<otherwise>
+					CLTCH.Date as '日期',
+					CLTCH.Time as '时间',
+					CLTCH.BSC as 'BSC',
+					CLTCH.ObjectID as 'CELL',
+					isnull(GSM_CELL.中文名,'') as '中文名',
+					isnull(GSM_CELL.县区,'') as '县区',
+					isnull(GSM_CELL.代维,'') as '代维',
+					CLRXQUAL.QUAL00UL as 'UL0',
+					CLRXQUAL.QUAL10UL as
+					'UL1',
+					CLRXQUAL.QUAL20UL as 'UL2',
+					CLRXQUAL.QUAL30UL as 'UL3',
+					CLRXQUAL.QUAL40UL as 'UL4',
+					CLRXQUAL.QUAL50UL as 'UL5',
+					CLRXQUAL.QUAL60UL as 'UL6',
+					CLRXQUAL.QUAL70UL as 'UL7',
+					CLRXQUAL.QUAL00DL as 'DL0',
+					CLRXQUAL.QUAL10DL as 'DL1',
+					CLRXQUAL.QUAL20DL as 'DL2',
+					CLRXQUAL.QUAL30DL as 'DL3',
+					CLRXQUAL.QUAL40DL as 'DL4',
+					CLRXQUAL.QUAL50DL as 'DL5',
+					CLRXQUAL.QUAL60DL as 'DL6',
+					CLRXQUAL.QUAL70DL as 'DL7',
+					convert(decimal(18,2),(CLRXQUAL.QUAL00UL + CLRXQUAL.QUAL10UL +
+					CLRXQUAL.QUAL20UL +
+					CLRXQUAL.QUAL30UL + CLRXQUAL.QUAL40UL +
+					CLRXQUAL.QUAL50UL) /
+					(CLRXQUAL.QUAL00UL + CLRXQUAL.QUAL10UL +
+					CLRXQUAL.QUAL20UL +
+					CLRXQUAL.QUAL30UL + CLRXQUAL.QUAL40UL +
+					CLRXQUAL.QUAL50UL +
+					CLRXQUAL.QUAL60UL + CLRXQUAL.QUAL70UL + 0.00001)
+					* 100) as '上行质量',
+					convert(decimal(18,2),(CLRXQUAL.QUAL00DL +
+					CLRXQUAL.QUAL10DL +
+					CLRXQUAL.QUAL20DL +
+					CLRXQUAL.QUAL30DL +
+					CLRXQUAL.QUAL40DL + CLRXQUAL.QUAL50DL) /
+					(CLRXQUAL.QUAL00DL +
+					CLRXQUAL.QUAL10DL + CLRXQUAL.QUAL20DL +
+					CLRXQUAL.QUAL30DL +
+					CLRXQUAL.QUAL40DL + CLRXQUAL.QUAL50DL +
+					CLRXQUAL.QUAL60DL +
+					CLRXQUAL.QUAL70DL + 0.00001) * 100) as '下行质量'
+				</otherwise>
+			</choose>
+			from (select *
+			from
+			sts${granularity}_CLTCH_${date}
+			where 1 = 1
+			<if test="time!=null">
+				and time in
+				<foreach collection="time" item="time1" open="(" close=")"
+					separator=",">
+					'${time1}'
+				</foreach>
+			</if>
+			<if test="bsc!=null">
+				and bsc in
+				<foreach collection="bsc" item="bsc1" open="(" close=")"
+					separator=",">
+					'${bsc1}'
+				</foreach>
+			</if>
+			<if test="cell!=null">
+				and ObjectID in
+				<foreach collection="cell" item="cell1" open="(" close=")"
+					separator=",">
+					'${cell1}'
+				</foreach>
+			</if>
+			) CLTCH
+			Left Join (select *
+			from
+			sts${granularity}_CLRXQUAL_${date}
+			where 1 = 1
+			<if test="time!=null">
+				and time in
+				<foreach collection="time" item="time2" open="(" close=")"
+					separator=",">
+					'${time2}'
+				</foreach>
+			</if>
+			<if test="bsc!=null">
+				and bsc in
+				<foreach collection="bsc" item="bsc2" open="(" close=")"
+					separator=",">
+					'${bsc2}'
+				</foreach>
+			</if>
+			<if test="cell!=null">
+				and ObjectID in
+				<foreach collection="cell" item="cell2" open="(" close=")"
+					separator=",">
+					'${cell2}'
+				</foreach>
+			</if>
+			) CLRXQUAL
+			on CLTCH.ObjectID = CLRXQUAL.ObjectID
+			and CLTCH.DATE =
+			CLRXQUAL.DATE
+			and CLTCH.TIME = CLRXQUAL.TIME
+			and CLTCH.BSC =
+			CLRXQUAL.BSC
+			Left Join sts_GSM_CELL GSM_CELL
+			on CLTCH.ObjectID =
+			GSM_CELL.ObjectID
+		</foreach>
+		SET ANSI_WARNINGS on SET ARITHABORT on SET
+		ARITHIGNORE off
+	</select>
+
+	<select id="showAggregationBSCSTrafficTemplateTab"
+		parameterType="map" resultType="java.util.LinkedHashMap">
+		SET ANSI_WARNINGS off SET ARITHABORT off SET ARITHIGNORE on
+		<foreach collection="date" item="date" separator="union all">
+			select
+			<choose>
+				<when test="index!=null">
+					<trim prefix="" suffixOverrides=",">
+						<if test="index.contains('日期')">
+							CLSDCCH.Date as '日期',
+						</if>
+						<if test="index.contains('BSC')">
+							CLSDCCH.BSC as 'BSC',
+						</if>
+						<if test="index.contains('总S拥塞数')">
+							sum(CLSDCCH.CCONGS) as '总S拥塞数',
+						</if>
+						<if test="index.contains('最大S拥塞数')">
+							max(CLSDCCH.CCONGS) as '最大S拥塞数',
+						</if>
+						<if test="index.contains('总LU次数')">
+							sum(RANDOMACC.RAOTHER) as '总LU次数',
+						</if>
+						<if test="index.contains('最大LU次数')">
+							max(RANDOMACC.RAOTHER) as '最大LU次数',
+						</if>
+						<if test="index.contains('总S掉话数')">
+							sum(CLSDCCH.CNDROP) as '总S掉话数',
+						</if>
+						<if test="index.contains('最大S掉话数')">
+							max(CLSDCCH.CNDROP) as '最大S掉话数'
+						</if>
+					</trim>
+				</when>
+				<otherwise>
+					CLSDCCH.Date as '日期',
+					CLSDCCH.BSC as 'BSC',
+					sum(CLSDCCH.CCONGS) as '总S拥塞数',
+					max(CLSDCCH.CCONGS) as '最大S拥塞数',
+					sum(RANDOMACC.RAOTHER) as '总LU次数',
+					max(RANDOMACC.RAOTHER) as
+					'最大LU次数',
+					sum(CLSDCCH.CNDROP) as '总S掉话数',
+					max(CLSDCCH.CNDROP) as
+					'最大S掉话数'
+				</otherwise>
+			</choose>
+			from (select *
+			from
+			sts${granularity}_CLSDCCH_${date}
+			where 1 = 1
+			<if test="time!=null">
+				and time in
+				<foreach collection="time" item="time1" open="(" close=")"
+					separator=",">
+					'${time1}'
+				</foreach>
+			</if>
+			<if test="bsc!=null">
+				and bsc in
+				<foreach collection="bsc" item="bsc1" open="(" close=")"
+					separator=",">
+					'${bsc1}'
+				</foreach>
+			</if>
+			<if test="cell!=null">
+				and ObjectID in
+				<foreach collection="cell" item="cell1" open="(" close=")"
+					separator=",">
+					'${cell1}'
+				</foreach>
+			</if>
+			) CLSDCCH
+			Left Join (select *
+			from
+			sts${granularity}_RANDOMACC_${date}
+			where 1 = 1
+			<if test="time!=null">
+				and time in
+				<foreach collection="time" item="time2" open="(" close=")"
+					separator=",">
+					'${time2}'
+				</foreach>
+			</if>
+			<if test="bsc!=null">
+				and bsc in
+				<foreach collection="bsc" item="bsc2" open="(" close=")"
+					separator=",">
+					'${bsc2}'
+				</foreach>
+			</if>
+			<if test="cell!=null">
+				and ObjectID in
+				<foreach collection="cell" item="cell2" open="(" close=")"
+					separator=",">
+					'${cell2}'
+				</foreach>
+			</if>
+			) RANDOMACC
+			on CLSDCCH.ObjectID = RANDOMACC.ObjectID
+			and CLSDCCH.DATE =
+			RANDOMACC.DATE
+			and CLSDCCH.TIME = RANDOMACC.TIME
+			and CLSDCCH.BSC =
+			RANDOMACC.BSC
+			group by CLSDCCH.Date, CLSDCCH.BSC
+		</foreach>
+		SET ANSI_WARNINGS on
+		SET ARITHABORT on SET ARITHIGNORE off
+	</select>
+
+	<select id="showAggregationBSCTrafficTemplateTab" parameterType="map"
+		resultType="java.util.LinkedHashMap">
+		SET ANSI_WARNINGS off SET ARITHABORT off SET ARITHIGNORE on
+		<foreach collection="date" item="date" separator="union all">
+			select
+			<choose>
+				<when test="index!=null">
+					<trim prefix="" suffixOverrides=",">
+						<if test="index.contains('日期')">
+							CELTCHF.Date as '日期',
+						</if>
+						<if test="index.contains('BSC')">
+							CELTCHF.BSC as 'BSC',
+						</if>
+						<if test="index.contains('总话务量')">
+							convert(decimal(18,2),sum((CELTCHF.TFTRALACC +
+							CELTCHH.THTRALACC) / CELTCHH.THNSCAN)) as '总话务量',
+						</if>
+						<if test="index.contains('最大话务量')">
+							convert(decimal(18,2),max((CELTCHF.TFTRALACC +
+							CELTCHH.THTRALACC) / CELTCHH.THNSCAN)) as '最大话务量',
+						</if>
+						<if test="index.contains('平均话务量')">
+							convert(decimal(18,2),avg((CELTCHF.TFTRALACC +
+							CELTCHH.THTRALACC) / CELTCHH.THNSCAN)) as '平均话务量',
+						</if>
+						<if test="index.contains('最大指配拥塞')">
+							max(CELTCHFP.TFESTPGSMSUB) as '最大指配拥塞',
+						</if>
+						<if test="index.contains('总掉话数')">
+							sum(CELTCHFP.TFCONGPGSMSUB) as '总掉话数',
+						</if>
+						<if test="index.contains('最大掉话数')">
+							max(CELTCHFP.TFCONGPGSMSUB) as '最大掉话数'
+						</if>
+					</trim>
+				</when>
+				<otherwise>
+					CELTCHF.Date as '日期',
+					CELTCHF.BSC as 'BSC',
+					convert(decimal(18,2),sum((CELTCHF.TFTRALACC + CELTCHH.THTRALACC) /
+					CELTCHH.THNSCAN)) as '总话务量',
+					convert(decimal(18,2),max((CELTCHF.TFTRALACC + CELTCHH.THTRALACC) /
+					CELTCHH.THNSCAN)) as '最大话务量',
+					convert(decimal(18,2),avg((CELTCHF.TFTRALACC + CELTCHH.THTRALACC) /
+					CELTCHH.THNSCAN)) as '平均话务量',
+					max(CELTCHFP.TFESTPGSMSUB) as
+					'最大指配拥塞',
+					sum(CELTCHFP.TFCONGPGSMSUB) as '总掉话数',
+					max(CELTCHFP.TFCONGPGSMSUB) as '最大掉话数'
+				</otherwise>
+			</choose>
+			from (select *
+			from
+			sts${granularity}_CELTCHF_${date}
+			where 1 = 1
+			<if test="time!=null">
+				and time in
+				<foreach collection="time" item="time1" open="(" close=")"
+					separator=",">
+					'${time1}'
+				</foreach>
+			</if>
+			<if test="bsc!=null">
+				and bsc in
+				<foreach collection="bsc" item="bsc1" open="(" close=")"
+					separator=",">
+					'${bsc1}'
+				</foreach>
+			</if>
+			<if test="cell!=null">
+				and ObjectID in
+				<foreach collection="cell" item="cell1" open="(" close=")"
+					separator=",">
+					'${cell1}'
+				</foreach>
+			</if>
+			) CELTCHF
+			Left Join (select *
+			from
+			sts${granularity}_CELTCHH_${date}
+			where 1 = 1
+			<if test="time!=null">
+				and time in
+				<foreach collection="time" item="time2" open="(" close=")"
+					separator=",">
+					'${time2}'
+				</foreach>
+			</if>
+			<if test="bsc!=null">
+				and bsc in
+				<foreach collection="bsc" item="bsc2" open="(" close=")"
+					separator=",">
+					'${bsc2}'
+				</foreach>
+			</if>
+			<if test="cell!=null">
+				and ObjectID in
+				<foreach collection="cell" item="cell2" open="(" close=")"
+					separator=",">
+					'${cell2}'
+				</foreach>
+			</if>
+			) CELTCHH
+			on CELTCHF.ObjectID = CELTCHH.ObjectID
+			and CELTCHF.DATE =
+			CELTCHH.DATE
+			and CELTCHF.TIME = CELTCHH.TIME
+			and CELTCHF.BSC =
+			CELTCHH.BSC
+			Left Join (select *
+			from
+			sts${granularity}_CELTCHFP_${date}
+			where 1 = 1
+			<if test="time!=null">
+				and time in
+				<foreach collection="time" item="time3" open="(" close=")"
+					separator=",">
+					'${time3}'
+				</foreach>
+			</if>
+			<if test="bsc!=null">
+				and bsc in
+				<foreach collection="bsc" item="bsc3" open="(" close=")"
+					separator=",">
+					'${bsc3}'
+				</foreach>
+			</if>
+			<if test="cell!=null">
+				and ObjectID in
+				<foreach collection="cell" item="cell3" open="(" close=")"
+					separator=",">
+					'${cell3}'
+				</foreach>
+			</if>
+			) CELTCHFP
+			on CELTCHF.ObjectID = CELTCHFP.ObjectID
+			and CELTCHF.DATE =
+			CELTCHFP.DATE
+			and CELTCHF.TIME = CELTCHFP.TIME
+			and CELTCHF.BSC =
+			CELTCHFP.BSC
+			group by CELTCHF.Date, CELTCHF.BSC
+		</foreach>
+		SET ANSI_WARNINGS on SET ARITHABORT on SET ARITHIGNORE off
+	</select>
+
+	<select id="showAggregationBSCDataTemplateTab" parameterType="map"
+		resultType="java.util.LinkedHashMap">
+		SET ANSI_WARNINGS off SET ARITHABORT off SET ARITHIGNORE on
+		<foreach collection="date" item="date" separator="union all">
+			select
+			<choose>
+				<when test="index!=null">
+					<trim prefix="" suffixOverrides=",">
+						<if test="index.contains('日期')">
+							CELLQOSEG.Date as '日期',
+						</if>
+						<if test="index.contains('BSC')">
+							CELLQOSEG.BSC as 'BSC',
+						</if>
+						<if test="index.contains('总EDGE下行流量')">
+							convert(decimal(18,2),sum((CELLQOSEG.DLTHP3EGDATA +
+							CELLQOSEG.DLTHP2EGDATA +
+							CELLQOSEG.DLTHP1EGDATA +
+							CELLQOSEG.DLBGEGDATA) / 8192)) as '总EDGE下行流量',
+						</if>
+						<if test="index.contains('总EDGE上行流量')">
+							convert(decimal(18,2),sum((CELLQOSEG.ULTHP3EGDATA +
+							CELLQOSEG.ULTHP2EGDATA +
+							CELLQOSEG.ULTHP1EGDATA +
+							CELLQOSEG.ULBGEGDATA) / 8192)) as '总EDGE上行流量',
+						</if>
+						<if test="index.contains('总GPRS下行流量')">
+							convert(decimal(18,2),sum((CELLQOSG.DLBGGDATA +
+							CELLQOSG.DLTHP1GDATA +
+							CELLQOSG.DLTHP2GDATA +
+							CELLQOSG.DLTHP3GDATA) / 8192)) as '总GPRS下行流量',
+						</if>
+						<if test="index.contains('总GPRS上行流量')">
+							convert(decimal(18,2),sum((CELLQOSG.ULBGGDATA +
+							CELLQOSG.ULTHP1GDATA +
+							CELLQOSG.ULTHP2GDATA +
+							CELLQOSG.ULTHP3GDATA) / 8192)) as '总GPRS上行流量',
+						</if>
+						<if test="index.contains('总下行流量')">
+							convert(decimal(18,2),sum((CELLQOSG.DLBGGDATA +
+							CELLQOSG.DLTHP1GDATA +
+							CELLQOSG.DLTHP2GDATA + CELLQOSG.DLTHP3GDATA
+							+
+							CELLQOSEG.DLTHP3EGDATA + CELLQOSEG.DLTHP2EGDATA +
+							CELLQOSEG.DLTHP1EGDATA + CELLQOSEG.DLBGEGDATA) / 8192)) as
+							'总下行流量',
+						</if>
+						<if test="index.contains('总上行流量')">
+							convert(decimal(18,2),sum((CELLQOSG.ULBGGDATA +
+							CELLQOSG.ULTHP1GDATA +
+							CELLQOSG.ULTHP2GDATA + CELLQOSG.ULTHP3GDATA
+							+
+							CELLQOSEG.ULTHP3EGDATA + CELLQOSEG.ULTHP2EGDATA +
+							CELLQOSEG.ULTHP1EGDATA + CELLQOSEG.ULBGEGDATA) / 8192)) as
+							'总上行流量'
+						</if>
+					</trim>
+				</when>
+				<otherwise>
+					CELLQOSEG.Date as '日期',
+					CELLQOSEG.BSC as 'BSC',
+					convert(decimal(18,2),sum((CELLQOSEG.DLTHP3EGDATA +
+					CELLQOSEG.DLTHP2EGDATA +
+					CELLQOSEG.DLTHP1EGDATA +
+					CELLQOSEG.DLBGEGDATA) / 8192)) as '总EDGE下行流量',
+					convert(decimal(18,2),sum((CELLQOSEG.ULTHP3EGDATA +
+					CELLQOSEG.ULTHP2EGDATA +
+					CELLQOSEG.ULTHP1EGDATA +
+					CELLQOSEG.ULBGEGDATA) / 8192)) as '总EDGE上行流量',
+					convert(decimal(18,2),sum((CELLQOSG.DLBGGDATA +
+					CELLQOSG.DLTHP1GDATA
+					+
+					CELLQOSG.DLTHP2GDATA + CELLQOSG.DLTHP3GDATA) /
+					8192)) as '总GPRS下行流量',
+					convert(decimal(18,2),sum((CELLQOSG.ULBGGDATA +
+					CELLQOSG.ULTHP1GDATA
+					+
+					CELLQOSG.ULTHP2GDATA + CELLQOSG.ULTHP3GDATA) /
+					8192)) as '总GPRS上行流量',
+					convert(decimal(18,2),sum((CELLQOSG.DLBGGDATA +
+					CELLQOSG.DLTHP1GDATA
+					+
+					CELLQOSG.DLTHP2GDATA + CELLQOSG.DLTHP3GDATA +
+					CELLQOSEG.DLTHP3EGDATA + CELLQOSEG.DLTHP2EGDATA +
+					CELLQOSEG.DLTHP1EGDATA + CELLQOSEG.DLBGEGDATA) / 8192)) as '总下行流量',
+					convert(decimal(18,2),sum((CELLQOSG.ULBGGDATA +
+					CELLQOSG.ULTHP1GDATA
+					+
+					CELLQOSG.ULTHP2GDATA + CELLQOSG.ULTHP3GDATA +
+					CELLQOSEG.ULTHP3EGDATA + CELLQOSEG.ULTHP2EGDATA +
+					CELLQOSEG.ULTHP1EGDATA + CELLQOSEG.ULBGEGDATA) / 8192)) as '总上行流量'
+				</otherwise>
+			</choose>
+			from (select *
+			from sts${granularity}_CELLQOSEG_${date}
+			where 1 = 1
+			<if test="time!=null">
+				and time in
+				<foreach collection="time" item="time1" open="(" close=")"
+					separator=",">
+					'${time1}'
+				</foreach>
+			</if>
+			<if test="bsc!=null">
+				and bsc in
+				<foreach collection="bsc" item="bsc1" open="(" close=")"
+					separator=",">
+					'${bsc1}'
+				</foreach>
+			</if>
+			<if test="cell!=null">
+				and ObjectID in
+				<foreach collection="cell" item="cell1" open="(" close=")"
+					separator=",">
+					'${cell1}'
+				</foreach>
+			</if>
+			) CELLQOSEG
+			Left Join (select *
+			from sts${granularity}_CELLQOSG_${date}
+			where 1 = 1
+			<if test="time!=null">
+				and time in
+				<foreach collection="time" item="time2" open="(" close=")"
+					separator=",">
+					'${time2}'
+				</foreach>
+			</if>
+			<if test="bsc!=null">
+				and bsc in
+				<foreach collection="bsc" item="bsc2" open="(" close=")"
+					separator=",">
+					'${bsc2}'
+				</foreach>
+			</if>
+			<if test="cell!=null">
+				and ObjectID in
+				<foreach collection="cell" item="cell2" open="(" close=")"
+					separator=",">
+					'${cell2}'
+				</foreach>
+			</if>
+			) CELLQOSG
+			on CELLQOSEG.ObjectID = CELLQOSG.ObjectID
+			and CELLQOSEG.DATE
+			= CELLQOSG.DATE
+			and CELLQOSEG.TIME = CELLQOSG.TIME
+			and CELLQOSEG.BSC =
+			CELLQOSG.BSC
+			group by CELLQOSEG.Date, CELLQOSEG.BSC
+		</foreach>
+		SET ANSI_WARNINGS on SET ARITHABORT on SET ARITHIGNORE off
+	</select>
+
+	<select id="showAggregationCELLSTrafficTemplateTab"
+		parameterType="map" resultType="java.util.LinkedHashMap">
+		SET ANSI_WARNINGS off SET ARITHABORT off SET ARITHIGNORE on
+		<foreach collection="date" item="date" separator="union all">
+			select
+			<choose>
+				<when test="index!=null">
+					<trim prefix="" suffixOverrides=",">
+						<if test="index.contains('日期')">
+							CLSDCCH.Date as '日期',
+						</if>
+						<if test="index.contains('BSC')">
+							CLSDCCH.BSC as 'BSC',
+						</if>
+						<if test="index.contains('CELL')">
+							CLSDCCH.ObjectID as 'CELL',
+						</if>
+						<if test="index.contains('总S拥塞数')">
+							sum(CLSDCCH.CCONGS) as '总S拥塞数',
+						</if>
+						<if test="index.contains('最大S拥塞数')">
+							max(CLSDCCH.CCONGS) as '最大S拥塞数',
+						</if>
+						<if test="index.contains('总LU次数')">
+							sum(RANDOMACC.RAOTHER) as '总LU次数',
+						</if>
+						<if test="index.contains('最大LU次数')">
+							max(RANDOMACC.RAOTHER) as '最大LU次数',
+						</if>
+						<if test="index.contains('总S掉话数')">
+							sum(CLSDCCH.CNDROP) as '总S掉话数',
+						</if>
+						<if test="index.contains('最大S掉话数')">
+							max(CLSDCCH.CNDROP) as '最大S掉话数'
+						</if>
+					</trim>
+				</when>
+				<otherwise>
+					CLSDCCH.Date as '日期',
+					CLSDCCH.BSC as 'BSC',
+					CLSDCCH.ObjectID as 'CELL',
+					sum(CLSDCCH.CCONGS) as '总S拥塞数',
+					max(CLSDCCH.CCONGS) as '最大S拥塞数',
+					sum(RANDOMACC.RAOTHER) as '总LU次数',
+					max(RANDOMACC.RAOTHER) as '最大LU次数',
+					sum(CLSDCCH.CNDROP) as '总S掉话数',
+					max(CLSDCCH.CNDROP) as '最大S掉话数'
+				</otherwise>
+			</choose>
+			from (select *
+			from sts${granularity}_CLSDCCH_${date}
+			where 1 = 1
+			<if test="time!=null">
+				and time in
+				<foreach collection="time" item="time1" open="(" close=")"
+					separator=",">
+					'${time1}'
+				</foreach>
+			</if>
+			<if test="bsc!=null">
+				and bsc in
+				<foreach collection="bsc" item="bsc1" open="(" close=")"
+					separator=",">
+					'${bsc1}'
+				</foreach>
+			</if>
+			<if test="cell!=null">
+				and ObjectID in
+				<foreach collection="cell" item="cell1" open="(" close=")"
+					separator=",">
+					'${cell1}'
+				</foreach>
+			</if>
+			) CLSDCCH
+			Left Join (select *
+			from sts${granularity}_RANDOMACC_${date}
+			where 1 = 1
+			<if test="time!=null">
+				and time in
+				<foreach collection="time" item="time2" open="(" close=")"
+					separator=",">
+					'${time2}'
+				</foreach>
+			</if>
+			<if test="bsc!=null">
+				and bsc in
+				<foreach collection="bsc" item="bsc2" open="(" close=")"
+					separator=",">
+					'${bsc2}'
+				</foreach>
+			</if>
+			<if test="cell!=null">
+				and ObjectID in
+				<foreach collection="cell" item="cell2" open="(" close=")"
+					separator=",">
+					'${cell2}'
+				</foreach>
+			</if>
+			) RANDOMACC
+			on CLSDCCH.ObjectID = RANDOMACC.ObjectID
+			and CLSDCCH.DATE =
+			RANDOMACC.DATE
+			and CLSDCCH.TIME = RANDOMACC.TIME
+			and CLSDCCH.BSC =
+			RANDOMACC.BSC
+			group by CLSDCCH.Date, CLSDCCH.BSC, CLSDCCH.ObjectID
+		</foreach>
+		SET ANSI_WARNINGS on SET ARITHABORT on SET ARITHIGNORE off
+	</select>
+
+	<select id="showAggregationCELLTrafficTemplateTab"
+		parameterType="map" resultType="java.util.LinkedHashMap">
+		SET ANSI_WARNINGS off SET ARITHABORT off SET ARITHIGNORE on
+		<foreach collection="date" item="date" separator="union all">
+			select
+			<choose>
+				<when test="index!=null">
+					<trim prefix="" suffixOverrides=",">
+						<if test="index.contains('日期')">
+
+							CELTCHF.Date as '日期',
+						</if>
+						<if test="index.contains('BSC')">
+							CELTCHF.BSC as 'BSC',
+						</if>
+						<if test="index.contains('CELL')">
+							CELTCHF.ObjectID as 'CELL',
+						</if>
+						<if test="index.contains('总话务量')">
+							convert(decimal(18,2),sum((CELTCHF.TFTRALACC +
+							CELTCHH.THTRALACC) / CELTCHH.THNSCAN)) as '总话务量',
+						</if>
+						<if test="index.contains('最大话务量')">
+							convert(decimal(18,2),max((CELTCHF.TFTRALACC +
+							CELTCHH.THTRALACC) / CELTCHH.THNSCAN)) as '最大话务量',
+						</if>
+						<if test="index.contains('平均话务量')">
+							convert(decimal(18,2),avg((CELTCHF.TFTRALACC +
+							CELTCHH.THTRALACC) / CELTCHH.THNSCAN)) as '平均话务量',
+						</if>
+						<if test="index.contains('总掉话数')">
+							sum(CELTCHFP.TFCONGPGSMSUB) as '总掉话数',
+						</if>
+						<if test="index.contains('最大掉话数')">
+							max(CELTCHFP.TFCONGPGSMSUB) as '最大掉话数'
+						</if>
+					</trim>
+				</when>
+				<otherwise>
+					CELTCHF.Date as '日期',
+					CELTCHF.BSC as 'BSC',
+					CELTCHF.ObjectID as 'CELL',
+					convert(decimal(18,2),sum((CELTCHF.TFTRALACC + CELTCHH.THTRALACC) /
+					CELTCHH.THNSCAN)) as '总话务量',
+					convert(decimal(18,2),max((CELTCHF.TFTRALACC + CELTCHH.THTRALACC) /
+					CELTCHH.THNSCAN)) as '最大话务量',
+					convert(decimal(18,2),avg((CELTCHF.TFTRALACC + CELTCHH.THTRALACC) /
+					CELTCHH.THNSCAN)) as '平均话务量',
+					sum(CELTCHFP.TFCONGPGSMSUB) as '总掉话数',
+					max(CELTCHFP.TFCONGPGSMSUB) as '最大掉话数'
+				</otherwise>
+			</choose>
+			from (select *
+			from sts${granularity}_CELTCHF_${date}
+			where 1 = 1
+			<if test="time!=null">
+				and time in
+				<foreach collection="time" item="time1" open="(" close=")"
+					separator=",">
+					'${time1}'
+				</foreach>
+			</if>
+			<if test="bsc!=null">
+				and bsc in
+				<foreach collection="bsc" item="bsc1" open="(" close=")"
+					separator=",">
+					'${bsc1}'
+				</foreach>
+			</if>
+			<if test="cell!=null">
+				and ObjectID in
+				<foreach collection="cell" item="cell1" open="(" close=")"
+					separator=",">
+					'${cell1}'
+				</foreach>
+			</if>
+			) CELTCHF
+			Left Join (select *
+			from sts${granularity}_CELTCHH_${date}
+			where 1 = 1
+			<if test="time!=null">
+				and time in
+				<foreach collection="time" item="time2" open="(" close=")"
+					separator=",">
+					'${time2}'
+				</foreach>
+			</if>
+			<if test="bsc!=null">
+				and bsc in
+				<foreach collection="bsc" item="bsc2" open="(" close=")"
+					separator=",">
+					'${bsc2}'
+				</foreach>
+			</if>
+			<if test="cell!=null">
+				and ObjectID in
+				<foreach collection="cell" item="cell2" open="(" close=")"
+					separator=",">
+					'${cell2}'
+				</foreach>
+			</if>
+			) CELTCHH
+			on CELTCHF.ObjectID = CELTCHH.ObjectID
+			and CELTCHF.DATE =
+			CELTCHH.DATE
+			and CELTCHF.TIME = CELTCHH.TIME
+			and CELTCHF.BSC =
+			CELTCHH.BSC
+			Left Join (select *
+			from sts${granularity}_CELTCHFP_${date}
+			where 1 = 1
+			<if test="time!=null">
+				and time in
+				<foreach collection="time" item="time3" open="(" close=")"
+					separator=",">
+					'${time3}'
+				</foreach>
+			</if>
+			<if test="bsc!=null">
+				and bsc in
+				<foreach collection="bsc" item="bsc3" open="(" close=")"
+					separator=",">
+					'${bsc3}'
+				</foreach>
+			</if>
+			<if test="cell!=null">
+				and ObjectID in
+				<foreach collection="cell" item="cell3" open="(" close=")"
+					separator=",">
+					'${cell3}'
+				</foreach>
+			</if>
+			) CELTCHFP
+			on CELTCHF.ObjectID = CELTCHFP.ObjectID
+			and CELTCHF.DATE =
+			CELTCHFP.DATE
+			and CELTCHF.TIME = CELTCHFP.TIME
+			and CELTCHF.BSC =
+			CELTCHFP.BSC
+			group by CELTCHF.Date, CELTCHF.BSC, CELTCHF.ObjectID
+		</foreach>
+		SET ANSI_WARNINGS on SET ARITHABORT on SET ARITHIGNORE off
+	</select>
+
+	<select id="showAggregationCELLDriveInAndOutTemplateTab"
+		parameterType="map" resultType="java.util.LinkedHashMap">
+		SET ANSI_WARNINGS off SET ARITHABORT off SET ARITHIGNORE on
+		<foreach collection="date" item="date" separator="union all">
+			select
+			<choose>
+				<when test="index!=null">
+					<trim prefix="" suffixOverrides=",">
+						<if test="index.contains('日期')">
+							sumHo.Date as '日期',
+						</if>
+						<if test="index.contains('BSC')">
+							sumHo.BSC as 'BSC',
+						</if>
+						<if test="index.contains('CELL')">
+							sumHo.ObjectID as 'CELL',
+						</if>
+						<if test="index.contains('切出申请')">
+							sum(sumHo.sumOutHOVERCNT) as '切出申请',
+						</if>
+						<if test="index.contains('切出成功')">
+							sum(sumHo.sumOutHOVERSUC) as '切出成功',
+						</if>
+						<if test="index.contains('切入申请')">
+							sum(sumHo.sumIntHOVERCNT) as '切入申请',
+						</if>
+						<if test="index.contains('切入成功')">
+							sum(sumHo.sumIntHOVERSUC) as '切入成功'
+						</if>
+					</trim>
+				</when>
+				<otherwise>
+					sumHo.Date as '日期',
+					sumHo.BSC as 'BSC',
+					sumHo.ObjectID as
+					'CELL',
+					sum(sumHo.sumOutHOVERCNT) as '切出申请',
+					sum(sumHo.sumOutHOVERSUC) as '切出成功',
+					sum(sumHo.sumIntHOVERCNT) as
+					'切入申请',
+					sum(sumHo.sumIntHOVERSUC) as '切入成功'
+				</otherwise>
+			</choose>
+			from (select *
+			from sts${granularity}_sumHo_${date}
+			where 1 = 1
+			<if test="time!=null">
+				and time in
+				<foreach collection="time" item="time1" open="(" close=")"
+					separator=",">
+					'${time1}'
+				</foreach>
+			</if>
+			<if test="bsc!=null">
+				and bsc in
+				<foreach collection="bsc" item="bsc1" open="(" close=")"
+					separator=",">
+					'${bsc1}'
+				</foreach>
+			</if>
+			<if test="cell!=null">
+				and ObjectID in
+				<foreach collection="cell" item="cell1" open="(" close=")"
+					separator=",">
+					'${cell1}'
+				</foreach>
+			</if>
+			) sumHo
+			group by sumHo.Date, sumHo.BSC, sumHo.ObjectID
+		</foreach>
+		SET ANSI_WARNINGS on SET ARITHABORT on SET ARITHIGNORE off
+	</select>
+
+	<select id="showAggregationCELLSwitchPointToPointTemplateTab"
+		parameterType="map" resultType="java.util.LinkedHashMap">
+		SET ANSI_WARNINGS off SET ARITHABORT off SET ARITHIGNORE on
+		<foreach collection="date" item="date" separator="union all">
+			select
+			<choose>
+				<when test="index!=null">
+					<trim prefix="" suffixOverrides=",">
+						<if test="index.contains('日期')">
+							HO.Date as '日期',
+						</if>
+						<if test="index.contains('BSC')">
+							HO.BSC as 'BSC',
+						</if>
+						<if test="index.contains('CELL_CELLR')">
+							HO.ObjectID as 'CELL_CELLR',
+						</if>
+						<if test="index.contains('切换申请')">
+							sum(HOVERCNT) as '切换申请',
+						</if>
+						<if test="index.contains('切换成功')">
+							sum(HOVERSUC) as '切换成功',
+						</if>
+						<if test="index.contains('回切次数')">
+							sum(HORTTOCH) as '回切次数'
+						</if>
+					</trim>
+				</when>
+				<otherwise>
+					HO.Date as '日期',
+					HO.BSC as 'BSC',
+					HO.ObjectID as
+					'CELL_CELLR',
+					sum(HOVERCNT) as '切换申请',
+					sum(HOVERSUC) as '切换成功',
+					sum(HORTTOCH) as '回切次数'
+				</otherwise>
+			</choose>
+			from (select *
+			from sts${granularity}_HO_${date}
+			where 1 = 1
+			<if test="time!=null">
+				and time in
+				<foreach collection="time" item="time1" open="(" close=")"
+					separator=",">
+					'${time1}'
+				</foreach>
+			</if>
+			<if test="bsc!=null">
+				and bsc in
+				<foreach collection="bsc" item="bsc1" open="(" close=")"
+					separator=",">
+					'${bsc1}'
+				</foreach>
+			</if>
+			<if test="cell!=null">
+				and ObjectID in
+				<foreach collection="cell" item="cell1" open="(" close=")"
+					separator=",">
+					'${cell1}'
+				</foreach>
+			</if>
+			) HO
+			group by HO.Date, HO.BSC, HO.ObjectID
+		</foreach>
+		SET ANSI_WARNINGS on SET ARITHABORT on SET ARITHIGNORE off
+	</select>
+
+	<select id="showAggregationCELLDataTemplateTab" parameterType="map"
+		resultType="java.util.LinkedHashMap">
+		SET ANSI_WARNINGS off SET ARITHABORT off SET ARITHIGNORE on
+		<foreach collection="date" item="date" separator="union all">
+			select
+			<choose>
+				<when test="index!=null">
+					<trim prefix="" suffixOverrides=",">
+						<if test="index.contains('日期')">
+							CELLQOSEG.Date as '日期',
+						</if>
+						<if test="index.contains('BSC')">
+							CELLQOSEG.BSC as 'BSC',
+						</if>
+						<if test="index.contains('CELL')">
+							CELLQOSEG.ObjectID as 'CELL',
+						</if>
+						<if test="index.contains('总EDGE下行流量')">
+							convert(decimal(18,2),sum((CELLQOSEG.DLTHP3EGDATA +
+							CELLQOSEG.DLTHP2EGDATA +
+							CELLQOSEG.DLTHP1EGDATA +
+							CELLQOSEG.DLBGEGDATA) / 8192)) as '总EDGE下行流量',
+						</if>
+						<if test="index.contains('总EDGE上行流量')">
+							convert(decimal(18,2),sum((CELLQOSEG.ULTHP3EGDATA +
+							CELLQOSEG.ULTHP2EGDATA +
+							CELLQOSEG.ULTHP1EGDATA +
+							CELLQOSEG.ULBGEGDATA) / 8192)) as '总EDGE上行流量',
+						</if>
+						<if test="index.contains('总GPRS下行流量')">
+							convert(decimal(18,2),sum((CELLQOSG.DLBGGDATA +
+							CELLQOSG.DLTHP1GDATA +
+							CELLQOSG.DLTHP2GDATA +
+							CELLQOSG.DLTHP3GDATA) / 8192)) as '总GPRS下行流量',
+						</if>
+						<if test="index.contains('总GPRS上行流量')">
+							convert(decimal(18,2),sum((CELLQOSG.ULBGGDATA +
+							CELLQOSG.ULTHP1GDATA +
+							CELLQOSG.ULTHP2GDATA +
+							CELLQOSG.ULTHP3GDATA) / 8192)) as '总GPRS上行流量',
+						</if>
+						<if test="index.contains('总下行流量')">
+							convert(decimal(18,2),sum((CELLQOSG.DLBGGDATA +
+							CELLQOSG.DLTHP1GDATA +
+							CELLQOSG.DLTHP2GDATA + CELLQOSG.DLTHP3GDATA
+							+
+							CELLQOSEG.DLTHP3EGDATA + CELLQOSEG.DLTHP2EGDATA +
+							CELLQOSEG.DLTHP1EGDATA + CELLQOSEG.DLBGEGDATA) / 8192)) as
+							'总下行流量',
+						</if>
+						<if test="index.contains('总上行流量')">
+							convert(decimal(18,2),sum((CELLQOSG.ULBGGDATA +
+							CELLQOSG.ULTHP1GDATA +
+							CELLQOSG.ULTHP2GDATA + CELLQOSG.ULTHP3GDATA
+							+
+							CELLQOSEG.ULTHP3EGDATA + CELLQOSEG.ULTHP2EGDATA +
+							CELLQOSEG.ULTHP1EGDATA + CELLQOSEG.ULBGEGDATA) / 8192)) as
+							'总上行流量'
+						</if>
+					</trim>
+				</when>
+				<otherwise>
+					CELLQOSEG.Date as '日期',
+					CELLQOSEG.BSC as 'BSC',
+					CELLQOSEG.ObjectID as 'CELL',
+					convert(decimal(18,2),sum((CELLQOSEG.DLTHP3EGDATA +
+					CELLQOSEG.DLTHP2EGDATA +
+					CELLQOSEG.DLTHP1EGDATA +
+					CELLQOSEG.DLBGEGDATA) / 8192)) as '总EDGE下行流量',
+					convert(decimal(18,2),sum((CELLQOSEG.ULTHP3EGDATA +
+					CELLQOSEG.ULTHP2EGDATA +
+					CELLQOSEG.ULTHP1EGDATA +
+					CELLQOSEG.ULBGEGDATA) / 8192)) as '总EDGE上行流量',
+					convert(decimal(18,2),sum((CELLQOSG.DLBGGDATA +
+					CELLQOSG.DLTHP1GDATA
+					+
+					CELLQOSG.DLTHP2GDATA + CELLQOSG.DLTHP3GDATA) /
+					8192)) as
+					'总GPRS下行流量',
+					convert(decimal(18,2),sum((CELLQOSG.ULBGGDATA
+					+
+					CELLQOSG.ULTHP1GDATA
+					+
+					CELLQOSG.ULTHP2GDATA + CELLQOSG.ULTHP3GDATA)
+					/
+					8192)) as '总GPRS上行流量',
+					convert(decimal(18,2),sum((CELLQOSG.DLBGGDATA
+					+ CELLQOSG.DLTHP1GDATA
+					+
+					CELLQOSG.DLTHP2GDATA + CELLQOSG.DLTHP3GDATA
+					+
+					CELLQOSEG.DLTHP3EGDATA + CELLQOSEG.DLTHP2EGDATA +
+					CELLQOSEG.DLTHP1EGDATA + CELLQOSEG.DLBGEGDATA) / 8192)) as '总下行流量',
+					convert(decimal(18,2),sum((CELLQOSG.ULBGGDATA +
+					CELLQOSG.ULTHP1GDATA
+					+
+					CELLQOSG.ULTHP2GDATA + CELLQOSG.ULTHP3GDATA +
+					CELLQOSEG.ULTHP3EGDATA + CELLQOSEG.ULTHP2EGDATA +
+					CELLQOSEG.ULTHP1EGDATA + CELLQOSEG.ULBGEGDATA) / 8192)) as '总上行流量'
+				</otherwise>
+			</choose>
+			from (select *
+			from sts${granularity}_CELLQOSEG_${date}
+			where 1 = 1
+			<if test="time!=null">
+				and time in
+				<foreach collection="time" item="time1" open="(" close=")"
+					separator=",">
+					'${time1}'
+				</foreach>
+			</if>
+			<if test="bsc!=null">
+				and bsc in
+				<foreach collection="bsc" item="bsc1" open="(" close=")"
+					separator=",">
+					'${bsc1}'
+				</foreach>
+			</if>
+			<if test="cell!=null">
+				and ObjectID in
+				<foreach collection="cell" item="cell1" open="(" close=")"
+					separator=",">
+					'${cell1}'
+				</foreach>
+			</if>
+			) CELLQOSEG
+			Left Join (select *
+			from sts${granularity}_CELLQOSG_${date}
+			where 1 = 1
+			<if test="time!=null">
+				and time in
+				<foreach collection="time" item="time2" open="(" close=")"
+					separator=",">
+					'${time2}'
+				</foreach>
+			</if>
+			<if test="bsc!=null">
+				and bsc in
+				<foreach collection="bsc" item="bsc2" open="(" close=")"
+					separator=",">
+					'${bsc2}'
+				</foreach>
+			</if>
+			<if test="cell!=null">
+				and ObjectID in
+				<foreach collection="cell" item="cell2" open="(" close=")"
+					separator=",">
+					'${cell2}'
+				</foreach>
+			</if>
+			) CELLQOSG
+			on CELLQOSEG.ObjectID = CELLQOSG.ObjectID
+			and CELLQOSEG.DATE
+			= CELLQOSG.DATE
+			and CELLQOSEG.TIME = CELLQOSG.TIME
+			and CELLQOSEG.BSC =
+			CELLQOSG.BSC
+			group by CELLQOSEG.Date, CELLQOSEG.BSC,
+			CELLQOSEG.ObjectID
+		</foreach>
+		SET ANSI_WARNINGS on SET ARITHABORT on SET ARITHIGNORE off
+	</select>
+
+	<select id="showAggregationDateSTrafficTemplateTab"
+		parameterType="map" resultType="java.util.LinkedHashMap">
+		SET ANSI_WARNINGS off SET ARITHABORT off SET ARITHIGNORE on
+		<foreach collection="date" item="date" separator="union all">
+			select
+			<choose>
+				<when test="index!=null">
+					<trim prefix="" suffixOverrides=",">
+						<if test="index.contains('日期')">
+							CLSDCCH.Date as '日期',
+						</if>
+						<if test="index.contains('总S拥塞数')">
+							sum(CLSDCCH.CCONGS) as '总S拥塞数',
+						</if>
+						<if test="index.contains('最大S拥塞数')">
+							max(CLSDCCH.CCONGS) as '最大S拥塞数',
+						</if>
+						<if test="index.contains('总LU次数')">
+							sum(RANDOMACC.RAOTHER) as '总LU次数',
+						</if>
+						<if test="index.contains('最大LU次数')">
+							max(RANDOMACC.RAOTHER) as '最大LU次数',
+						</if>
+						<if test="index.contains('总S掉话数')">
+							sum(CLSDCCH.CNDROP) as '总S掉话数',
+						</if>
+						<if test="index.contains('最大S掉话数')">
+							max(CLSDCCH.CNDROP) as '最大S掉话数'
+						</if>
+					</trim>
+				</when>
+				<otherwise>
+					CLSDCCH.Date as '日期',
+					sum(CLSDCCH.CCONGS) as '总S拥塞数',
+					max(CLSDCCH.CCONGS) as '最大S拥塞数',
+					sum(RANDOMACC.RAOTHER) as '总LU次数',
+					max(RANDOMACC.RAOTHER) as '最大LU次数',
+					sum(CLSDCCH.CNDROP) as '总S掉话数',
+					max(CLSDCCH.CNDROP) as '最大S掉话数'
+				</otherwise>
+			</choose>
+			from (select *
+			from sts${granularity}_CLSDCCH_${date}
+			where 1 = 1
+			<if test="time!=null">
+				and time in
+				<foreach collection="time" item="time1" open="(" close=")"
+					separator=",">
+					'${time1}'
+				</foreach>
+			</if>
+			<if test="bsc!=null">
+				and bsc in
+				<foreach collection="bsc" item="bsc1" open="(" close=")"
+					separator=",">
+					'${bsc1}'
+				</foreach>
+			</if>
+			<if test="cell!=null">
+				and ObjectID in
+				<foreach collection="cell" item="cell1" open="(" close=")"
+					separator=",">
+					'${cell1}'
+				</foreach>
+			</if>
+			) CLSDCCH
+			Left Join (select *
+			from sts${granularity}_RANDOMACC_${date}
+			where 1 = 1
+			<if test="time!=null">
+				and time in
+				<foreach collection="time" item="time2" open="(" close=")"
+					separator=",">
+					'${time2}'
+				</foreach>
+			</if>
+			<if test="bsc!=null">
+				and bsc in
+				<foreach collection="bsc" item="bsc2" open="(" close=")"
+					separator=",">
+					'${bsc2}'
+				</foreach>
+			</if>
+			<if test="cell!=null">
+				and ObjectID in
+				<foreach collection="cell" item="cell2" open="(" close=")"
+					separator=",">
+					'${cell2}'
+				</foreach>
+			</if>
+			) RANDOMACC
+			on CLSDCCH.ObjectID = RANDOMACC.ObjectID
+			and CLSDCCH.DATE =
+			RANDOMACC.DATE
+			and CLSDCCH.TIME = RANDOMACC.TIME
+			and CLSDCCH.BSC =
+			RANDOMACC.BSC
+			group by CLSDCCH.Date
+		</foreach>
+		SET ANSI_WARNINGS on SET ARITHABORT on SET ARITHIGNORE off
+	</select>
+
+	<select id="showAggregationDateTrafficTemplateTab"
+		parameterType="map" resultType="java.util.LinkedHashMap">
+		SET ANSI_WARNINGS off SET ARITHABORT off SET ARITHIGNORE on
+		<foreach collection="date" item="date" separator="union all">
+			select
+			<choose>
+				<when test="index!=null">
+					<trim prefix="" suffixOverrides=",">
+						<if test="index.contains('日期')">
+							CELTCHF.Date as '日期',
+						</if>
+						<if test="index.contains('总话务量')">
+							convert(decimal(18,2),sum((CELTCHF.TFTRALACC +
+							CELTCHH.THTRALACC) / CELTCHH.THNSCAN)) as '总话务量',
+						</if>
+						<if test="index.contains('最大话务量')">
+							convert(decimal(18,2),max((CELTCHF.TFTRALACC +
+							CELTCHH.THTRALACC) / CELTCHH.THNSCAN)) as '最大话务量',
+						</if>
+						<if test="index.contains('平均话务量')">
+							convert(decimal(18,2),avg((CELTCHF.TFTRALACC +
+							CELTCHH.THTRALACC) / CELTCHH.THNSCAN)) as '平均话务量',
+						</if>
+						<if test="index.contains('最大指配拥塞')">
+							max(CELTCHFP.TFESTPGSMSUB) as '最大指配拥塞',
+						</if>
+						<if test="index.contains('总掉话数')">
+							sum(CELTCHFP.TFCONGPGSMSUB) as '总掉话数',
+						</if>
+						<if test="index.contains('最大掉话数')">
+							max(CELTCHFP.TFCONGPGSMSUB) as '最大掉话数'
+						</if>
+					</trim>
+				</when>
+				<otherwise>
+					CELTCHF.Date as '日期',
+					convert(decimal(18,2),sum((CELTCHF.TFTRALACC + CELTCHH.THTRALACC) /
+					CELTCHH.THNSCAN)) as '总话务量',
+					convert(decimal(18,2),max((CELTCHF.TFTRALACC + CELTCHH.THTRALACC) /
+					CELTCHH.THNSCAN)) as '最大话务量',
+					convert(decimal(18,2),avg((CELTCHF.TFTRALACC + CELTCHH.THTRALACC) /
+					CELTCHH.THNSCAN)) as '平均话务量',
+					max(CELTCHFP.TFESTPGSMSUB) as
+					'最大指配拥塞',
+					sum(CELTCHFP.TFCONGPGSMSUB) as '总掉话数',
+					max(CELTCHFP.TFCONGPGSMSUB) as '最大掉话数'
+				</otherwise>
+			</choose>
+			from (select *
+			from sts${granularity}_CELTCHF_${date}
+			where 1 = 1
+			<if test="time!=null">
+				and time in
+				<foreach collection="time" item="time1" open="(" close=")"
+					separator=",">
+					'${time1}'
+				</foreach>
+			</if>
+			<if test="bsc!=null">
+				and bsc in
+				<foreach collection="bsc" item="bsc1" open="(" close=")"
+					separator=",">
+					'${bsc1}'
+				</foreach>
+			</if>
+			<if test="cell!=null">
+				and ObjectID in
+				<foreach collection="cell" item="cell1" open="(" close=")"
+					separator=",">
+					'${cell1}'
+				</foreach>
+			</if>
+			) CELTCHF
+			Left Join (select *
+			from sts${granularity}_CELTCHH_${date}
+			where 1 = 1
+			<if test="time!=null">
+				and time in
+				<foreach collection="time" item="time2" open="(" close=")"
+					separator=",">
+					'${time2}'
+				</foreach>
+			</if>
+			<if test="bsc!=null">
+				and bsc in
+				<foreach collection="bsc" item="bsc2" open="(" close=")"
+					separator=",">
+					'${bsc2}'
+				</foreach>
+			</if>
+			<if test="cell!=null">
+				and ObjectID in
+				<foreach collection="cell" item="cell2" open="(" close=")"
+					separator=",">
+					'${cell2}'
+				</foreach>
+			</if>
+			) CELTCHH
+			on CELTCHF.ObjectID = CELTCHH.ObjectID
+			and CELTCHF.DATE =
+			CELTCHH.DATE
+			and CELTCHF.TIME = CELTCHH.TIME
+			and CELTCHF.BSC =
+			CELTCHH.BSC
+			Left Join (select *
+			from sts${granularity}_CELTCHFP_${date}
+			where 1 = 1
+			<if test="time!=null">
+				and time in
+				<foreach collection="time" item="time3" open="(" close=")"
+					separator=",">
+					'${time3}'
+				</foreach>
+			</if>
+			<if test="bsc!=null">
+				and bsc in
+				<foreach collection="bsc" item="bsc3" open="(" close=")"
+					separator=",">
+					'${bsc3}'
+				</foreach>
+			</if>
+			<if test="cell!=null">
+				and ObjectID in
+				<foreach collection="cell" item="cell3" open="(" close=")"
+					separator=",">
+					'${cell3}'
+				</foreach>
+			</if>
+			) CELTCHFP
+			on CELTCHF.ObjectID = CELTCHFP.ObjectID
+			and CELTCHF.DATE =
+			CELTCHFP.DATE
+			and CELTCHF.TIME = CELTCHFP.TIME
+			and CELTCHF.BSC =
+			CELTCHFP.BSC
+			group by CELTCHF.Date
+		</foreach>
+		SET ANSI_WARNINGS on SET ARITHABORT on SET ARITHIGNORE off
+	</select>
+
+	<select id="showAggregationDateDataTemplateTab" parameterType="map"
+		resultType="java.util.LinkedHashMap">
+		SET ANSI_WARNINGS off SET ARITHABORT off SET ARITHIGNORE on
+		<foreach collection="date" item="date" separator="union all">
+			select
+			<choose>
+				<when test="index!=null">
+					<trim prefix="" suffixOverrides=",">
+						<if test="index.contains('日期')">
+							CELLQOSEG.Date as '日期',
+						</if>
+						<if test="index.contains('总EDGE下行流量')">
+							convert(decimal(18,2),sum((CELLQOSEG.DLTHP3EGDATA +
+							CELLQOSEG.DLTHP2EGDATA +
+							CELLQOSEG.DLTHP1EGDATA +
+							CELLQOSEG.DLBGEGDATA) / 8192)) as '总EDGE下行流量',
+						</if>
+						<if test="index.contains('总EDGE上行流量')">
+							convert(decimal(18,2),sum((CELLQOSEG.ULTHP3EGDATA +
+							CELLQOSEG.ULTHP2EGDATA +
+							CELLQOSEG.ULTHP1EGDATA +
+							CELLQOSEG.ULBGEGDATA) / 8192)) as '总EDGE上行流量',
+						</if>
+						<if test="index.contains('总GPRS下行流量')">
+							convert(decimal(18,2),sum((CELLQOSG.DLBGGDATA +
+							CELLQOSG.DLTHP1GDATA +
+							CELLQOSG.DLTHP2GDATA +
+							CELLQOSG.DLTHP3GDATA) / 8192)) as '总GPRS下行流量',
+						</if>
+						<if test="index.contains('总GPRS上行流量')">
+							convert(decimal(18,2),sum((CELLQOSG.ULBGGDATA +
+							CELLQOSG.ULTHP1GDATA +
+							CELLQOSG.ULTHP2GDATA +
+							CELLQOSG.ULTHP3GDATA) / 8192)) as '总GPRS上行流量',
+						</if>
+						<if test="index.contains('总下行流量')">
+							convert(decimal(18,2),sum((CELLQOSG.DLBGGDATA +
+							CELLQOSG.DLTHP1GDATA +
+							CELLQOSG.DLTHP2GDATA + CELLQOSG.DLTHP3GDATA
+							+
+							CELLQOSEG.DLTHP3EGDATA + CELLQOSEG.DLTHP2EGDATA +
+							CELLQOSEG.DLTHP1EGDATA + CELLQOSEG.DLBGEGDATA) / 8192)) as
+							'总下行流量',
+						</if>
+						<if test="index.contains('总上行流量')">
+							convert(decimal(18,2),sum((CELLQOSG.ULBGGDATA +
+							CELLQOSG.ULTHP1GDATA +
+							CELLQOSG.ULTHP2GDATA + CELLQOSG.ULTHP3GDATA
+							+
+							CELLQOSEG.ULTHP3EGDATA + CELLQOSEG.ULTHP2EGDATA +
+							CELLQOSEG.ULTHP1EGDATA + CELLQOSEG.ULBGEGDATA) / 8192)) as
+							'总上行流量'
+						</if>
+					</trim>
+				</when>
+				<otherwise>
+					CELLQOSEG.Date as '日期',
+					convert(decimal(18,2),sum((CELLQOSEG.DLTHP3EGDATA +
+					CELLQOSEG.DLTHP2EGDATA +
+					CELLQOSEG.DLTHP1EGDATA +
+					CELLQOSEG.DLBGEGDATA) / 8192)) as '总EDGE下行流量',
+					convert(decimal(18,2),sum((CELLQOSEG.ULTHP3EGDATA +
+					CELLQOSEG.ULTHP2EGDATA +
+					CELLQOSEG.ULTHP1EGDATA +
+					CELLQOSEG.ULBGEGDATA) / 8192)) as '总EDGE上行流量',
+					convert(decimal(18,2),sum((CELLQOSG.DLBGGDATA +
+					CELLQOSG.DLTHP1GDATA +
+					CELLQOSG.DLTHP2GDATA + CELLQOSG.DLTHP3GDATA)
+					/ 8192)) as '总GPRS下行流量',
+					convert(decimal(18,2),sum((CELLQOSG.ULBGGDATA +
+					CELLQOSG.ULTHP1GDATA +
+					CELLQOSG.ULTHP2GDATA + CELLQOSG.ULTHP3GDATA)
+					/ 8192)) as '总GPRS上行流量',
+					convert(decimal(18,2),sum((CELLQOSG.DLBGGDATA +
+					CELLQOSG.DLTHP1GDATA +
+					CELLQOSG.DLTHP2GDATA + CELLQOSG.DLTHP3GDATA +
+					CELLQOSEG.DLTHP3EGDATA + CELLQOSEG.DLTHP2EGDATA +
+					CELLQOSEG.DLTHP1EGDATA + CELLQOSEG.DLBGEGDATA) / 8192)) as '总下行流量',
+					convert(decimal(18,2),sum((CELLQOSG.ULBGGDATA +
+					CELLQOSG.ULTHP1GDATA +
+					CELLQOSG.ULTHP2GDATA + CELLQOSG.ULTHP3GDATA +
+					CELLQOSEG.ULTHP3EGDATA + CELLQOSEG.ULTHP2EGDATA +
+					CELLQOSEG.ULTHP1EGDATA + CELLQOSEG.ULBGEGDATA) / 8192)) as '总上行流量'
+				</otherwise>
+			</choose>
+			from (select *
+			from sts${granularity}_CELLQOSEG_${date}
+			where 1 = 1
+			<if test="time!=null">
+				and time in
+				<foreach collection="time" item="time1" open="(" close=")"
+					separator=",">
+					'${time1}'
+				</foreach>
+			</if>
+			<if test="bsc!=null">
+				and bsc in
+				<foreach collection="bsc" item="bsc1" open="(" close=")"
+					separator=",">
+					'${bsc1}'
+				</foreach>
+			</if>
+			<if test="cell!=null">
+				and ObjectID in
+				<foreach collection="cell" item="cell1" open="(" close=")"
+					separator=",">
+					'${cell1}'
+				</foreach>
+			</if>
+			) CELLQOSEG
+			Left Join (select *
+			from sts${granularity}_CELLQOSG_${date}
+			where 1 = 1
+			<if test="time!=null">
+				and time in
+				<foreach collection="time" item="time2" open="(" close=")"
+					separator=",">
+					'${time2}'
+				</foreach>
+			</if>
+			<if test="bsc!=null">
+				and bsc in
+				<foreach collection="bsc" item="bsc2" open="(" close=")"
+					separator=",">
+					'${bsc2}'
+				</foreach>
+			</if>
+			<if test="cell!=null">
+				and ObjectID in
+				<foreach collection="cell" item="cell2" open="(" close=")"
+					separator=",">
+					'${cell2}'
+				</foreach>
+			</if>
+			) CELLQOSG
+			on CELLQOSEG.ObjectID = CELLQOSG.ObjectID
+			and CELLQOSEG.DATE
+			= CELLQOSG.DATE
+			and CELLQOSEG.TIME = CELLQOSG.TIME
+			and CELLQOSEG.BSC =
+			CELLQOSG.BSC
+			group by CELLQOSEG.Date
+		</foreach>
+		SET ANSI_WARNINGS on SET ARITHABORT on SET ARITHIGNORE off
+	</select>
+
+	<select id="showAggregationTimeSTrafficTemplateTab"
+		parameterType="map" resultType="java.util.LinkedHashMap">
+		SET ANSI_WARNINGS off SET ARITHABORT off SET ARITHIGNORE on
+		<foreach collection="date" item="date" separator="union all">
+			select
+			<choose>
+				<when test="index!=null">
+					<trim prefix="" suffixOverrides=",">
+						<if test="index.contains('日期')">
+							CLSDCCH.Date as '日期',
+						</if>
+						<if test="index.contains('时间')">
+							CLSDCCH.Time as '时间',
+						</if>
+						<if test="index.contains('BSC')">
+							CLSDCCH.BSC as 'BSC',
+						</if>
+						<if test="index.contains('总S拥塞数')">
+							sum(CLSDCCH.CCONGS) as '总S拥塞数',
+						</if>
+						<if test="index.contains('最大S拥塞数')">
+							max(CLSDCCH.CCONGS) as '最大S拥塞数',
+						</if>
+						<if test="index.contains('总LU次数')">
+							sum(RANDOMACC.RAOTHER) as '总LU次数',
+						</if>
+						<if test="index.contains('最大LU次数')">
+							max(RANDOMACC.RAOTHER) as '最大LU次数',
+						</if>
+						<if test="index.contains('总S掉话数')">
+							sum(CLSDCCH.CNDROP) as '总S掉话数',
+						</if>
+						<if test="index.contains('最大S掉话数')">
+							max(CLSDCCH.CNDROP) as '最大S掉话数'
+						</if>
+					</trim>
+				</when>
+				<otherwise>
+					CLSDCCH.Date as '日期',
+					CLSDCCH.Time as '时间',
+					CLSDCCH.BSC as
+					'BSC',
+					sum(CLSDCCH.CCONGS) as '总S拥塞数',
+					max(CLSDCCH.CCONGS) as
+					'最大S拥塞数',
+					sum(RANDOMACC.RAOTHER) as '总LU次数',
+					max(RANDOMACC.RAOTHER)
+					as '最大LU次数',
+					sum(CLSDCCH.CNDROP) as '总S掉话数',
+					max(CLSDCCH.CNDROP) as
+					'最大S掉话数'
+				</otherwise>
+			</choose>
+			from (select *
+			from sts${granularity}_CLSDCCH_${date}
+			where 1 = 1
+			<if test="time!=null">
+				and time in
+				<foreach collection="time" item="time1" open="(" close=")"
+					separator=",">
+					'${time1}'
+				</foreach>
+			</if>
+			<if test="bsc!=null">
+				and bsc in
+				<foreach collection="bsc" item="bsc1" open="(" close=")"
+					separator=",">
+					'${bsc1}'
+				</foreach>
+			</if>
+			<if test="cell!=null">
+				and ObjectID in
+				<foreach collection="cell" item="cell1" open="(" close=")"
+					separator=",">
+					'${cell1}'
+				</foreach>
+			</if>
+			) CLSDCCH
+			Left Join (select *
+			from sts${granularity}_RANDOMACC_${date}
+			where 1 = 1
+			<if test="time!=null">
+				and time in
+				<foreach collection="time" item="time2" open="(" close=")"
+					separator=",">
+					'${time2}'
+				</foreach>
+			</if>
+			<if test="bsc!=null">
+				and bsc in
+				<foreach collection="bsc" item="bsc2" open="(" close=")"
+					separator=",">
+					'${bsc2}'
+				</foreach>
+			</if>
+			<if test="cell!=null">
+				and ObjectID in
+				<foreach collection="cell" item="cell2" open="(" close=")"
+					separator=",">
+					'${cell2}'
+				</foreach>
+			</if>
+			) RANDOMACC
+			on CLSDCCH.ObjectID = RANDOMACC.ObjectID
+			and CLSDCCH.DATE =
+			RANDOMACC.DATE
+			and CLSDCCH.TIME = RANDOMACC.TIME
+			and CLSDCCH.BSC =
+			RANDOMACC.BSC
+			group by CLSDCCH.Date, CLSDCCH.Time, CLSDCCH.BSC
+		</foreach>
+		SET ANSI_WARNINGS on SET ARITHABORT on SET ARITHIGNORE off
+	</select>
+
+	<select id="showAggregationTimeTrafficTemplateTab"
+		parameterType="map" resultType="java.util.LinkedHashMap">
+		SET ANSI_WARNINGS off SET ARITHABORT off SET ARITHIGNORE on
+		<foreach collection="date" item="date" separator="union all">
+			select
+			<choose>
+				<when test="index!=null">
+					<trim prefix="" suffixOverrides=",">
+						<if test="index.contains('日期')">
+							CELTCHF.Date as '日期',
+						</if>
+						<if test="index.contains('时间')">
+							CELTCHF.Time as '时间',
+						</if>
+						<if test="index.contains('BSC')">
+							CELTCHF.BSC as 'BSC',
+						</if>
+						<if test="index.contains('总话务量')">
+							convert(decimal(18,2),sum((CELTCHF.TFTRALACC +
+							CELTCHH.THTRALACC) / CELTCHH.THNSCAN)) as '总话务量',
+						</if>
+						<if test="index.contains('最大话务量')">
+							convert(decimal(18,2),max((CELTCHF.TFTRALACC +
+							CELTCHH.THTRALACC) / CELTCHH.THNSCAN)) as '最大话务量',
+						</if>
+						<if test="index.contains('平均话务量')">
+							convert(decimal(18,2),avg((CELTCHF.TFTRALACC +
+							CELTCHH.THTRALACC) / CELTCHH.THNSCAN)) as '平均话务量',
+						</if>
+						<if test="index.contains('最大指配拥塞')">
+							max(CELTCHFP.TFESTPGSMSUB) as '最大指配拥塞',
+						</if>
+						<if test="index.contains('总掉话数')">
+							sum(CELTCHFP.TFCONGPGSMSUB) as '总掉话数',
+						</if>
+						<if test="index.contains('最大掉话数')">
+							max(CELTCHFP.TFCONGPGSMSUB) as '最大掉话数'
+						</if>
+					</trim>
+				</when>
+				<otherwise>
+					CELTCHF.Date as '日期',
+					CELTCHF.Time as '时间',
+					CELTCHF.BSC as
+					'BSC',
+					convert(decimal(18,2),sum((CELTCHF.TFTRALACC +
+					CELTCHH.THTRALACC) / CELTCHH.THNSCAN)) as '总话务量',
+					convert(decimal(18,2),max((CELTCHF.TFTRALACC + CELTCHH.THTRALACC) /
+					CELTCHH.THNSCAN)) as '最大话务量',
+					convert(decimal(18,2),avg((CELTCHF.TFTRALACC + CELTCHH.THTRALACC) /
+					CELTCHH.THNSCAN)) as '平均话务量',
+					max(CELTCHFP.TFESTPGSMSUB) as
+					'最大指配拥塞',
+					sum(CELTCHFP.TFCONGPGSMSUB) as '总掉话数',
+					max(CELTCHFP.TFCONGPGSMSUB) as '最大掉话数'
+				</otherwise>
+			</choose>
+			from (select *
+			from sts${granularity}_CELTCHF_${date}
+			where 1 = 1
+			<if test="time!=null">
+				and time in
+				<foreach collection="time" item="time1" open="(" close=")"
+					separator=",">
+					'${time1}'
+				</foreach>
+			</if>
+			<if test="bsc!=null">
+				and bsc in
+				<foreach collection="bsc" item="bsc1" open="(" close=")"
+					separator=",">
+					'${bsc1}'
+				</foreach>
+			</if>
+			<if test="cell!=null">
+				and ObjectID in
+				<foreach collection="cell" item="cell1" open="(" close=")"
+					separator=",">
+					'${cell1}'
+				</foreach>
+			</if>
+			) CELTCHF
+			Left Join (select *
+			from sts${granularity}_CELTCHH_${date}
+			where 1 = 1
+			<if test="time!=null">
+				and time in
+				<foreach collection="time" item="time2" open="(" close=")"
+					separator=",">
+					'${time2}'
+				</foreach>
+			</if>
+			<if test="bsc!=null">
+				and bsc in
+				<foreach collection="bsc" item="bsc2" open="(" close=")"
+					separator=",">
+					'${bsc2}'
+				</foreach>
+			</if>
+			<if test="cell!=null">
+				and ObjectID in
+				<foreach collection="cell" item="cell2" open="(" close=")"
+					separator=",">
+					'${cell2}'
+				</foreach>
+			</if>
+			) CELTCHH
+			on CELTCHF.ObjectID = CELTCHH.ObjectID
+			and CELTCHF.DATE =
+			CELTCHH.DATE
+			and CELTCHF.TIME = CELTCHH.TIME
+			and CELTCHF.BSC =
+			CELTCHH.BSC
+			Left Join (select *
+			from sts${granularity}_CELTCHFP_${date}
+			where 1 = 1
+			<if test="time!=null">
+				and time in
+				<foreach collection="time" item="time3" open="(" close=")"
+					separator=",">
+					'${time3}'
+				</foreach>
+			</if>
+			<if test="bsc!=null">
+				and bsc in
+				<foreach collection="bsc" item="bsc3" open="(" close=")"
+					separator=",">
+					'${bsc3}'
+				</foreach>
+			</if>
+			<if test="cell!=null">
+				and ObjectID in
+				<foreach collection="cell" item="cell3" open="(" close=")"
+					separator=",">
+					'${cell3}'
+				</foreach>
+			</if>
+			) CELTCHFP
+			on CELTCHF.ObjectID = CELTCHFP.ObjectID
+			and CELTCHF.DATE =
+			CELTCHFP.DATE
+			and CELTCHF.TIME = CELTCHFP.TIME
+			and CELTCHF.BSC =
+			CELTCHFP.BSC
+			group by CELTCHF.Date, CELTCHF.Time, CELTCHF.BSC
+		</foreach>
+		SET ANSI_WARNINGS on SET ARITHABORT on SET ARITHIGNORE off
+	</select>
+
+	<select id="showAggregationTimeDataTemplateTab" parameterType="map"
+		resultType="java.util.LinkedHashMap">
+		SET ANSI_WARNINGS off SET ARITHABORT off SET ARITHIGNORE on
+		<foreach collection="date" item="date" separator="union all">
+			select
+			<choose>
+				<when test="index!=null">
+					<trim prefix="" suffixOverrides=",">
+						<if test="index.contains('日期')">
+							CELLQOSEG.Date as '日期',
+						</if>
+						<if test="index.contains('时间')">
+							CELLQOSEG.Time as '时间',
+						</if>
+						<if test="index.contains('BSC')">
+							CELLQOSEG.BSC as 'BSC',
+						</if>
+						<if test="index.contains('总EDGE下行流量')">
+							convert(decimal(18,2),sum((CELLQOSEG.DLTHP3EGDATA + CELLQOSEG.DLTHP2EGDATA +
+							CELLQOSEG.DLTHP1EGDATA + CELLQOSEG.DLBGEGDATA) / 8192)) as '总EDGE下行流量',
+						</if>
+						<if test="index.contains('总EDGE上行流量')">
+							convert(decimal(18,2),sum((CELLQOSEG.ULTHP3EGDATA + CELLQOSEG.ULTHP2EGDATA +
+							CELLQOSEG.ULTHP1EGDATA + CELLQOSEG.ULBGEGDATA) / 8192)) as '总EDGE上行流量',
+						</if>
+						<if test="index.contains('总GPRS下行流量')">
+							convert(decimal(18,2),sum((CELLQOSG.DLBGGDATA + CELLQOSG.DLTHP1GDATA +
+							CELLQOSG.DLTHP2GDATA + CELLQOSG.DLTHP3GDATA) / 8192)) as '总GPRS下行流量',
+						</if>
+						<if test="index.contains('总GPRS上行流量')">
+							convert(decimal(18,2),sum((CELLQOSG.ULBGGDATA + CELLQOSG.ULTHP1GDATA +
+							CELLQOSG.ULTHP2GDATA + CELLQOSG.ULTHP3GDATA) / 8192)) as '总GPRS上行流量',
+						</if>
+						<if test="index.contains('总下行流量')">
+							convert(decimal(18,2),sum((CELLQOSG.DLBGGDATA + CELLQOSG.DLTHP1GDATA +
+							CELLQOSG.DLTHP2GDATA + CELLQOSG.DLTHP3GDATA +
+							CELLQOSEG.DLTHP3EGDATA + CELLQOSEG.DLTHP2EGDATA +
+							CELLQOSEG.DLTHP1EGDATA + CELLQOSEG.DLBGEGDATA) / 8192)) as '总下行流量',
+						</if>
+						<if test="index.contains('总上行流量')">
+							convert(decimal(18,2),sum((CELLQOSG.ULBGGDATA + CELLQOSG.ULTHP1GDATA +
+							CELLQOSG.ULTHP2GDATA + CELLQOSG.ULTHP3GDATA +
+							CELLQOSEG.ULTHP3EGDATA + CELLQOSEG.ULTHP2EGDATA +
+							CELLQOSEG.ULTHP1EGDATA + CELLQOSEG.ULBGEGDATA) / 8192)) as '总上行流量'
+						</if>
+					</trim>
+				</when>
+				<otherwise>
+					CELLQOSEG.Date as '日期',
+					CELLQOSEG.Time as '时间',
+					CELLQOSEG.BSC as 'BSC',
+					convert(decimal(18,2),sum((CELLQOSEG.DLTHP3EGDATA + CELLQOSEG.DLTHP2EGDATA +
+					CELLQOSEG.DLTHP1EGDATA + CELLQOSEG.DLBGEGDATA) / 8192)) as '总EDGE下行流量',
+					convert(decimal(18,2),sum((CELLQOSEG.ULTHP3EGDATA +
+					CELLQOSEG.ULTHP2EGDATA +
+					CELLQOSEG.ULTHP1EGDATA + CELLQOSEG.ULBGEGDATA) / 8192)) as '总EDGE上行流量',
+					convert(decimal(18,2),sum((CELLQOSG.DLBGGDATA +
+					CELLQOSG.DLTHP1GDATA +
+					CELLQOSG.DLTHP2GDATA + CELLQOSG.DLTHP3GDATA) / 8192)) as '总GPRS下行流量',
+					convert(decimal(18,2),sum((CELLQOSG.ULBGGDATA +
+					CELLQOSG.ULTHP1GDATA +
+					CELLQOSG.ULTHP2GDATA + CELLQOSG.ULTHP3GDATA) / 8192)) as '总GPRS上行流量',
+					convert(decimal(18,2),sum((CELLQOSG.DLBGGDATA +
+					CELLQOSG.DLTHP1GDATA +
+					CELLQOSG.DLTHP2GDATA + CELLQOSG.DLTHP3GDATA +
+					CELLQOSEG.DLTHP3EGDATA + CELLQOSEG.DLTHP2EGDATA +
+					CELLQOSEG.DLTHP1EGDATA + CELLQOSEG.DLBGEGDATA) / 8192)) as '总下行流量',
+					convert(decimal(18,2),sum((CELLQOSG.ULBGGDATA +
+					CELLQOSG.ULTHP1GDATA +
+					CELLQOSG.ULTHP2GDATA + CELLQOSG.ULTHP3GDATA +
+					CELLQOSEG.ULTHP3EGDATA + CELLQOSEG.ULTHP2EGDATA +
+					CELLQOSEG.ULTHP1EGDATA + CELLQOSEG.ULBGEGDATA) / 8192)) as '总上行流量'
+				</otherwise>
+			</choose>
+			from (select *
+			from sts${granularity}_CELLQOSEG_${date}
+			where 1 = 1
+			<if test="time!=null">
+				and time in
+				<foreach collection="time" item="time1" open="(" close=")"
+					separator=",">
+					'${time1}'
+				</foreach>
+			</if>
+			<if test="bsc!=null">
+				and bsc in
+				<foreach collection="bsc" item="bsc1" open="(" close=")"
+					separator=",">
+					'${bsc1}'
+				</foreach>
+			</if>
+			<if test="cell!=null">
+				and ObjectID in
+				<foreach collection="cell" item="cell1" open="(" close=")"
+					separator=",">
+					'${cell1}'
+				</foreach>
+			</if>
+			) CELLQOSEG
+			Left Join (select *
+			from sts${granularity}_CELLQOSG_${date}
+			where 1 = 1
+			<if test="time!=null">
+				and time in
+				<foreach collection="time" item="time2" open="(" close=")"
+					separator=",">
+					'${time2}'
+				</foreach>
+			</if>
+			<if test="bsc!=null">
+				and bsc in
+				<foreach collection="bsc" item="bsc2" open="(" close=")"
+					separator=",">
+					'${bsc2}'
+				</foreach>
+			</if>
+			<if test="cell!=null">
+				and ObjectID in
+				<foreach collection="cell" item="cell2" open="(" close=")"
+					separator=",">
+					'${cell2}'
+				</foreach>
+			</if>
+			) CELLQOSG
+			on CELLQOSEG.ObjectID = CELLQOSG.ObjectID
+			and CELLQOSEG.DATE = CELLQOSG.DATE
+			and CELLQOSEG.TIME = CELLQOSG.TIME
+			and CELLQOSEG.BSC = CELLQOSG.BSC
+			group by CELLQOSEG.Date, CELLQOSEG.Time, CELLQOSEG.BSC
+		</foreach>
+		SET ANSI_WARNINGS on SET ARITHABORT on SET ARITHIGNORE off
+	</select>
+</mapper>

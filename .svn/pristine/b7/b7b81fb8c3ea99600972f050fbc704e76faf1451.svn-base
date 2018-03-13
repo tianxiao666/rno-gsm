@@ -1,0 +1,49 @@
+<ion-header>
+  <!--<ion-navbar >-->
+    <!--<button ion-button menuToggle>-->
+      <!--<ion-icon name="menu"></ion-icon>-->
+    <!--</button>-->
+    <!--<ion-title>登录</ion-title>-->
+  <!--</ion-navbar>-->
+</ion-header>
+
+<ion-content class="cards-bg" style="background: url(assets/img/login-bg.png);background-size: 100% 100%; " >
+
+  <ion-card style="width: 80%;margin:55% auto 0;">
+    <ion-card-header class="ionCardHeader">
+      登录
+    </ion-card-header>
+    <ion-item>
+      <ion-label fixed style="color:black">用户名</ion-label>
+      <ion-input type="text" [(ngModel)]="username" placeholder="用户名" autocomplete="on"></ion-input>
+    </ion-item>
+    <ion-item>
+      <ion-label fixed style="color:black">密码</ion-label>
+      <ion-input type="password" [(ngModel)]="password" placeholder="密码" autocomplete="on"></ion-input>
+    </ion-item>
+    <ion-grid *ngIf="shouldShowVerifyCode">
+      <ion-row>
+        <ion-col col-5>
+          <a block item-start  (click)="changeVerifyCode()" >
+            <img  width="120" height="60" [src]="verifyCodeSource"/>
+          </a>
+        </ion-col>
+        <ion-col col-7>
+          <ion-item>
+            <ion-label  color="primary" floating >{{VerifyCodeTip}}</ion-label>
+            <ion-input  type="text" [(ngModel)]="verifyCodeInput"></ion-input>
+          </ion-item>
+        </ion-col>
+      </ion-row>
+    </ion-grid>
+    <ion-item>
+      <ion-label>记住我</ion-label>
+      <ion-checkbox checked="false" [(ngModel)]="rememberUsernameAndPassword"></ion-checkbox>
+    </ion-item>
+  </ion-card>
+  <div style="padding: 1em 0;">
+    <div style="width: 80%;margin: 0 auto;">
+      <button ion-button color="secondary" class="button-work" style="padding: 0; margin: 0; width: 100%;" (click)="login()">登录</button>
+    </div>
+  </div>
+</ion-content>

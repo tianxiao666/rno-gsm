@@ -1,0 +1,86 @@
+<ion-header>
+  <ion-navbar>
+    <button ion-button menuToggle>
+      <ion-icon name="menu"></ion-icon>
+    </button>
+    <ion-title>工单提取</ion-title>
+    <ion-buttons end (click)="toIndex()">
+      <button ion-button icon-only>
+        <ion-icon name="md-home">
+        </ion-icon>
+      </button>
+    </ion-buttons>
+  </ion-navbar>
+</ion-header>
+
+<ion-content class="cards-bg">
+
+  <ion-card class="cards-list-demo">
+    <ion-card-header class="ionCardHeader">
+      提取条件
+    </ion-card-header>
+
+    <ion-list>
+
+      <ion-item>
+        <ion-label style="color:black">代维</ion-label>
+        <ion-select [(ngModel)]="subMaintain" interface="action-sheet">
+          <ion-option value="-1" selected>全部</ion-option>
+          <ion-option value="鼎利">鼎利</ion-option>
+          <ion-option value="华苏">华苏</ion-option>
+          <ion-option value="长实">长实</ion-option>
+          <ion-option value="工程">工程</ion-option>
+          <ion-option value="润建">润建</ion-option>
+          <ion-option value="浙通服">浙通服</ion-option>
+        </ion-select>
+      </ion-item>
+
+      <ion-item>
+      <ion-label style="color:black">指标类型</ion-label>
+      <ion-select [(ngModel)]="index" interface="action-sheet">
+      <ion-option value="-1" selected>全部</ion-option>
+      <ion-option value="切出">切出</ion-option>
+      <ion-option value="寻呼拥塞">寻呼拥塞</ion-option>
+      <ion-option value="下行语音质量">下行语音质量</ion-option>
+      <ion-option value="误码滑码">误码滑码</ion-option>ion-
+      <ion-option value="S拥塞">S拥塞</ion-option>
+      <ion-option value="CF告警">CF告警</ion-option>
+      <ion-option value="信道完好率">信道完好率</ion-option>
+      <ion-option value="SQI">SQI</ion-option>
+      <ion-option value="干扰">干扰</ion-option>
+      <ion-option value="切入">切入</ion-option>
+      <ion-option value="TBF建立成功率">TBF建立成功率</ion-option>
+      <ion-option value="传输断链">传输断链</ion-option>
+      <ion-option value="0话务">0话务</ion-option>
+      <ion-option value="S掉话">S掉话</ion-option>
+      <ion-option value="掉话率">掉话率</ion-option>
+      <ion-option value="EDGE下行0流量">EDGE下行0流量</ion-option>
+      <ion-option value="无线接入性">无线接入性</ion-option>
+      <ion-option value="指配拥塞">指配拥塞</ion-option>
+      </ion-select>
+      </ion-item>
+
+      <ion-item>
+        <ion-label fixed style="color:black">cell</ion-label>
+        <ion-input type="search" [(ngModel)]="cell" placeholder="输入CELL,逗号隔开" autocomplete="on"></ion-input>
+      </ion-item>
+      <ion-item>
+        <ion-label fixed style="color:black">中文名</ion-label>
+        <ion-input type="search" [(ngModel)]="chinese" placeholder="输入小区名,逗号隔开" autocomplete="on"></ion-input>
+      </ion-item>
+
+      <ion-item>
+        <ion-label>开始时间</ion-label>
+        <ion-datetime displayFormat="YYYY-MM-DD" [(ngModel)]="beginTime" (ionChange)="checkTime('beginTime')"></ion-datetime>
+      </ion-item>
+      <ion-item>
+        <ion-label>结束时间</ion-label>
+        <ion-datetime displayFormat="YYYY-MM-DD" [(ngModel)]="endTime" (ionChange)="checkTime('endTime')"></ion-datetime>
+      </ion-item>
+    </ion-list>
+  </ion-card>
+
+
+  <button ion-button color="secondary" class="button-work" (click)="doSearch()">提取</button>
+
+</ion-content>

@@ -1,0 +1,4287 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hgicreate.rno.gsm.mapper.query.ParamsQueryMapper">
+    <select id="selectDbtspCount" parameterType="map" resultType="long">
+        select count(*) from (
+        <foreach collection="dates" item="date" index="index" separator="union all">
+            select Date,BSC,NAME,SETNAME,PARID,VALUE,UNIT,CLASS,DISTRIB,STATUS,FCVSET,FCVALUE,DCINFO,FCODE
+            from cdd_DBTSP_${date} where 1=1
+            <if test="bscs !=null">
+                and BSC in
+                <foreach collection="bscs" item="bsc" index="index" open="(" close=")" separator=",">
+                    '${bsc}'
+                </foreach>
+            </if>
+        </foreach>
+        ) as ABCD
+    </select>
+    <select id="selectDbtsp" parameterType="map" resultType="java.util.LinkedHashMap">
+        <foreach collection="dates" item="date" index="index" separator="union all">
+            select Date,BSC,NAME,SETNAME,PARID,VALUE,UNIT,CLASS,DISTRIB,STATUS,FCVSET,FCVALUE,DCINFO,FCODE
+            from cdd_DBTSP_${date} where 1=1
+            <if test="bscs !=null">
+                and BSC in
+                <foreach collection="bscs" item="bsc" index="index" open="(" close=")" separator=",">
+                    '${bsc}'
+                </foreach>
+            </if>
+        </foreach>
+
+    </select>
+    <select id="selectDbtspByPage" parameterType="map" resultType="java.util.LinkedHashMap">
+         select top ${cnt} Date,BSC,NAME,SETNAME,PARID,VALUE,UNIT,CLASS,DISTRIB,STATUS,FCVSET,FCVALUE,DCINFO,FCODE
+        from (select row_number() over(order by A.Date) as rownumber,*
+              from (
+        <foreach collection="dates" item="date" index="index" separator="union all">
+            select Date,BSC,NAME,SETNAME,PARID,VALUE,UNIT,CLASS,DISTRIB,STATUS,FCVSET,FCVALUE,DCINFO,FCODE
+            from cdd_DBTSP_${date} where 1=1
+            <if test="bscs !=null">
+                and BSC in
+                <foreach collection="bscs" item="bsc" index="index" open="(" close=")" separator=",">
+                    '${bsc}'
+                </foreach>
+            </if>
+        </foreach>
+              ) A) B
+        where B.rownumber &gt;${startIndex}
+    </select>
+
+    <select id="selectDtstpCount" parameterType="map" resultType="long">
+        select count(*) from (
+        <foreach collection="dates" item="date" index="index" separator="union all">
+            select Date,BSC,DIP,STATE from cdd_DTSTP_${date} where 1=1
+            <if test="bscs !=null">
+                and BSC in
+                <foreach collection="bscs" item="bsc" index="index" open="(" close=")" separator=",">
+                    '${bsc}'
+                </foreach>
+            </if>
+        </foreach>
+        ) as B
+    </select>
+    <select id="selectDtstp" parameterType="map" resultType="java.util.LinkedHashMap">
+        <foreach collection="dates" item="date" index="index" separator="union all">
+            select Date,BSC,DIP,STATE from cdd_DTSTP_${date} where 1=1
+            <if test="bscs !=null">
+                and BSC in
+                <foreach collection="bscs" item="bsc" index="index" open="(" close=")" separator=",">
+                    '${bsc}'
+                </foreach>
+            </if>
+        </foreach>
+    </select>
+    <select id="selectDtstpByPage" parameterType="map" resultType="java.util.LinkedHashMap">
+         select top ${cnt} Date,BSC,DIP,STATE
+        from (select row_number() over(order by A.Date) as rownumber,*
+              from (
+        <foreach collection="dates" item="date" index="index" separator="union all">
+            select Date,BSC,DIP,STATE from cdd_DTSTP_${date} where 1=1
+            <if test="bscs !=null">
+                and BSC in
+                <foreach collection="bscs" item="bsc" index="index" open="(" close=")" separator=",">
+                    '${bsc}'
+                </foreach>
+            </if>
+        </foreach>
+              ) A) B
+        where B.rownumber &gt;${startIndex}
+    </select>
+
+    <select id="selectIoexpCount" parameterType="map" resultType="long">
+        select count(*) from (
+        <foreach collection="dates" item="date" index="index" separator="union all">
+            select Date,BSC,[IDENTITY] from cdd_IOEXP_${date}  where 1=1
+            <if test="bscs !=null">
+                and BSC in
+                <foreach collection="bscs" item="bsc" index="index" open="(" close=")" separator=",">
+                    '${bsc}'
+                </foreach>
+            </if>
+        </foreach>
+        ) as C
+    </select>
+    <select id="selectIoexp" parameterType="map" resultType="java.util.LinkedHashMap">
+        <foreach collection="dates" item="date" index="index" separator="union all">
+            select Date,BSC,[IDENTITY] from cdd_IOEXP_${date}  where 1=1
+            <if test="bscs !=null">
+                and BSC in
+                <foreach collection="bscs" item="bsc" index="index" open="(" close=")" separator=",">
+                    '${bsc}'
+                </foreach>
+            </if>
+        </foreach>
+    </select>
+    <select id="selectIoexpByPage" parameterType="map" resultType="java.util.LinkedHashMap">
+         select top ${cnt} Date,BSC,[IDENTITY]
+        from (select row_number() over(order by A.Date) as rownumber,*
+              from (
+        <foreach collection="dates" item="date" index="index" separator="union all">
+            select Date,BSC,[IDENTITY] from cdd_IOEXP_${date}  where 1=1
+            <if test="bscs !=null">
+                and BSC in
+                <foreach collection="bscs" item="bsc" index="index" open="(" close=")" separator=",">
+                    '${bsc}'
+                </foreach>
+            </if>
+        </foreach>
+              ) A) B
+        where B.rownumber &gt;${startIndex}
+    </select>
+
+    <select id="selectRaclpCount" parameterType="map" resultType="long">
+        select count(*) from (
+        <foreach collection="dates" item="date" index="index" separator="union all">
+            select Date,BSC,CLNAME,CLAL,CLSUP,CLEX,CLUSE,CLTHR,CLMAX from cdd_RACLP_${date} where 1=1
+            <if test="bscs !=null">
+                and BSC in
+                <foreach collection="bscs" item="bsc" index="index" open="(" close=")" separator=",">
+                    '${bsc}'
+                </foreach>
+            </if>
+        </foreach>
+        ) as D
+    </select>
+    <select id="selectRaclp" parameterType="map" resultType="java.util.LinkedHashMap">
+        <foreach collection="dates" item="date" index="index" separator="union all">
+            select Date,BSC,CLNAME,CLAL,CLSUP,CLEX,CLUSE,CLTHR,CLMAX from cdd_RACLP_${date} where 1=1
+            <if test="bscs !=null">
+                and BSC in
+                <foreach collection="bscs" item="bsc" index="index" open="(" close=")" separator=",">
+                    '${bsc}'
+                </foreach>
+            </if>
+        </foreach>
+    </select>
+    <select id="selectRaclpByPage" parameterType="map" resultType="java.util.LinkedHashMap">
+         select top ${cnt} Date,BSC,CLNAME,CLAL,CLSUP,CLEX,CLUSE,CLTHR,CLMAX
+        from (select row_number() over(order by A.Date) as rownumber,*
+              from (
+        <foreach collection="dates" item="date" index="index" separator="union all">
+            select Date,BSC,CLNAME,CLAL,CLSUP,CLEX,CLUSE,CLTHR,CLMAX from cdd_RACLP_${date} where 1=1
+            <if test="bscs !=null">
+                and BSC in
+                <foreach collection="bscs" item="bsc" index="index" open="(" close=")" separator=",">
+                    '${bsc}'
+                </foreach>
+            </if>
+        </foreach>
+              ) A) B
+        where B.rownumber &gt;${startIndex}
+    </select>
+
+    <select id="selectRaeppCount" parameterType="map" resultType="long">
+        select count(*) from (
+        <foreach collection="dates" item="date" index="index" separator="union all">
+            select Date,BSC,PROP from cdd_RAEPP_${date} where 1=1
+            <if test="bscs !=null">
+                and BSC in
+                <foreach collection="bscs" item="bsc" index="index" open="(" close=")" separator=",">
+                    '${bsc}'
+                </foreach>
+            </if>
+        </foreach>
+        ) as A
+    </select>
+    <select id="selectRaepp" parameterType="map" resultType="java.util.LinkedHashMap">
+        <foreach collection="dates" item="date" index="index" separator="union all">
+            select Date,BSC,PROP from cdd_RAEPP_${date} where 1=1
+            <if test="bscs !=null">
+                and BSC in
+                <foreach collection="bscs" item="bsc" index="index" open="(" close=")" separator=",">
+                    '${bsc}'
+                </foreach>
+            </if>
+        </foreach>
+    </select>
+    <select id="selectRaeppByPage" parameterType="map" resultType="java.util.LinkedHashMap">
+         select top ${cnt} Date,BSC,PROP
+        from (select row_number() over(order by A.Date) as rownumber,*
+              from (
+        <foreach collection="dates" item="date" index="index" separator="union all">
+            select Date,BSC,PROP from cdd_RAEPP_${date} where 1=1
+            <if test="bscs !=null">
+                and BSC in
+                <foreach collection="bscs" item="bsc" index="index" open="(" close=")" separator=",">
+                    '${bsc}'
+                </foreach>
+            </if>
+        </foreach>
+              ) A) B
+        where B.rownumber &gt;${startIndex}
+    </select>
+
+    <select id="selectRfcapCount" parameterType="map" resultType="long">
+        select count(*) from (
+        <foreach collection="dates" item="date" index="index" separator="union all">
+            select Date,BSC,CELL,AFRCSCC,AHRCSCC,AWBCSCC,EFRCSCC,HRCSCC,VCSCC from cdd_RFCAP_${date} where 1=1
+            <if test="bscs !=null">
+                and BSC in
+                <foreach collection="bscs" item="bsc" index="index" open="(" close=")" separator=",">
+                    '${bsc}'
+                </foreach>
+            </if>
+        </foreach>
+        ) as E
+    </select>
+    <select id="selectRfcap" parameterType="map" resultType="java.util.LinkedHashMap">
+        <foreach collection="dates" item="date" index="index" separator="union all">
+            select Date,BSC,CELL,AFRCSCC,AHRCSCC,AWBCSCC,EFRCSCC,HRCSCC,VCSCC from cdd_RFCAP_${date} where 1=1
+            <if test="bscs !=null">
+                and BSC in
+                <foreach collection="bscs" item="bsc" index="index" open="(" close=")" separator=",">
+                    '${bsc}'
+                </foreach>
+            </if>
+            <if test="cells !=null">
+                and CELL in
+                <foreach collection="cells" item="cell" index="index" open="(" close=")" separator=",">
+                    '${cell}'
+                </foreach>
+            </if>
+        </foreach>
+    </select>
+    <select id="selectRfcapByPage" parameterType="map" resultType="java.util.LinkedHashMap">
+         select top ${cnt} Date,BSC,CELL,AFRCSCC,AHRCSCC,AWBCSCC,EFRCSCC,HRCSCC,VCSCC
+        from (select row_number() over(order by A.Date) as rownumber,*
+              from (
+        <foreach collection="dates" item="date" index="index" separator="union all">
+            select Date,BSC,CELL,AFRCSCC,AHRCSCC,AWBCSCC,EFRCSCC,HRCSCC,VCSCC from cdd_RFCAP_${date} where 1=1
+            <if test="bscs !=null">
+                and BSC in
+                <foreach collection="bscs" item="bsc" index="index" open="(" close=")" separator=",">
+                    '${bsc}'
+                </foreach>
+            </if>
+            <if test="cells !=null">
+                and CELL in
+                <foreach collection="cells" item="cell" index="index" open="(" close=")" separator=",">
+                    '${cell}'
+                </foreach>
+            </if>
+        </foreach>
+              ) A) B
+        where B.rownumber &gt;${startIndex}
+    </select>
+
+    <select id="selectRlappCount" parameterType="map" resultType="long">
+        select count(*) from (
+        <foreach collection="dates" item="date" index="index" separator="union all">
+            select Date,BSC,CELL,AMRPCSTATE,SCTYPE,SSDESDLAFR,SSDESULAFR,
+            QDESDLAFR,QDESULAFR,SSDESDLAHR,SSDESULAHR,QDESDLAHR,QDESULAHR,SSDESDLAWB,SSDESULAWB,QDESDLAWB,QDESULAWB
+            from cdd_RLAPP_${date} where 1=1
+            <if test="bscs !=null">
+                and BSC in
+                <foreach collection="bscs" item="bsc" index="index" open="(" close=")" separator=",">
+                    '${bsc}'
+                </foreach>
+            </if>
+            <if test="cells !=null">
+                and CELL in
+                <foreach collection="cells" item="cell" index="index" open="(" close=")" separator=",">
+                    '${cell}'
+                </foreach>
+            </if>
+        </foreach>
+        ) as F
+    </select>
+    <select id="selectRlapp" parameterType="map" resultType="java.util.LinkedHashMap">
+        <foreach collection="dates" item="date" index="index" separator="union all">
+            select Date,BSC,CELL,AMRPCSTATE,SCTYPE,SSDESDLAFR,SSDESULAFR,
+            QDESDLAFR,QDESULAFR,SSDESDLAHR,SSDESULAHR,QDESDLAHR,QDESULAHR,SSDESDLAWB,SSDESULAWB,QDESDLAWB,QDESULAWB
+            from cdd_RLAPP_${date} where 1=1
+            <if test="bscs !=null">
+                and BSC in
+                <foreach collection="bscs" item="bsc" index="index" open="(" close=")" separator=",">
+                    '${bsc}'
+                </foreach>
+            </if>
+            <if test="cells !=null">
+                and CELL in
+                <foreach collection="cells" item="cell" index="index" open="(" close=")" separator=",">
+                    '${cell}'
+                </foreach>
+            </if>
+        </foreach>
+    </select>
+    <select id="selectRlappByPage" parameterType="map" resultType="java.util.LinkedHashMap">
+         select top ${cnt} Date,BSC,CELL,AMRPCSTATE,SCTYPE,SSDESDLAFR,SSDESULAFR,
+        QDESDLAFR,QDESULAFR,SSDESDLAHR,SSDESULAHR,QDESDLAHR,QDESULAHR,SSDESDLAWB,SSDESULAWB,QDESDLAWB,QDESULAWB
+        from (select row_number() over(order by A.Date) as rownumber,*
+              from (
+        <foreach collection="dates" item="date" index="index" separator="union all">
+            select Date,BSC,CELL,AMRPCSTATE,SCTYPE,SSDESDLAFR,SSDESULAFR,
+            QDESDLAFR,QDESULAFR,SSDESDLAHR,SSDESULAHR,QDESDLAHR,QDESULAHR,SSDESDLAWB,SSDESULAWB,QDESDLAWB,QDESULAWB
+            from cdd_RLAPP_${date} where 1=1
+            <if test="bscs !=null">
+                and BSC in
+                <foreach collection="bscs" item="bsc" index="index" open="(" close=")" separator=",">
+                    '${bsc}'
+                </foreach>
+            </if>
+            <if test="cells !=null">
+                and CELL in
+                <foreach collection="cells" item="cell" index="index" open="(" close=")" separator=",">
+                    '${cell}'
+                </foreach>
+            </if>
+        </foreach>
+              ) A) B
+        where B.rownumber &gt;${startIndex}
+    </select>
+
+    <select id="selectRlbapCount" parameterType="map" resultType="long">
+        select count(*) from (
+        <foreach collection="dates" item="date" index="index" separator="union all">
+            select Date,BSC,REGINTDL,SSLENDL,QLENDL from cdd_RLBAP_${date} where 1=1
+            <if test="bscs !=null">
+                and BSC in
+                <foreach collection="bscs" item="bsc" index="index" open="(" close=")" separator=",">
+                    '${bsc}'
+                </foreach>
+            </if>
+        </foreach>
+        ) as G
+    </select>
+    <select id="selectRlbap" parameterType="map" resultType="java.util.LinkedHashMap">
+        <foreach collection="dates" item="date" index="index" separator="union all">
+            select Date,BSC,REGINTDL,SSLENDL,QLENDL from cdd_RLBAP_${date} where 1=1
+            <if test="bscs !=null">
+                and BSC in
+                <foreach collection="bscs" item="bsc" index="index" open="(" close=")" separator=",">
+                    '${bsc}'
+                </foreach>
+            </if>
+        </foreach>
+    </select>
+    <select id="selectRlbapByPage" parameterType="map" resultType="java.util.LinkedHashMap">
+         select top ${cnt} Date,BSC,REGINTDL,SSLENDL,QLENDL
+        from (select row_number() over(order by A.Date) as rownumber,*
+              from (
+        <foreach collection="dates" item="date" index="index" separator="union all">
+            select Date,BSC,REGINTDL,SSLENDL,QLENDL from cdd_RLBAP_${date} where 1=1
+            <if test="bscs !=null">
+                and BSC in
+                <foreach collection="bscs" item="bsc" index="index" open="(" close=")" separator=",">
+                    '${bsc}'
+                </foreach>
+            </if>
+        </foreach>
+              ) A) B
+        where B.rownumber &gt;${startIndex}
+    </select>
+
+    <select id="selectRlbcpCount" parameterType="map" resultType="long">
+        select count(*) from (
+        <foreach collection="dates" item="date" index="index" separator="union all">
+            select Date,BSC,CELL,DBPSTATE,SCTYPE,SSDESDL,QDESDL,LCOMPDL,QCOMPDL from cdd_RLBCP_${date} where 1=1
+            <if test="bscs !=null">
+                and BSC in
+                <foreach collection="bscs" item="bsc" index="index" open="(" close=")" separator=",">
+                    '${bsc}'
+                </foreach>
+            </if>
+            <if test="cells !=null">
+                and CELL in
+                <foreach collection="cells" item="cell" index="index" open="(" close=")" separator=",">
+                    '${cell}'
+                </foreach>
+            </if>
+        </foreach>
+        ) as H
+    </select>
+    <select id="selectRlbcp" parameterType="map" resultType="java.util.LinkedHashMap">
+        <foreach collection="dates" item="date" index="index" separator="union all">
+            select Date,BSC,CELL,DBPSTATE,SCTYPE,SSDESDL,QDESDL,LCOMPDL,QCOMPDL from cdd_RLBCP_${date} where 1=1
+            <if test="bscs !=null">
+                and BSC in
+                <foreach collection="bscs" item="bsc" index="index" open="(" close=")" separator=",">
+                    '${bsc}'
+                </foreach>
+            </if>
+            <if test="cells !=null">
+                and CELL in
+                <foreach collection="cells" item="cell" index="index" open="(" close=")" separator=",">
+                    '${cell}'
+                </foreach>
+            </if>
+        </foreach>
+    </select>
+    <select id="selectRlbcpByPage" parameterType="map" resultType="java.util.LinkedHashMap">
+         select top ${cnt}  Date,BSC,CELL,DBPSTATE,SCTYPE,SSDESDL,QDESDL,LCOMPDL,QCOMPDL
+        from (select row_number() over(order by A.Date) as rownumber,*
+              from (
+        <foreach collection="dates" item="date" index="index" separator="union all">
+            select Date,BSC,CELL,DBPSTATE,SCTYPE,SSDESDL,QDESDL,LCOMPDL,QCOMPDL from cdd_RLBCP_${date} where 1=1
+            <if test="bscs !=null">
+                and BSC in
+                <foreach collection="bscs" item="bsc" index="index" open="(" close=")" separator=",">
+                    '${bsc}'
+                </foreach>
+            </if>
+            <if test="cells !=null">
+                and CELL in
+                <foreach collection="cells" item="cell" index="index" open="(" close=")" separator=",">
+                    '${cell}'
+                </foreach>
+            </if>
+        </foreach>
+              ) A) B
+        where B.rownumber &gt;${startIndex}
+    </select>
+
+    <select id="selectRlbdpCount" parameterType="map" resultType="long">
+        select count(*) from (
+        <foreach collection="dates" item="date" index="index" separator="union all">
+            select Date,BSC,CELL,CHGR,NUMREQBPC,NUMREQEGPRSBPC,NUMREQCS3CS4BPC,
+            TN7BCCH,EACPREF,	ETCHTN,	TNBCCH,	NUMREQE2ABPC
+            from cdd_RLBDP_${date} where 1=1
+            <if test="bscs !=null">
+                and BSC in
+                <foreach collection="bscs" item="bsc" index="index" open="(" close=")" separator=",">
+                    '${bsc}'
+                </foreach>
+            </if>
+            <if test="cells !=null">
+                and CELL in
+                <foreach collection="cells" item="cell" index="index" open="(" close=")" separator=",">
+                    '${cell}'
+                </foreach>
+            </if>
+        </foreach>
+        ) as A
+    </select>
+    <select id="selectRlbdp" parameterType="map" resultType="java.util.LinkedHashMap">
+        <foreach collection="dates" item="date" index="index" separator="union all">
+            select Date,BSC,CELL,CHGR,NUMREQBPC,NUMREQEGPRSBPC,NUMREQCS3CS4BPC,
+            TN7BCCH,EACPREF,	ETCHTN,	TNBCCH,	NUMREQE2ABPC
+            from cdd_RLBDP_${date} where 1=1
+            <if test="bscs !=null">
+                and BSC in
+                <foreach collection="bscs" item="bsc" index="index" open="(" close=")" separator=",">
+                    '${bsc}'
+                </foreach>
+            </if>
+            <if test="cells !=null">
+                and CELL in
+                <foreach collection="cells" item="cell" index="index" open="(" close=")" separator=",">
+                    '${cell}'
+                </foreach>
+            </if>
+        </foreach>
+    </select>
+    <select id="selectRlbdpByPage" parameterType="map" resultType="java.util.LinkedHashMap">
+         select top ${cnt} Date,BSC,CELL,CHGR,NUMREQBPC,NUMREQEGPRSBPC,NUMREQCS3CS4BPC,
+        TN7BCCH,EACPREF,	ETCHTN,	TNBCCH,	NUMREQE2ABPC
+        from (select row_number() over(order by A.Date) as rownumber,*
+              from (
+        <foreach collection="dates" item="date" index="index" separator="union all">
+            select Date,BSC,CELL,CHGR,NUMREQBPC,NUMREQEGPRSBPC,NUMREQCS3CS4BPC,
+            TN7BCCH,EACPREF,	ETCHTN,	TNBCCH,	NUMREQE2ABPC
+            from cdd_RLBDP_${date} where 1=1
+            <if test="bscs !=null">
+                and BSC in
+                <foreach collection="bscs" item="bsc" index="index" open="(" close=")" separator=",">
+                    '${bsc}'
+                </foreach>
+            </if>
+            <if test="cells !=null">
+                and CELL in
+                <foreach collection="cells" item="cell" index="index" open="(" close=")" separator=",">
+                    '${cell}'
+                </foreach>
+            </if>
+        </foreach>
+              ) A) B
+        where B.rownumber &gt;${startIndex}
+    </select>
+
+    <select id="selectRlccpCount" parameterType="map" resultType="long">
+        select count(*) from (
+        <foreach collection="dates" item="date" index="index" separator="union all">
+            select Date,BSC,CELL,CHG,SDCCH,SDCCHAC,TN,CBCH,CCCH from cdd_RLCCP_${date} where 1=1
+            <if test="bscs !=null">
+                and BSC in
+                <foreach collection="bscs" item="bsc" index="index" open="(" close=")" separator=",">
+                    '${bsc}'
+                </foreach>
+            </if>
+            <if test="cells !=null">
+                and CELL in
+                <foreach collection="cells" item="cell" index="index" open="(" close=")" separator=",">
+                    '${cell}'
+                </foreach>
+            </if>
+        </foreach>
+        ) as I
+    </select>
+    <select id="selectRlccp" parameterType="map" resultType="java.util.LinkedHashMap">
+        <foreach collection="dates" item="date" index="index" separator="union all">
+            select Date,BSC,CELL,CHG,SDCCH,SDCCHAC,TN,CBCH,CCCH from cdd_RLCCP_${date} where 1=1
+            <if test="bscs !=null">
+                and BSC in
+                <foreach collection="bscs" item="bsc" index="index" open="(" close=")" separator=",">
+                    '${bsc}'
+                </foreach>
+            </if>
+            <if test="cells !=null">
+                and CELL in
+                <foreach collection="cells" item="cell" index="index" open="(" close=")" separator=",">
+                    '${cell}'
+                </foreach>
+            </if>
+        </foreach>
+    </select>
+    <select id="selectRlccpByPage" parameterType="map" resultType="java.util.LinkedHashMap">
+         select top ${cnt} Date,BSC,CELL,CHG,SDCCH,SDCCHAC,TN,CBCH,CCCH
+        from (select row_number() over(order by A.Date) as rownumber,*
+              from (
+        <foreach collection="dates" item="date" index="index" separator="union all">
+            select Date,BSC,CELL,CHG,SDCCH,SDCCHAC,TN,CBCH,CCCH from cdd_RLCCP_${date} where 1=1
+            <if test="bscs !=null">
+                and BSC in
+                <foreach collection="bscs" item="bsc" index="index" open="(" close=")" separator=",">
+                    '${bsc}'
+                </foreach>
+            </if>
+            <if test="cells !=null">
+                and CELL in
+                <foreach collection="cells" item="cell" index="index" open="(" close=")" separator=",">
+                    '${cell}'
+                </foreach>
+            </if>
+        </foreach>
+              ) A) B
+        where B.rownumber &gt;${startIndex}
+    </select>
+
+    <select id="selectRlcdpCount" parameterType="map" resultType="long">
+        select count(*) from (
+        <foreach collection="dates" item="date" index="index" separator="union all">
+            select Date,BSC,BSCMC,CELL,MC from cdd_RLCDP_${date} where 1=1
+            <if test="bscs !=null">
+                and BSC in
+                <foreach collection="bscs" item="bsc" index="index" open="(" close=")" separator=",">
+                    '${bsc}'
+                </foreach>
+            </if>
+        </foreach>
+        ) as J
+    </select>
+    <select id="selectRlcdp" parameterType="map" resultType="java.util.LinkedHashMap">
+        <foreach collection="dates" item="date" index="index" separator="union all">
+            select Date,BSC,BSCMC,CELL,MC from cdd_RLCDP_${date} where 1=1
+            <if test="bscs !=null">
+                and BSC in
+                <foreach collection="bscs" item="bsc" index="index" open="(" close=")" separator=",">
+                    '${bsc}'
+                </foreach>
+            </if>
+        </foreach>
+    </select>
+    <select id="selectRlcdpByPage" parameterType="map" resultType="java.util.LinkedHashMap">
+         select top ${cnt} Date,BSC,BSCMC,CELL,MC
+        from (select row_number() over(order by A.Date) as rownumber,*
+              from (
+        <foreach collection="dates" item="date" index="index" separator="union all">
+            select Date,BSC,BSCMC,CELL,MC from cdd_RLCDP_${date} where 1=1
+            <if test="bscs !=null">
+                and BSC in
+                <foreach collection="bscs" item="bsc" index="index" open="(" close=")" separator=",">
+                    '${bsc}'
+                </foreach>
+            </if>
+        </foreach>
+              ) A) B
+        where B.rownumber &gt;${startIndex}
+    </select>
+
+    <select id="selectRlcfpCount" parameterType="map" resultType="long">
+        select count(*) from (
+        <foreach collection="dates" item="date" index="index" separator="union all">
+            select Date,BSC,CELL,CHGR,SCTYPE,SDCCH,SDCCHAC,TN,CBCH,HSN,HOP,DCHNO
+            from cdd_RLCFP_${date} where 1=1
+            <if test="bscs !=null">
+                and BSC in
+                <foreach collection="bscs" item="bsc" index="index" open="(" close=")" separator=",">
+                    '${bsc}'
+                </foreach>
+            </if>
+            <if test="cells !=null">
+                and CELL in
+                <foreach collection="cells" item="cell" index="index" open="(" close=")" separator=",">
+                    '${cell}'
+                </foreach>
+            </if>
+        </foreach>
+        ) as K
+    </select>
+    <select id="selectRlcfp" parameterType="map" resultType="java.util.LinkedHashMap">
+        <foreach collection="dates" item="date" index="index" separator="union all">
+            select Date,BSC,CELL,CHGR,SCTYPE,SDCCH,SDCCHAC,TN,CBCH,HSN,HOP,DCHNO
+            from cdd_RLCFP_${date} where 1=1
+            <if test="bscs !=null">
+                and BSC in
+                <foreach collection="bscs" item="bsc" index="index" open="(" close=")" separator=",">
+                    '${bsc}'
+                </foreach>
+            </if>
+            <if test="cells !=null">
+                and CELL in
+                <foreach collection="cells" item="cell" index="index" open="(" close=")" separator=",">
+                    '${cell}'
+                </foreach>
+            </if>
+        </foreach>
+    </select>
+    <select id="selectRlcfpByPage" parameterType="map" resultType="java.util.LinkedHashMap">
+         select top ${cnt} Date,BSC,CELL,CHGR,SCTYPE,SDCCH,SDCCHAC,TN,CBCH,HSN,HOP,DCHNO
+        from (select row_number() over(order by A.Date) as rownumber,*
+              from (
+        <foreach collection="dates" item="date" index="index" separator="union all">
+            select Date,BSC,CELL,CHGR,SCTYPE,SDCCH,SDCCHAC,TN,CBCH,HSN,HOP,DCHNO
+            from cdd_RLCFP_${date} where 1=1
+            <if test="bscs !=null">
+                and BSC in
+                <foreach collection="bscs" item="bsc" index="index" open="(" close=")" separator=",">
+                    '${bsc}'
+                </foreach>
+            </if>
+            <if test="cells !=null">
+                and CELL in
+                <foreach collection="cells" item="cell" index="index" open="(" close=")" separator=",">
+                    '${cell}'
+                </foreach>
+            </if>
+        </foreach>
+              ) A) B
+        where B.rownumber &gt;${startIndex}
+    </select>
+
+    <select id="selectRlchpCount" parameterType="map" resultType="long">
+        select count(*) from (
+        <foreach collection="dates" item="date" index="index" separator="union all">
+            select Date,BSC,CELL,CHGR,HSN,HOP,MAIO,BCCD from cdd_RLCHP_${date} where 1=1
+            <if test="bscs !=null">
+                and BSC in
+                <foreach collection="bscs" item="bsc" index="index" open="(" close=")" separator=",">
+                    '${bsc}'
+                </foreach>
+            </if>
+            <if test="cells !=null">
+                and CELL in
+                <foreach collection="cells" item="cell" index="index" open="(" close=")" separator=",">
+                    '${cell}'
+                </foreach>
+            </if>
+        </foreach>
+        ) as L
+    </select>
+    <select id="selectRlchp" parameterType="map" resultType="java.util.LinkedHashMap">
+        <foreach collection="dates" item="date" index="index" separator="union all">
+            select Date,BSC,CELL,CHGR,HSN,HOP,MAIO,BCCD from cdd_RLCHP_${date} where 1=1
+            <if test="bscs !=null">
+                and BSC in
+                <foreach collection="bscs" item="bsc" index="index" open="(" close=")" separator=",">
+                    '${bsc}'
+                </foreach>
+            </if>
+            <if test="cells !=null">
+                and CELL in
+                <foreach collection="cells" item="cell" index="index" open="(" close=")" separator=",">
+                    '${cell}'
+                </foreach>
+            </if>
+        </foreach>
+    </select>
+    <select id="selectRlchpByPage" parameterType="map" resultType="java.util.LinkedHashMap">
+         select top ${cnt} Date,BSC,CELL,CHGR,HSN,HOP,MAIO,BCCD
+        from (select row_number() over(order by A.Date) as rownumber,*
+              from (
+        <foreach collection="dates" item="date" index="index" separator="union all">
+            select Date,BSC,CELL,CHGR,HSN,HOP,MAIO,BCCD from cdd_RLCHP_${date} where 1=1
+            <if test="bscs !=null">
+                and BSC in
+                <foreach collection="bscs" item="bsc" index="index" open="(" close=")" separator=",">
+                    '${bsc}'
+                </foreach>
+            </if>
+            <if test="cells !=null">
+                and CELL in
+                <foreach collection="cells" item="cell" index="index" open="(" close=")" separator=",">
+                    '${cell}'
+                </foreach>
+            </if>
+        </foreach>
+              ) A) B
+        where B.rownumber &gt;${startIndex}
+    </select>
+
+    <select id="selectRlclpCount" parameterType="map" resultType="long">
+        select count(*) from (
+        <foreach collection="dates" item="date" index="index" separator="union all">
+            select Date,BSC,CELL,CSPSALLOC,CSPSPRIO,GPRSPRIO,CODECREST,HRTRX,AHRTRX from cdd_RLCLP_${date} where 1=1
+            <if test="bscs !=null">
+                and BSC in
+                <foreach collection="bscs" item="bsc" index="index" open="(" close=")" separator=",">
+                    '${bsc}'
+                </foreach>
+            </if>
+            <if test="cells !=null">
+                and CELL in
+                <foreach collection="cells" item="cell" index="index" open="(" close=")" separator=",">
+                    '${cell}'
+                </foreach>
+            </if>
+        </foreach>
+        ) as M
+    </select>
+    <select id="selectRlclp" parameterType="map" resultType="java.util.LinkedHashMap">
+        <foreach collection="dates" item="date" index="index" separator="union all">
+            select Date,BSC,CELL,CSPSALLOC,CSPSPRIO,GPRSPRIO,CODECREST,HRTRX,AHRTRX from cdd_RLCLP_${date} where 1=1
+            <if test="bscs !=null">
+                and BSC in
+                <foreach collection="bscs" item="bsc" index="index" open="(" close=")" separator=",">
+                    '${bsc}'
+                </foreach>
+            </if>
+            <if test="cells !=null">
+                and CELL in
+                <foreach collection="cells" item="cell" index="index" open="(" close=")" separator=",">
+                    '${cell}'
+                </foreach>
+            </if>
+        </foreach>
+    </select>
+    <select id="selectRlclpByPage" parameterType="map" resultType="java.util.LinkedHashMap">
+         select top ${cnt} Date,BSC,CELL,CSPSALLOC,CSPSPRIO,GPRSPRIO,CODECREST,HRTRX,AHRTRX
+        from (select row_number() over(order by A.Date) as rownumber,*
+              from (
+        <foreach collection="dates" item="date" index="index" separator="union all">
+            select Date,BSC,CELL,CSPSALLOC,CSPSPRIO,GPRSPRIO,CODECREST,HRTRX,AHRTRX from cdd_RLCLP_${date} where 1=1
+            <if test="bscs !=null">
+                and BSC in
+                <foreach collection="bscs" item="bsc" index="index" open="(" close=")" separator=",">
+                    '${bsc}'
+                </foreach>
+            </if>
+            <if test="cells !=null">
+                and CELL in
+                <foreach collection="cells" item="cell" index="index" open="(" close=")" separator=",">
+                    '${cell}'
+                </foreach>
+            </if>
+        </foreach>
+              ) A) B
+        where B.rownumber &gt;${startIndex}
+    </select>
+
+    <select id="selectRlcppCount" parameterType="map" resultType="long">
+        select count(*) from (
+        <foreach collection="dates" item="date" index="index" separator="union all">
+            select Date,BSC,CELL,TYPE,BSPWRB,BSPWRT,MSTXPWR,SCTYPE from cdd_RLCPP_${date} where 1=1
+            <if test="bscs !=null">
+                and BSC in
+                <foreach collection="bscs" item="bsc" index="index" open="(" close=")" separator=",">
+                    '${bsc}'
+                </foreach>
+            </if>
+            <if test="cells !=null">
+                and CELL in
+                <foreach collection="cells" item="cell" index="index" open="(" close=")" separator=",">
+                    '${cell}'
+                </foreach>
+            </if>
+        </foreach>
+        ) as N
+    </select>
+    <select id="selectRlcpp" parameterType="map" resultType="java.util.LinkedHashMap">
+        <foreach collection="dates" item="date" index="index" separator="union all">
+            select Date,BSC,CELL,TYPE,BSPWRB,BSPWRT,MSTXPWR,SCTYPE from cdd_RLCPP_${date} where 1=1
+            <if test="bscs !=null">
+                and BSC in
+                <foreach collection="bscs" item="bsc" index="index" open="(" close=")" separator=",">
+                    '${bsc}'
+                </foreach>
+            </if>
+            <if test="cells !=null">
+                and CELL in
+                <foreach collection="cells" item="cell" index="index" open="(" close=")" separator=",">
+                    '${cell}'
+                </foreach>
+            </if>
+        </foreach>
+    </select>
+    <select id="selectRlcppByPage" parameterType="map" resultType="java.util.LinkedHashMap">
+         select top ${cnt} Date,BSC,CELL,TYPE,BSPWRB,BSPWRT,MSTXPWR,SCTYPE
+        from (select row_number() over(order by A.Date desc) as rownumber,*
+              from (
+        <foreach collection="dates" item="date" index="index" separator="union all">
+            select Date,BSC,CELL,TYPE,BSPWRB,BSPWRT,MSTXPWR,SCTYPE from cdd_RLCPP_${date} where 1=1
+            <if test="bscs !=null">
+                and BSC in
+                <foreach collection="bscs" item="bsc" index="index" open="(" close=")" separator=",">
+                    '${bsc}'
+                </foreach>
+            </if>
+            <if test="cells !=null">
+                and CELL in
+                <foreach collection="cells" item="cell" index="index" open="(" close=")" separator=",">
+                    '${cell}'
+                </foreach>
+            </if>
+        </foreach>
+              ) A) B
+        where B.rownumber &gt;${startIndex}
+    </select>
+
+    <select id="selectRlcppExtCount" parameterType="map" resultType="long">
+        select count(*) from (
+        <foreach collection="dates" item="date" index="index" separator="union all">
+            select Date,BSC,CELL,TYPE,MSTXPWR from cdd_RLCPP_EXT_${date} where 1=1
+            <if test="bscs !=null">
+                and BSC in
+                <foreach collection="bscs" item="bsc" index="index" open="(" close=")" separator=",">
+                    '${bsc}'
+                </foreach>
+            </if>
+            <if test="cells !=null">
+                and CELL in
+                <foreach collection="cells" item="cell" index="index" open="(" close=")" separator=",">
+                    '${cell}'
+                </foreach>
+            </if>
+        </foreach>
+        ) as O
+    </select>
+    <select id="selectRlcppExt" parameterType="map" resultType="java.util.LinkedHashMap">
+        <foreach collection="dates" item="date" index="index" separator="union all">
+            select Date,BSC,CELL,TYPE,MSTXPWR from cdd_RLCPP_EXT_${date} where 1=1
+            <if test="bscs !=null">
+                and BSC in
+                <foreach collection="bscs" item="bsc" index="index" open="(" close=")" separator=",">
+                    '${bsc}'
+                </foreach>
+            </if>
+            <if test="cells !=null">
+                and CELL in
+                <foreach collection="cells" item="cell" index="index" open="(" close=")" separator=",">
+                    '${cell}'
+                </foreach>
+            </if>
+        </foreach>
+    </select>
+    <select id="selectRlcppExtByPage" parameterType="map" resultType="java.util.LinkedHashMap">
+         select top ${cnt} Date,BSC,CELL,TYPE,MSTXPWR
+        from (select row_number() over(order by A.Date desc) as rownumber,*
+              from (
+        <foreach collection="dates" item="date" index="index" separator="union all">
+            select Date,BSC,CELL,TYPE,MSTXPWR from cdd_RLCPP_EXT_${date} where 1=1
+            <if test="bscs !=null">
+                and BSC in
+                <foreach collection="bscs" item="bsc" index="index" open="(" close=")" separator=",">
+                    '${bsc}'
+                </foreach>
+            </if>
+            <if test="cells !=null">
+                and CELL in
+                <foreach collection="cells" item="cell" index="index" open="(" close=")" separator=",">
+                    '${cell}'
+                </foreach>
+            </if>
+        </foreach>
+              ) A) B
+        where B.rownumber &gt;${startIndex}
+    </select>
+
+    <select id="selectRlcrpCount" parameterType="map" resultType="long">
+        select count(*) from (
+        <foreach collection="dates" item="date" index="index" separator="union all">
+            select Date,BSC,CELL,BCCH,CBCH,SDCCH,NOOFTCH,QUEUED from cdd_RLCRP_${date} where 1=1
+            <if test="bscs !=null">
+                and BSC in
+                <foreach collection="bscs" item="bsc" index="index" open="(" close=")" separator=",">
+                    '${bsc}'
+                </foreach>
+            </if>
+            <if test="cells !=null">
+                and CELL in
+                <foreach collection="cells" item="cell" index="index" open="(" close=")" separator=",">
+                    '${cell}'
+                </foreach>
+            </if>
+        </foreach>
+        ) as P
+    </select>
+    <select id="selectRlcrp" parameterType="map" resultType="java.util.LinkedHashMap">
+        <foreach collection="dates" item="date" index="index" separator="union all">
+            select Date,BSC,CELL,BCCH,CBCH,SDCCH,NOOFTCH,QUEUED from cdd_RLCRP_${date} where 1=1
+            <if test="bscs !=null">
+                and BSC in
+                <foreach collection="bscs" item="bsc" index="index" open="(" close=")" separator=",">
+                    '${bsc}'
+                </foreach>
+            </if>
+            <if test="cells !=null">
+                and CELL in
+                <foreach collection="cells" item="cell" index="index" open="(" close=")" separator=",">
+                    '${cell}'
+                </foreach>
+            </if>
+        </foreach>
+    </select>
+    <select id="selectRlcrpByPage" parameterType="map" resultType="java.util.LinkedHashMap">
+         select top ${cnt} Date,BSC,CELL,BCCH,CBCH,SDCCH,NOOFTCH,QUEUED
+        from (select row_number() over(order by A.Date) as rownumber,*
+              from (
+        <foreach collection="dates" item="date" index="index" separator="union all">
+            select Date,BSC,CELL,BCCH,CBCH,SDCCH,NOOFTCH,QUEUED from cdd_RLCRP_${date} where 1=1
+            <if test="bscs !=null">
+                and BSC in
+                <foreach collection="bscs" item="bsc" index="index" open="(" close=")" separator=",">
+                    '${bsc}'
+                </foreach>
+            </if>
+            <if test="cells !=null">
+                and CELL in
+                <foreach collection="cells" item="cell" index="index" open="(" close=")" separator=",">
+                    '${cell}'
+                </foreach>
+            </if>
+        </foreach>
+              ) A) B
+        where B.rownumber &gt;${startIndex}
+    </select>
+
+    <select id="selectRlcxpCount" parameterType="map" resultType="long">
+        select count(*) from (
+        <foreach collection="dates" item="date" index="index" separator="union all">
+            select Date,BSC,CELL,DTXD from cdd_RLCXP_${date} where 1=1
+            <if test="bscs !=null">
+                and BSC in
+                <foreach collection="bscs" item="bsc" index="index" open="(" close=")" separator=",">
+                    '${bsc}'
+                </foreach>
+            </if>
+            <if test="cells !=null">
+                and CELL in
+                <foreach collection="cells" item="cell" index="index" open="(" close=")" separator=",">
+                    '${cell}'
+                </foreach>
+            </if>
+        </foreach>
+        ) as Q
+    </select>
+    <select id="selectRlcxp" parameterType="map" resultType="java.util.LinkedHashMap">
+        <foreach collection="dates" item="date" index="index" separator="union all">
+            select Date,BSC,CELL,DTXD from cdd_RLCXP_${date} where 1=1
+            <if test="bscs !=null">
+                and BSC in
+                <foreach collection="bscs" item="bsc" index="index" open="(" close=")" separator=",">
+                    '${bsc}'
+                </foreach>
+            </if>
+            <if test="cells !=null">
+                and CELL in
+                <foreach collection="cells" item="cell" index="index" open="(" close=")" separator=",">
+                    '${cell}'
+                </foreach>
+            </if>
+        </foreach>
+    </select>
+    <select id="selectRlcxpByPage" parameterType="map" resultType="java.util.LinkedHashMap">
+         select top ${cnt} Date,BSC,CELL,DTXD
+        from (select row_number() over(order by A.Date) as rownumber,*
+              from (
+        <foreach collection="dates" item="date" index="index" separator="union all">
+            select Date,BSC,CELL,DTXD from cdd_RLCXP_${date} where 1=1
+            <if test="bscs !=null">
+                and BSC in
+                <foreach collection="bscs" item="bsc" index="index" open="(" close=")" separator=",">
+                    '${bsc}'
+                </foreach>
+            </if>
+            <if test="cells !=null">
+                and CELL in
+                <foreach collection="cells" item="cell" index="index" open="(" close=")" separator=",">
+                    '${cell}'
+                </foreach>
+            </if>
+        </foreach>
+              ) A) B
+        where B.rownumber &gt;${startIndex}
+    </select>
+
+    <select id="selectRldepCount" parameterType="map" resultType="long">
+        select count(*) from (
+        <foreach collection="dates" item="date" index="index" separator="union all">
+            select Date,BSC,CELL,CGI,BSIC,BCCHNO,AGBLK,MFRMS,IRC,TYPE,BCCHTYPE,FNOFFSET,XRANGE,CSYSTYPE,CELLIND
+            from cdd_RLDEP_${date} where 1=1
+            <if test="bscs !=null">
+                and BSC in
+                <foreach collection="bscs" item="bsc" index="index" open="(" close=")" separator=",">
+                    '${bsc}'
+                </foreach>
+            </if>
+            <if test="cells !=null">
+                and CELL in
+                <foreach collection="cells" item="cell" index="index" open="(" close=")" separator=",">
+                    '${cell}'
+                </foreach>
+            </if>
+        </foreach>
+        ) as R
+    </select>
+    <select id="selectRldep" parameterType="map" resultType="java.util.LinkedHashMap">
+        <foreach collection="dates" item="date" index="index" separator="union all">
+            select Date,BSC,CELL,CGI,BSIC,BCCHNO,AGBLK,MFRMS,IRC,TYPE,BCCHTYPE,FNOFFSET,XRANGE,CSYSTYPE,CELLIND
+            from cdd_RLDEP_${date} where 1=1
+            <if test="bscs !=null">
+                and BSC in
+                <foreach collection="bscs" item="bsc" index="index" open="(" close=")" separator=",">
+                    '${bsc}'
+                </foreach>
+            </if>
+            <if test="cells !=null">
+                and CELL in
+                <foreach collection="cells" item="cell" index="index" open="(" close=")" separator=",">
+                    '${cell}'
+                </foreach>
+            </if>
+        </foreach>
+    </select>
+    <select id="selectRldepByPage" parameterType="map" resultType="java.util.LinkedHashMap">
+         select top ${cnt} Date,BSC,CELL,CGI,BSIC,BCCHNO,AGBLK,MFRMS,IRC,TYPE,BCCHTYPE,FNOFFSET,XRANGE,CSYSTYPE,CELLIND
+        from (select row_number() over(order by A.Date) as rownumber,*
+              from (
+        <foreach collection="dates" item="date" index="index" separator="union all">
+            select Date,BSC,CELL,CGI,BSIC,BCCHNO,AGBLK,MFRMS,IRC,TYPE,BCCHTYPE,FNOFFSET,XRANGE,CSYSTYPE,CELLIND
+            from cdd_RLDEP_${date} where 1=1
+            <if test="bscs !=null">
+                and BSC in
+                <foreach collection="bscs" item="bsc" index="index" open="(" close=")" separator=",">
+                    '${bsc}'
+                </foreach>
+            </if>
+            <if test="cells !=null">
+                and CELL in
+                <foreach collection="cells" item="cell" index="index" open="(" close=")" separator=",">
+                    '${cell}'
+                </foreach>
+            </if>
+        </foreach>
+              ) A) B
+        where B.rownumber &gt;${startIndex}
+    </select>
+
+    <select id="selectRldepExtCount" parameterType="map" resultType="long">
+        select count(*) from (
+        <foreach collection="dates" item="date" index="index" separator="union all">
+            select Date,BSC,CELL,CGI,BSIC,BCCHNO,TYPE,CSYSTYPE from cdd_RLDEP_EXT_${date} where 1=1
+            <if test="bscs !=null">
+                and BSC in
+                <foreach collection="bscs" item="bsc" index="index" open="(" close=")" separator=",">
+                    '${bsc}'
+                </foreach>
+            </if>
+            <if test="cells !=null">
+                and CELL in
+                <foreach collection="cells" item="cell" index="index" open="(" close=")" separator=",">
+                    '${cell}'
+                </foreach>
+            </if>
+        </foreach>
+        ) as S
+    </select>
+    <select id="selectRldepExt" parameterType="map" resultType="java.util.LinkedHashMap">
+        <foreach collection="dates" item="date" index="index" separator="union all">
+            select Date,BSC,CELL,CGI,BSIC,BCCHNO,TYPE,CSYSTYPE from cdd_RLDEP_EXT_${date} where 1=1
+            <if test="bscs !=null">
+                and BSC in
+                <foreach collection="bscs" item="bsc" index="index" open="(" close=")" separator=",">
+                    '${bsc}'
+                </foreach>
+            </if>
+            <if test="cells !=null">
+                and CELL in
+                <foreach collection="cells" item="cell" index="index" open="(" close=")" separator=",">
+                    '${cell}'
+                </foreach>
+            </if>
+        </foreach>
+    </select>
+    <select id="selectRldepExtByPage" parameterType="map" resultType="java.util.LinkedHashMap">
+         select top ${cnt} Date,BSC,CELL,CGI,BSIC,BCCHNO,TYPE,CSYSTYPE
+        from (select row_number() over(order by A.Date) as rownumber,*
+              from (
+        <foreach collection="dates" item="date" index="index" separator="union all">
+            select Date,BSC,CELL,CGI,BSIC,BCCHNO,TYPE,CSYSTYPE from cdd_RLDEP_EXT_${date} where 1=1
+            <if test="bscs !=null">
+                and BSC in
+                <foreach collection="bscs" item="bsc" index="index" open="(" close=")" separator=",">
+                    '${bsc}'
+                </foreach>
+            </if>
+            <if test="cells !=null">
+                and CELL in
+                <foreach collection="cells" item="cell" index="index" open="(" close=")" separator=",">
+                    '${cell}'
+                </foreach>
+            </if>
+        </foreach>
+              ) A) B
+        where B.rownumber &gt;${startIndex}
+    </select>
+
+    <select id="selectRldgpCount" parameterType="map" resultType="long">
+        select count(*) from (
+        <foreach collection="dates" item="date" index="index" separator="union all">
+            select Date,BSC,CELL,CHGR,SCTYPE,BAND from cdd_RLDGP_20121025 where 1=1
+            <if test="bscs !=null">
+                and BSC in
+                <foreach collection="bscs" item="bsc" index="index" open="(" close=")" separator=",">
+                    '${bsc}'
+                </foreach>
+            </if>
+            <if test="cells !=null">
+                and CELL in
+                <foreach collection="cells" item="cell" index="index" open="(" close=")" separator=",">
+                    '${cell}'
+                </foreach>
+            </if>
+        </foreach>
+        ) as T
+    </select>
+    <select id="selectRldgp" parameterType="map" resultType="java.util.LinkedHashMap">
+        <foreach collection="dates" item="date" index="index" separator="union all">
+            select Date,BSC,CELL,CHGR,SCTYPE,BAND from cdd_RLDGP_20121025 where 1=1
+            <if test="bscs !=null">
+                and BSC in
+                <foreach collection="bscs" item="bsc" index="index" open="(" close=")" separator=",">
+                    '${bsc}'
+                </foreach>
+            </if>
+            <if test="cells !=null">
+                and CELL in
+                <foreach collection="cells" item="cell" index="index" open="(" close=")" separator=",">
+                    '${cell}'
+                </foreach>
+            </if>
+        </foreach>
+    </select>
+    <select id="selectRldgpByPage" parameterType="map" resultType="java.util.LinkedHashMap">
+         select top ${cnt} Date,BSC,CELL,CHGR,SCTYPE,BAND
+        from (select row_number() over(order by A.Date) as rownumber,*
+              from (
+        <foreach collection="dates" item="date" index="index" separator="union all">
+            select Date,BSC,CELL,CHGR,SCTYPE,BAND from cdd_RLDGP_20121025 where 1=1
+            <if test="bscs !=null">
+                and BSC in
+                <foreach collection="bscs" item="bsc" index="index" open="(" close=")" separator=",">
+                    '${bsc}'
+                </foreach>
+            </if>
+            <if test="cells !=null">
+                and CELL in
+                <foreach collection="cells" item="cell" index="index" open="(" close=")" separator=",">
+                    '${cell}'
+                </foreach>
+            </if>
+        </foreach>
+              ) A) B
+        where B.rownumber &gt;${startIndex}
+    </select>
+
+    <select id="selectRldhpCount" parameterType="map" resultType="long">
+        select count(*) from (
+        <foreach collection="dates" item="date" index="index" separator="union all">
+            select Date,BSC,CELL,DHA,DTHAMR,DTHNAMR,DTHAMRWB,DHPRL,DHPR from cdd_RLDHP_${date} where 1=1
+            <if test="bscs !=null">
+                and BSC in
+                <foreach collection="bscs" item="bsc" index="index" open="(" close=")" separator=",">
+                    '${bsc}'
+                </foreach>
+            </if>
+            <if test="cells !=null">
+                and CELL in
+                <foreach collection="cells" item="cell" index="index" open="(" close=")" separator=",">
+                    '${cell}'
+                </foreach>
+            </if>
+        </foreach>
+        ) as U
+    </select>
+    <select id="selectRldhp" parameterType="map" resultType="java.util.LinkedHashMap">
+        <foreach collection="dates" item="date" index="index" separator="union all">
+            select Date,BSC,CELL,DHA,DTHAMR,DTHNAMR,DTHAMRWB,DHPRL,DHPR from cdd_RLDHP_${date} where 1=1
+            <if test="bscs !=null">
+                and BSC in
+                <foreach collection="bscs" item="bsc" index="index" open="(" close=")" separator=",">
+                    '${bsc}'
+                </foreach>
+            </if>
+            <if test="cells !=null">
+                and CELL in
+                <foreach collection="cells" item="cell" index="index" open="(" close=")" separator=",">
+                    '${cell}'
+                </foreach>
+            </if>
+        </foreach>
+    </select>
+    <select id="selectRldhpByPage" parameterType="map" resultType="java.util.LinkedHashMap">
+         select top ${cnt} Date,BSC,CELL,DHA,DTHAMR,DTHNAMR,DTHAMRWB,DHPRL,DHPR
+        from (select row_number() over(order by A.Date desc) as rownumber,*
+              from (
+        <foreach collection="dates" item="date" index="index" separator="union all">
+            select Date,BSC,CELL,DHA,DTHAMR,DTHNAMR,DTHAMRWB,DHPRL,DHPR from cdd_RLDHP_${date} where 1=1
+            <if test="bscs !=null">
+                and BSC in
+                <foreach collection="bscs" item="bsc" index="index" open="(" close=")" separator=",">
+                    '${bsc}'
+                </foreach>
+            </if>
+            <if test="cells !=null">
+                and CELL in
+                <foreach collection="cells" item="cell" index="index" open="(" close=")" separator=",">
+                    '${cell}'
+                </foreach>
+            </if>
+        </foreach>
+              ) A) B
+        where B.rownumber &gt;${startIndex}
+    </select>
+
+    <select id="selectRldtpCount" parameterType="map" resultType="long">
+        select count(*) from (
+        <foreach collection="dates" item="date" index="index" separator="union all">
+            select Date,BSC,CELL,CHGR,TSC from cdd_RLDTP_${date} where 1=1
+            <if test="bscs !=null">
+                and BSC in
+                <foreach collection="bscs" item="bsc" index="index" open="(" close=")" separator=",">
+                    '${bsc}'
+                </foreach>
+            </if>
+            <if test="cells !=null">
+                and CELL in
+                <foreach collection="cells" item="cell" index="index" open="(" close=")" separator=",">
+                    '${cell}'
+                </foreach>
+            </if>
+        </foreach>
+        ) as V
+    </select>
+    <select id="selectRldtp" parameterType="map" resultType="java.util.LinkedHashMap">
+        <foreach collection="dates" item="date" index="index" separator="union all">
+            select Date,BSC,CELL,CHGR,TSC from cdd_RLDTP_${date} where 1=1
+            <if test="bscs !=null">
+                and BSC in
+                <foreach collection="bscs" item="bsc" index="index" open="(" close=")" separator=",">
+                    '${bsc}'
+                </foreach>
+            </if>
+            <if test="cells !=null">
+                and CELL in
+                <foreach collection="cells" item="cell" index="index" open="(" close=")" separator=",">
+                    '${cell}'
+                </foreach>
+            </if>
+        </foreach>
+    </select>
+    <select id="selectRldtpByPage" parameterType="map" resultType="java.util.LinkedHashMap">
+         select top ${cnt} Date,BSC,CELL,CHGR,TSC
+        from (select row_number() over(order by A.Date) as rownumber,*
+              from (
+        <foreach collection="dates" item="date" index="index" separator="union all">
+            select Date,BSC,CELL,CHGR,TSC from cdd_RLDTP_${date} where 1=1
+            <if test="bscs !=null">
+                and BSC in
+                <foreach collection="bscs" item="bsc" index="index" open="(" close=")" separator=",">
+                    '${bsc}'
+                </foreach>
+            </if>
+            <if test="cells !=null">
+                and CELL in
+                <foreach collection="cells" item="cell" index="index" open="(" close=")" separator=",">
+                    '${cell}'
+                </foreach>
+            </if>
+        </foreach>
+              ) A) B
+        where B.rownumber &gt;${startIndex}
+    </select>
+
+    <select id="selectRldupCount" parameterType="map" resultType="long">
+        select count(*) from (
+        <foreach collection="dates" item="date" index="index" separator="union all">
+            select Date,BSC,CELL,DTMSTATE,MAXLAPDM,ALLOCPREF,OPTMSCLASS from cdd_RLDUP_${date} where 1=1
+            <if test="bscs !=null">
+                and BSC in
+                <foreach collection="bscs" item="bsc" index="index" open="(" close=")" separator=",">
+                    '${bsc}'
+                </foreach>
+            </if>
+            <if test="cells !=null">
+                and CELL in
+                <foreach collection="cells" item="cell" index="index" open="(" close=")" separator=",">
+                    '${cell}'
+                </foreach>
+            </if>
+        </foreach>
+        ) as W
+    </select>
+    <select id="selectRldup" parameterType="map" resultType="java.util.LinkedHashMap">
+        <foreach collection="dates" item="date" index="index" separator="union all">
+            select Date,BSC,CELL,DTMSTATE,MAXLAPDM,ALLOCPREF,OPTMSCLASS from cdd_RLDUP_${date} where 1=1
+            <if test="bscs !=null">
+                and BSC in
+                <foreach collection="bscs" item="bsc" index="index" open="(" close=")" separator=",">
+                    '${bsc}'
+                </foreach>
+            </if>
+            <if test="cells !=null">
+                and CELL in
+                <foreach collection="cells" item="cell" index="index" open="(" close=")" separator=",">
+                    '${cell}'
+                </foreach>
+            </if>
+        </foreach>
+    </select>
+    <select id="selectRldupByPage" parameterType="map" resultType="java.util.LinkedHashMap">
+         select top ${cnt} Date,BSC,CELL,DTMSTATE,MAXLAPDM,ALLOCPREF,OPTMSCLASS
+        from (select row_number() over(order by A.Date) as rownumber,*
+              from (
+        <foreach collection="dates" item="date" index="index" separator="union all">
+            select Date,BSC,CELL,DTMSTATE,MAXLAPDM,ALLOCPREF,OPTMSCLASS from cdd_RLDUP_${date} where 1=1
+            <if test="bscs !=null">
+                and BSC in
+                <foreach collection="bscs" item="bsc" index="index" open="(" close=")" separator=",">
+                    '${bsc}'
+                </foreach>
+            </if>
+            <if test="cells !=null">
+                and CELL in
+                <foreach collection="cells" item="cell" index="index" open="(" close=")" separator=",">
+                    '${cell}'
+                </foreach>
+            </if>
+        </foreach>
+              ) A) B
+        where B.rownumber &gt;${startIndex}
+    </select>
+
+    <select id="selectRlefpCount" parameterType="map" resultType="long">
+        select count(*) from (
+        <foreach collection="dates" item="date" index="index" separator="union all">
+            select Date,BSC,CELL,EARFCN from cdd_RLEFP_${date} where 1=1
+            <if test="bscs !=null">
+                and BSC in
+                <foreach collection="bscs" item="bsc" index="index" open="(" close=")" separator=",">
+                    '${bsc}'
+                </foreach>
+            </if>
+            <if test="cells !=null">
+                and CELL in
+                <foreach collection="cells" item="cell" index="index" open="(" close=")" separator=",">
+                    '${cell}'
+                </foreach>
+            </if>
+        </foreach>
+        ) as X
+    </select>
+    <select id="selectRlefp" parameterType="map" resultType="java.util.LinkedHashMap">
+        <foreach collection="dates" item="date" index="index" separator="union all">
+            select Date,BSC,CELL,EARFCN from cdd_RLEFP_${date} where 1=1
+            <if test="bscs !=null">
+                and BSC in
+                <foreach collection="bscs" item="bsc" index="index" open="(" close=")" separator=",">
+                    '${bsc}'
+                </foreach>
+            </if>
+            <if test="cells !=null">
+                and CELL in
+                <foreach collection="cells" item="cell" index="index" open="(" close=")" separator=",">
+                    '${cell}'
+                </foreach>
+            </if>
+        </foreach>
+    </select>
+    <select id="selectRlefpByPage" parameterType="map" resultType="java.util.LinkedHashMap">
+         select top ${cnt} Date,BSC,CELL,EARFCN
+        from (select row_number() over(order by A.Date) as rownumber,*
+              from (
+        <foreach collection="dates" item="date" index="index" separator="union all">
+            select Date,BSC,CELL,EARFCN from cdd_RLEFP_${date} where 1=1
+            <if test="bscs !=null">
+                and BSC in
+                <foreach collection="bscs" item="bsc" index="index" open="(" close=")" separator=",">
+                    '${bsc}'
+                </foreach>
+            </if>
+            <if test="cells !=null">
+                and CELL in
+                <foreach collection="cells" item="cell" index="index" open="(" close=")" separator=",">
+                    '${cell}'
+                </foreach>
+            </if>
+        </foreach>
+              ) A) B
+        where B.rownumber &gt;${startIndex}
+    </select>
+
+    <select id="selectRlgapCount" parameterType="map" resultType="long">
+        select count(*) from (
+        <foreach collection="dates" item="date" index="index" separator="union all">
+            select Date,BSC,CELL,CHGR,SAS,ODPDCHLIMIT from cdd_RLGAP_${date} where 1=1
+            <if test="bscs !=null">
+                and BSC in
+                <foreach collection="bscs" item="bsc" index="index" open="(" close=")" separator=",">
+                    '${bsc}'
+                </foreach>
+            </if>
+            <if test="cells !=null">
+                and CELL in
+                <foreach collection="cells" item="cell" index="index" open="(" close=")" separator=",">
+                    '${cell}'
+                </foreach>
+            </if>
+        </foreach>
+        ) as Y
+    </select>
+    <select id="selectRlgap" parameterType="map" resultType="java.util.LinkedHashMap">
+        <foreach collection="dates" item="date" index="index" separator="union all">
+            select Date,BSC,CELL,CHGR,SAS,ODPDCHLIMIT from cdd_RLGAP_${date} where 1=1
+            <if test="bscs !=null">
+                and BSC in
+                <foreach collection="bscs" item="bsc" index="index" open="(" close=")" separator=",">
+                    '${bsc}'
+                </foreach>
+            </if>
+            <if test="cells !=null">
+                and CELL in
+                <foreach collection="cells" item="cell" index="index" open="(" close=")" separator=",">
+                    '${cell}'
+                </foreach>
+            </if>
+        </foreach>
+    </select>
+    <select id="selectRlgapByPage" parameterType="map" resultType="java.util.LinkedHashMap">
+         select top ${cnt} Date,BSC,CELL,CHGR,SAS,ODPDCHLIMIT
+        from (select row_number() over(order by A.Date) as rownumber,*
+              from (
+        <foreach collection="dates" item="date" index="index" separator="union all">
+            select Date,BSC,CELL,CHGR,SAS,ODPDCHLIMIT from cdd_RLGAP_${date} where 1=1
+            <if test="bscs !=null">
+                and BSC in
+                <foreach collection="bscs" item="bsc" index="index" open="(" close=")" separator=",">
+                    '${bsc}'
+                </foreach>
+            </if>
+            <if test="cells !=null">
+                and CELL in
+                <foreach collection="cells" item="cell" index="index" open="(" close=")" separator=",">
+                    '${cell}'
+                </foreach>
+            </if>
+        </foreach>
+              ) A) B
+        where B.rownumber &gt;${startIndex}
+    </select>
+
+    <select id="selectRlgrpCount" parameterType="map" resultType="long">
+        select count(*) from (
+        <foreach collection="dates" item="date" index="index" separator="union all">
+            select Date,BSC,CELL,NOPDCH,RP from cdd_RLGRP_${date} where 1=1
+            <if test="bscs !=null">
+                and BSC in
+                <foreach collection="bscs" item="bsc" index="index" open="(" close=")" separator=",">
+                    '${bsc}'
+                </foreach>
+            </if>
+            <if test="cells !=null">
+                and CELL in
+                <foreach collection="cells" item="cell" index="index" open="(" close=")" separator=",">
+                    '${cell}'
+                </foreach>
+            </if>
+        </foreach>
+        ) as Z
+    </select>
+    <select id="selectRlgrp" parameterType="map" resultType="java.util.LinkedHashMap">
+        <foreach collection="dates" item="date" index="index" separator="union all">
+            select Date,BSC,CELL,NOPDCH,RP from cdd_RLGRP_${date} where 1=1
+            <if test="bscs !=null">
+                and BSC in
+                <foreach collection="bscs" item="bsc" index="index" open="(" close=")" separator=",">
+                    '${bsc}'
+                </foreach>
+            </if>
+            <if test="cells !=null">
+                and CELL in
+                <foreach collection="cells" item="cell" index="index" open="(" close=")" separator=",">
+                    '${cell}'
+                </foreach>
+            </if>
+        </foreach>
+    </select>
+    <select id="selectRlgrpByPage" parameterType="map" resultType="java.util.LinkedHashMap">
+         select top ${cnt} Date,BSC,CELL,NOPDCH,RP
+        from (select row_number() over(order by A.Date) as rownumber,*
+              from (
+        <foreach collection="dates" item="date" index="index" separator="union all">
+                select Date,BSC,CELL,NOPDCH,RP from cdd_RLGRP_${date} where 1=1
+        <if test="bscs !=null">
+            and BSC in
+            <foreach collection="bscs" item="bsc" index="index" open="(" close=")" separator=",">
+                '${bsc}'
+            </foreach>
+        </if>
+        <if test="cells !=null">
+            and CELL in
+            <foreach collection="cells" item="cell" index="index" open="(" close=")" separator=",">
+                '${cell}'
+            </foreach>
+        </if>
+        </foreach>
+              ) A) B
+        where B.rownumber &gt;${startIndex}
+    </select>
+
+    <select id="selectRlgspCount" parameterType="map" resultType="long">
+        select count(*) from (
+        <foreach collection="dates" item="date" index="index" separator="union all">
+            select Date,BSC,CELL,GPRSSUP,BVCI,FPDCH,GAMMA,PSKONBCCH,LA,CHCSDL,SCALLOC,PDCHPREEMPT,MPDCH,
+            PRIMPLIM,SPDCH,FLEXHIGHGPRS,EFACTOR from cdd_RLGSP_${date} where 1=1
+            <if test="bscs !=null">
+                and BSC in
+                <foreach collection="bscs" item="bsc" index="index" open="(" close=")" separator=",">
+                    '${bsc}'
+                </foreach>
+            </if>
+            <if test="cells !=null">
+                and CELL in
+                <foreach collection="cells" item="cell" index="index" open="(" close=")" separator=",">
+                    '${cell}'
+                </foreach>
+            </if>
+        </foreach>) as AA
+    </select>
+    <select id="selectRlgsp" parameterType="map" resultType="java.util.LinkedHashMap">
+        <foreach collection="dates" item="date" index="index" separator="union all">
+            select Date,BSC,CELL,GPRSSUP,BVCI,FPDCH,GAMMA,PSKONBCCH,LA,CHCSDL,SCALLOC,PDCHPREEMPT,MPDCH,
+            PRIMPLIM,SPDCH,FLEXHIGHGPRS,EFACTOR from cdd_RLGSP_${date} where 1=1
+            <if test="bscs !=null">
+                and BSC in
+                <foreach collection="bscs" item="bsc" index="index" open="(" close=")" separator=",">
+                    '${bsc}'
+                </foreach>
+            </if>
+            <if test="cells !=null">
+                and CELL in
+                <foreach collection="cells" item="cell" index="index" open="(" close=")" separator=",">
+                    '${cell}'
+                </foreach>
+            </if>
+        </foreach>
+    </select>
+    <select id="selectRlgspByPage" parameterType="map" resultType="java.util.LinkedHashMap">
+         select top ${cnt} Date,BSC,CELL,GPRSSUP,BVCI,FPDCH,GAMMA,PSKONBCCH,LA,CHCSDL,SCALLOC,PDCHPREEMPT,MPDCH,
+        PRIMPLIM,SPDCH,FLEXHIGHGPRS,EFACTOR
+        from (select row_number() over(order by A.Date) as rownumber,*
+              from (
+        <foreach collection="dates" item="date" index="index" separator="union all">
+            select Date,BSC,CELL,GPRSSUP,BVCI,FPDCH,GAMMA,PSKONBCCH,LA,CHCSDL,SCALLOC,PDCHPREEMPT,MPDCH,
+            PRIMPLIM,SPDCH,FLEXHIGHGPRS,EFACTOR from cdd_RLGSP_${date} where 1=1
+            <if test="bscs !=null">
+                and BSC in
+                <foreach collection="bscs" item="bsc" index="index" open="(" close=")" separator=",">
+                    '${bsc}'
+                </foreach>
+            </if>
+            <if test="cells !=null">
+                and CELL in
+                <foreach collection="cells" item="cell" index="index" open="(" close=")" separator=",">
+                    '${cell}'
+                </foreach>
+            </if>
+        </foreach>
+              ) A) B
+        where B.rownumber &gt;${startIndex}
+    </select>
+
+    <select id="selectRlhppCount" parameterType="map" resultType="long">
+        select count(*) from (
+        <foreach collection="dates" item="date" index="index" separator="union all">
+            select Date,BSC,CELL,CHAP from cdd_RLHPP_${date} where 1=1
+            <if test="bscs !=null">
+                and BSC in
+                <foreach collection="bscs" item="bsc" index="index" open="(" close=")" separator=",">
+                    '${bsc}'
+                </foreach>
+            </if>
+            <if test="cells !=null">
+                and CELL in
+                <foreach collection="cells" item="cell" index="index" open="(" close=")" separator=",">
+                    '${cell}'
+                </foreach>
+            </if>
+        </foreach>
+        ) as AB
+    </select>
+    <select id="selectRlhpp" parameterType="map" resultType="java.util.LinkedHashMap">
+        <foreach collection="dates" item="date" index="index" separator="union all">
+            select Date,BSC,CELL,CHAP from cdd_RLHPP_${date} where 1=1
+            <if test="bscs !=null">
+                and BSC in
+                <foreach collection="bscs" item="bsc" index="index" open="(" close=")" separator=",">
+                    '${bsc}'
+                </foreach>
+            </if>
+            <if test="cells !=null">
+                and CELL in
+                <foreach collection="cells" item="cell" index="index" open="(" close=")" separator=",">
+                    '${cell}'
+                </foreach>
+            </if>
+        </foreach>
+    </select>
+    <select id="selectRlhppByPage" parameterType="map" resultType="java.util.LinkedHashMap">
+         select top ${cnt} Date,BSC,CELL,CHAP
+        from (select row_number() over(order by A.Date) as rownumber,*
+              from (
+        <foreach collection="dates" item="date" index="index" separator="union all">
+            select Date,BSC,CELL,CHAP from cdd_RLHPP_${date} where 1=1
+            <if test="bscs !=null">
+                and BSC in
+                <foreach collection="bscs" item="bsc" index="index" open="(" close=")" separator=",">
+                    '${bsc}'
+                </foreach>
+            </if>
+            <if test="cells !=null">
+                and CELL in
+                <foreach collection="cells" item="cell" index="index" open="(" close=")" separator=",">
+                    '${cell}'
+                </foreach>
+            </if>
+        </foreach>
+              ) A) B
+        where B.rownumber &gt;${startIndex}
+    </select>
+
+    <select id="selectRlihpCount" parameterType="map" resultType="long">
+        select count(*) from (
+        <foreach collection="dates" item="date" index="index" separator="union all">
+            select Date,BSC,CELL,SCTYPE,IHO,MAXIHO,TMAXIHO,TIHO,SSOFFSETULP,SSOFFSETULN,SSOFFSETDLP,
+            SSOFFSETDLN,QOFFSETULP,QOFFSETULN,QOFFSETDLP,QOFFSETDLN,SSOFFSETULAFRP,SSOFFSETULAFRN,
+            SSOFFSETDLAFRP,SSOFFSETDLAFRN,QOFFSETULAFRP,QOFFSETULAFRN,QOFFSETDLAFRP,QOFFSETDLAFRN,
+            SSOFFSETULAWBP,SSOFFSETULAWBN,SSOFFSETDLAWBP,
+            SSOFFSETDLAWBN,QOFFSETULAWBP,QOFFSETULAWBN,QOFFSETDLAWBP,QOFFSETDLAWBN
+            from cdd_RLIHP_${date} where 1=1
+            <if test="bscs !=null">
+                and BSC in
+                <foreach collection="bscs" item="bsc" index="index" open="(" close=")" separator=",">
+                    '${bsc}'
+                </foreach>
+            </if>
+            <if test="cells !=null">
+                and CELL in
+                <foreach collection="cells" item="cell" index="index" open="(" close=")" separator=",">
+                    '${cell}'
+                </foreach>
+            </if>
+        </foreach>
+        ) as AC
+    </select>
+    <select id="selectRlihp" parameterType="map" resultType="java.util.LinkedHashMap">
+        <foreach collection="dates" item="date" index="index" separator="union all">
+            select Date,BSC,CELL,SCTYPE,IHO,MAXIHO,TMAXIHO,TIHO,SSOFFSETULP,SSOFFSETULN,SSOFFSETDLP,
+            SSOFFSETDLN,QOFFSETULP,QOFFSETULN,QOFFSETDLP,QOFFSETDLN,SSOFFSETULAFRP,SSOFFSETULAFRN,
+            SSOFFSETDLAFRP,SSOFFSETDLAFRN,QOFFSETULAFRP,QOFFSETULAFRN,QOFFSETDLAFRP,QOFFSETDLAFRN,
+            SSOFFSETULAWBP,SSOFFSETULAWBN,SSOFFSETDLAWBP,
+            SSOFFSETDLAWBN,QOFFSETULAWBP,QOFFSETULAWBN,QOFFSETDLAWBP,QOFFSETDLAWBN
+            from cdd_RLIHP_${date} where 1=1
+            <if test="bscs !=null">
+                and BSC in
+                <foreach collection="bscs" item="bsc" index="index" open="(" close=")" separator=",">
+                    '${bsc}'
+                </foreach>
+            </if>
+            <if test="cells !=null">
+                and CELL in
+                <foreach collection="cells" item="cell" index="index" open="(" close=")" separator=",">
+                    '${cell}'
+                </foreach>
+            </if>
+        </foreach>
+    </select>
+    <select id="selectRlihpByPage" parameterType="map" resultType="java.util.LinkedHashMap">
+         select top ${cnt} Date,BSC,CELL,SCTYPE,IHO,MAXIHO,TMAXIHO,TIHO,SSOFFSETULP,SSOFFSETULN,SSOFFSETDLP,
+        SSOFFSETDLN,QOFFSETULP,QOFFSETULN,QOFFSETDLP,QOFFSETDLN,SSOFFSETULAFRP,SSOFFSETULAFRN,
+        SSOFFSETDLAFRP,SSOFFSETDLAFRN,QOFFSETULAFRP,QOFFSETULAFRN,QOFFSETDLAFRP,QOFFSETDLAFRN,
+        SSOFFSETULAWBP,SSOFFSETULAWBN,SSOFFSETDLAWBP,
+        SSOFFSETDLAWBN,QOFFSETULAWBP,QOFFSETULAWBN,QOFFSETDLAWBP,QOFFSETDLAWBN
+        from (select row_number() over(order by A.Date) as rownumber,*
+              from (
+        <foreach collection="dates" item="date" index="index" separator="union all">
+            select Date,BSC,CELL,SCTYPE,IHO,MAXIHO,TMAXIHO,TIHO,SSOFFSETULP,SSOFFSETULN,SSOFFSETDLP,
+            SSOFFSETDLN,QOFFSETULP,QOFFSETULN,QOFFSETDLP,QOFFSETDLN,SSOFFSETULAFRP,SSOFFSETULAFRN,
+            SSOFFSETDLAFRP,SSOFFSETDLAFRN,QOFFSETULAFRP,QOFFSETULAFRN,QOFFSETDLAFRP,QOFFSETDLAFRN,
+            SSOFFSETULAWBP,SSOFFSETULAWBN,SSOFFSETDLAWBP,
+            SSOFFSETDLAWBN,QOFFSETULAWBP,QOFFSETULAWBN,QOFFSETDLAWBP,QOFFSETDLAWBN
+            from cdd_RLIHP_${date} where 1=1
+            <if test="bscs !=null">
+                and BSC in
+                <foreach collection="bscs" item="bsc" index="index" open="(" close=")" separator=",">
+                    '${bsc}'
+                </foreach>
+            </if>
+            <if test="cells !=null">
+                and CELL in
+                <foreach collection="cells" item="cell" index="index" open="(" close=")" separator=",">
+                    '${cell}'
+                </foreach>
+            </if>
+        </foreach>
+              ) A) B
+        where B.rownumber &gt;${startIndex}
+    </select>
+
+    <select id="selectRlimpCount" parameterType="map" resultType="long">
+        select count(*) from (
+        <foreach collection="dates" item="date" index="index" separator="union all">
+            select Date,BSC,CELL,ICMSTATE,INTAVE,LIMIT1,LIMIT2,LIMIT3,LIMIT4 from cdd_RLIMP_${date} where 1=1
+            <if test="bscs !=null">
+                and BSC in
+                <foreach collection="bscs" item="bsc" index="index" open="(" close=")" separator=",">
+                    '${bsc}'
+                </foreach>
+            </if>
+            <if test="cells !=null">
+                and CELL in
+                <foreach collection="cells" item="cell" index="index" open="(" close=")" separator=",">
+                    '${cell}'
+                </foreach>
+            </if>
+        </foreach>
+        ) as AD
+    </select>
+    <select id="selectRlimp" parameterType="map" resultType="java.util.LinkedHashMap">
+        <foreach collection="dates" item="date" index="index" separator="union all">
+            select Date,BSC,CELL,ICMSTATE,INTAVE,LIMIT1,LIMIT2,LIMIT3,LIMIT4 from cdd_RLIMP_${date} where 1=1
+            <if test="bscs !=null">
+                and BSC in
+                <foreach collection="bscs" item="bsc" index="index" open="(" close=")" separator=",">
+                    '${bsc}'
+                </foreach>
+            </if>
+            <if test="cells !=null">
+                and CELL in
+                <foreach collection="cells" item="cell" index="index" open="(" close=")" separator=",">
+                    '${cell}'
+                </foreach>
+            </if>
+        </foreach>
+    </select>
+    <select id="selectRlimpByPage" parameterType="map" resultType="java.util.LinkedHashMap">
+         select top ${cnt} Date,BSC,CELL,ICMSTATE,INTAVE,LIMIT1,LIMIT2,LIMIT3,LIMIT4
+        from (select row_number() over(order by A.Date) as rownumber,*
+              from (
+        <foreach collection="dates" item="date" index="index" separator="union all">
+            select Date,BSC,CELL,ICMSTATE,INTAVE,LIMIT1,LIMIT2,LIMIT3,LIMIT4 from cdd_RLIMP_${date} where 1=1
+            <if test="bscs !=null">
+                and BSC in
+                <foreach collection="bscs" item="bsc" index="index" open="(" close=")" separator=",">
+                    '${bsc}'
+                </foreach>
+            </if>
+            <if test="cells !=null">
+                and CELL in
+                <foreach collection="cells" item="cell" index="index" open="(" close=")" separator=",">
+                    '${cell}'
+                </foreach>
+            </if>
+        </foreach>
+              ) A) B
+        where B.rownumber &gt;${startIndex}
+    </select>
+
+    <select id="selectRllbpCount" parameterType="map" resultType="long">
+        select count(*) from (
+        <foreach collection="dates" item="date" index="index" separator="union all">
+            select Date,BSC,SYSTYPE,TAAVELEN,TINIT,TALLOC,TURGEN,EVALTYPE,THO,NHO,ASSOC,IBHOASS,IBHOSICH,IHOSICH
+            from cdd_RLLBP_${date} where 1=1
+            <if test="bscs !=null">
+                and BSC in
+                <foreach collection="bscs" item="bsc" index="index" open="(" close=")" separator=",">
+                    '${bsc}'
+                </foreach>
+            </if>
+        </foreach>
+        ) as AE
+    </select>
+    <select id="selectRllbp" parameterType="map" resultType="java.util.LinkedHashMap">
+        <foreach collection="dates" item="date" index="index" separator="union all">
+            select Date,BSC,SYSTYPE,TAAVELEN,TINIT,TALLOC,TURGEN,EVALTYPE,THO,NHO,ASSOC,IBHOASS,IBHOSICH,IHOSICH
+            from cdd_RLLBP_${date} where 1=1
+            <if test="bscs !=null">
+                and BSC in
+                <foreach collection="bscs" item="bsc" index="index" open="(" close=")" separator=",">
+                    '${bsc}'
+                </foreach>
+            </if>
+        </foreach>
+    </select>
+    <select id="selectRllbpByPage" parameterType="map" resultType="java.util.LinkedHashMap">
+         select top ${cnt} Date,BSC,SYSTYPE,TAAVELEN,TINIT,TALLOC,TURGEN,EVALTYPE,THO,NHO,ASSOC,IBHOASS,IBHOSICH,IHOSICH
+        from (select row_number() over(order by A.Date desc) as rownumber,*
+              from (
+        <foreach collection="dates" item="date" index="index" separator="union all">
+            select Date,BSC,SYSTYPE,TAAVELEN,TINIT,TALLOC,TURGEN,EVALTYPE,THO,NHO,ASSOC,IBHOASS,IBHOSICH,IHOSICH
+            from cdd_RLLBP_${date} where 1=1
+            <if test="bscs !=null">
+                and BSC in
+                <foreach collection="bscs" item="bsc" index="index" open="(" close=")" separator=",">
+                    '${bsc}'
+                </foreach>
+            </if>
+        </foreach>
+              ) A) B
+        where B.rownumber &gt;${startIndex}
+    </select>
+
+    <select id="selectRlldpCount" parameterType="map" resultType="long">
+        select count(*) from (
+        <foreach collection="dates" item="date" index="index" separator="union all">
+            select Date,BSC,CELL,MAXTA,RLINKUP,RLINKUPAFR,RLINKUPAHR,RLINKUPAWB from cdd_RLLDP_${date} where 1=1
+            <if test="bscs !=null">
+                and BSC in
+                <foreach collection="bscs" item="bsc" index="index" open="(" close=")" separator=",">
+                    '${bsc}'
+                </foreach>
+            </if>
+            <if test="cells !=null">
+                and CELL in
+                <foreach collection="cells" item="cell" index="index" open="(" close=")" separator=",">
+                    '${cell}'
+                </foreach>
+            </if>
+        </foreach>
+        ) as AF
+    </select>
+    <select id="selectRlldp" parameterType="map" resultType="java.util.LinkedHashMap">
+        <foreach collection="dates" item="date" index="index" separator="union all">
+            select Date,BSC,CELL,MAXTA,RLINKUP,RLINKUPAFR,RLINKUPAHR,RLINKUPAWB from cdd_RLLDP_${date} where 1=1
+            <if test="bscs !=null">
+                and BSC in
+                <foreach collection="bscs" item="bsc" index="index" open="(" close=")" separator=",">
+                    '${bsc}'
+                </foreach>
+            </if>
+            <if test="cells !=null">
+                and CELL in
+                <foreach collection="cells" item="cell" index="index" open="(" close=")" separator=",">
+                    '${cell}'
+                </foreach>
+            </if>
+        </foreach>
+    </select>
+    <select id="selectRlldpByPage" parameterType="map" resultType="java.util.LinkedHashMap">
+         select top ${cnt} Date,BSC,CELL,MAXTA,RLINKUP,RLINKUPAFR,RLINKUPAHR,RLINKUPAWB
+        from (select row_number() over(order by A.Date) as rownumber,*
+              from (
+        <foreach collection="dates" item="date" index="index" separator="union all">
+            select Date,BSC,CELL,MAXTA,RLINKUP,RLINKUPAFR,RLINKUPAHR,RLINKUPAWB from cdd_RLLDP_${date} where 1=1
+            <if test="bscs !=null">
+                and BSC in
+                <foreach collection="bscs" item="bsc" index="index" open="(" close=")" separator=",">
+                    '${bsc}'
+                </foreach>
+            </if>
+            <if test="cells !=null">
+                and CELL in
+                <foreach collection="cells" item="cell" index="index" open="(" close=")" separator=",">
+                    '${cell}'
+                </foreach>
+            </if>
+        </foreach>
+              ) A) B
+        where B.rownumber &gt;${startIndex}
+    </select>
+
+    <select id="selectRllfpCount" parameterType="map" resultType="long">
+        select count(*) from (
+        <foreach collection="dates" item="date" index="index" separator="union all">
+            select Date,BSC,CELL,SSEVALSD,QEVALSD,SSEVALSI,QEVALSI,SSLENSD,QLENSD,SSLENSI,QLENSI,SSRAMPSD,SSRAMPSI,FERLEN
+            from cdd_RLLFP_${date} where 1=1
+            <if test="bscs !=null">
+                and BSC in
+                <foreach collection="bscs" item="bsc" index="index" open="(" close=")" separator=",">
+                    '${bsc}'
+                </foreach>
+            </if>
+            <if test="cells !=null">
+                and CELL in
+                <foreach collection="cells" item="cell" index="index" open="(" close=")" separator=",">
+                    '${cell}'
+                </foreach>
+            </if>
+        </foreach>
+        ) as AG
+    </select>
+    <select id="selectRllfp" parameterType="map" resultType="java.util.LinkedHashMap">
+        <foreach collection="dates" item="date" index="index" separator="union all">
+            select Date,BSC,CELL,SSEVALSD,QEVALSD,SSEVALSI,QEVALSI,SSLENSD,QLENSD,SSLENSI,QLENSI,SSRAMPSD,SSRAMPSI,FERLEN
+            from cdd_RLLFP_${date} where 1=1
+            <if test="bscs !=null">
+                and BSC in
+                <foreach collection="bscs" item="bsc" index="index" open="(" close=")" separator=",">
+                    '${bsc}'
+                </foreach>
+            </if>
+            <if test="cells !=null">
+                and CELL in
+                <foreach collection="cells" item="cell" index="index" open="(" close=")" separator=",">
+                    '${cell}'
+                </foreach>
+            </if>
+        </foreach>
+    </select>
+    <select id="selectRllfpByPage" parameterType="map" resultType="java.util.LinkedHashMap">
+        select top ${cnt} Date,BSC,CELL,SSEVALSD,QEVALSD,SSEVALSI,QEVALSI,SSLENSD,QLENSD,SSLENSI,QLENSI,SSRAMPSD,SSRAMPSI,FERLEN
+        from (select row_number() over(order by A.Date) as rownumber,*
+        from (
+        <foreach collection="dates" item="date" index="index" separator="union all">
+            select Date,BSC,CELL,SSEVALSD,QEVALSD,SSEVALSI,QEVALSI,SSLENSD,QLENSD,SSLENSI,QLENSI,SSRAMPSD,SSRAMPSI,FERLEN
+            from cdd_RLLFP_${date} where 1=1
+            <if test="bscs !=null">
+                and BSC in
+                <foreach collection="bscs" item="bsc" index="index" open="(" close=")" separator=",">
+                    '${bsc}'
+                </foreach>
+            </if>
+            <if test="cells !=null">
+                and CELL in
+                <foreach collection="cells" item="cell" index="index" open="(" close=")" separator=",">
+                    '${cell}'
+                </foreach>
+            </if>
+        </foreach>
+        ) A) B
+        where B.rownumber &gt;${startIndex}
+    </select>
+
+    <select id="selectRllhpCount" parameterType="map" resultType="long">
+        select count(*) from (
+        <foreach collection="dates" item="date" index="index" separator="union all">
+            select Date,BSC,CELL,TYPE,LAYER,LAYERTHR,LAYERHYST,PSSTEMP,PTIMTEMP,FASTMSREG,HCSIN,HCSOUT
+            from cdd_RLLHP_${date} where 1=1
+            <if test="bscs !=null">
+                and BSC in
+                <foreach collection="bscs" item="bsc" index="index" open="(" close=")" separator=",">
+                    '${bsc}'
+                </foreach>
+            </if>
+            <if test="cells !=null">
+                and CELL in
+                <foreach collection="cells" item="cell" index="index" open="(" close=")" separator=",">
+                    '${cell}'
+                </foreach>
+            </if>
+        </foreach>
+        ) as AH
+    </select>
+    <select id="selectRllhp" parameterType="map" resultType="java.util.LinkedHashMap">
+        <foreach collection="dates" item="date" index="index" separator="union all">
+            select Date,BSC,CELL,TYPE,LAYER,LAYERTHR,LAYERHYST,PSSTEMP,PTIMTEMP,FASTMSREG,HCSIN,HCSOUT
+            from cdd_RLLHP_${date} where 1=1
+            <if test="bscs !=null">
+                and BSC in
+                <foreach collection="bscs" item="bsc" index="index" open="(" close=")" separator=",">
+                    '${bsc}'
+                </foreach>
+            </if>
+            <if test="cells !=null">
+                and CELL in
+                <foreach collection="cells" item="cell" index="index" open="(" close=")" separator=",">
+                    '${cell}'
+                </foreach>
+            </if>
+        </foreach>
+    </select>
+    <select id="selectRllhpByPage" parameterType="map" resultType="java.util.LinkedHashMap">
+         select top ${cnt} Date,BSC,CELL,TYPE,LAYER,LAYERTHR,LAYERHYST,PSSTEMP,PTIMTEMP,FASTMSREG,HCSIN,HCSOUT
+        from (select row_number() over(order by A.Date) as rownumber,*
+              from (
+        <foreach collection="dates" item="date" index="index" separator="union all">
+            select Date,BSC,CELL,TYPE,LAYER,LAYERTHR,LAYERHYST,PSSTEMP,PTIMTEMP,FASTMSREG,HCSIN,HCSOUT
+            from cdd_RLLHP_${date} where 1=1
+            <if test="bscs !=null">
+                and BSC in
+                <foreach collection="bscs" item="bsc" index="index" open="(" close=")" separator=",">
+                    '${bsc}'
+                </foreach>
+            </if>
+            <if test="cells !=null">
+                and CELL in
+                <foreach collection="cells" item="cell" index="index" open="(" close=")" separator=",">
+                    '${cell}'
+                </foreach>
+            </if>
+        </foreach>
+              ) A) B
+        where B.rownumber &gt;${startIndex}
+    </select>
+
+    <select id="selectRllhpExtCount" parameterType="map" resultType="long">
+        select count(*) from (
+        <foreach collection="dates" item="date" index="index" separator="union all">
+            select Date,BSC,CELL,TYPE,LAYER,LAYERTHR,LAYERHYST,PSSTEMP,PTIMTEMP,FASTMSREG from cdd_RLLHP_EXT_${date} where 1=1
+            <if test="bscs !=null">
+                and BSC in
+                <foreach collection="bscs" item="bsc" index="index" open="(" close=")" separator=",">
+                    '${bsc}'
+                </foreach>
+            </if>
+            <if test="cells !=null">
+                and CELL in
+                <foreach collection="cells" item="cell" index="index" open="(" close=")" separator=",">
+                    '${cell}'
+                </foreach>
+            </if>
+        </foreach>
+        ) as AI
+    </select>
+    <select id="selectRllhpExt" parameterType="map" resultType="java.util.LinkedHashMap">
+        <foreach collection="dates" item="date" index="index" separator="union all">
+            select Date,BSC,CELL,TYPE,LAYER,LAYERTHR,LAYERHYST,PSSTEMP,PTIMTEMP,FASTMSREG from cdd_RLLHP_EXT_${date} where 1=1
+            <if test="bscs !=null">
+                and BSC in
+                <foreach collection="bscs" item="bsc" index="index" open="(" close=")" separator=",">
+                    '${bsc}'
+                </foreach>
+            </if>
+            <if test="cells !=null">
+                and CELL in
+                <foreach collection="cells" item="cell" index="index" open="(" close=")" separator=",">
+                    '${cell}'
+                </foreach>
+            </if>
+        </foreach>
+    </select>
+    <select id="selectRllhpExtByPage" parameterType="map" resultType="java.util.LinkedHashMap">
+         select top ${cnt}  Date,BSC,CELL,TYPE,LAYER,LAYERTHR,LAYERHYST,PSSTEMP,PTIMTEMP,FASTMSREG
+        from (select row_number() over(order by A.Date) as rownumber,*
+              from (
+        <foreach collection="dates" item="date" index="index" separator="union all">
+            select Date,BSC,CELL,TYPE,LAYER,LAYERTHR,LAYERHYST,PSSTEMP,PTIMTEMP,FASTMSREG from cdd_RLLHP_EXT_${date} where 1=1
+            <if test="bscs !=null">
+                and BSC in
+                <foreach collection="bscs" item="bsc" index="index" open="(" close=")" separator=",">
+                    '${bsc}'
+                </foreach>
+            </if>
+            <if test="cells !=null">
+                and CELL in
+                <foreach collection="cells" item="cell" index="index" open="(" close=")" separator=",">
+                    '${cell}'
+                </foreach>
+            </if>
+        </foreach>
+              ) A) B
+        where B.rownumber &gt;${startIndex}
+    </select>
+
+    <select id="selectRllopCount" parameterType="map" resultType="long">
+        select count(*) from (
+        <foreach collection="dates" item="date" index="index" separator="union all">
+            select Date,BSC,CELL,BSPWR,BSRXMIN,BSRXSUFF,MSRXMIN,
+            MSRXSUFF,SCHO,MISSNM,AW,SCTYPE,BSTXPWR,EXTPEN,HYSTSEP,ISHOLEV,MAXISHO,FBOFFSP,FBOFFSN
+            from cdd_RLLOP_${date} where 1=1
+            <if test="bscs !=null">
+                and BSC in
+                <foreach collection="bscs" item="bsc" index="index" open="(" close=")" separator=",">
+                    '${bsc}'
+                </foreach>
+            </if>
+            <if test="cells !=null">
+                and CELL in
+                <foreach collection="cells" item="cell" index="index" open="(" close=")" separator=",">
+                    '${cell}'
+                </foreach>
+            </if>
+        </foreach>
+        ) as AJ
+    </select>
+    <select id="selectRllop" parameterType="map" resultType="java.util.LinkedHashMap">
+        <foreach collection="dates" item="date" index="index" separator="union all">
+            select Date,BSC,CELL,BSPWR,BSRXMIN,BSRXSUFF,MSRXMIN,
+            MSRXSUFF,SCHO,MISSNM,AW,SCTYPE,BSTXPWR,EXTPEN,HYSTSEP,ISHOLEV,MAXISHO,FBOFFSP,FBOFFSN
+            from cdd_RLLOP_${date} where 1=1
+            <if test="bscs !=null">
+                and BSC in
+                <foreach collection="bscs" item="bsc" index="index" open="(" close=")" separator=",">
+                    '${bsc}'
+                </foreach>
+            </if>
+            <if test="cells !=null">
+                and CELL in
+                <foreach collection="cells" item="cell" index="index" open="(" close=")" separator=",">
+                    '${cell}'
+                </foreach>
+            </if>
+        </foreach>
+    </select>
+    <select id="selectRllopByPage" parameterType="map" resultType="java.util.LinkedHashMap">
+         select top ${cnt} Date,BSC,CELL,BSPWR,BSRXMIN,BSRXSUFF,MSRXMIN,
+        MSRXSUFF,SCHO,MISSNM,AW,SCTYPE,BSTXPWR,EXTPEN,HYSTSEP,ISHOLEV,MAXISHO,FBOFFSP,FBOFFSN
+        from (select row_number() over(order by A.Date) as rownumber,*
+              from (
+        <foreach collection="dates" item="date" index="index" separator="union all">
+            select Date,BSC,CELL,BSPWR,BSRXMIN,BSRXSUFF,MSRXMIN,
+            MSRXSUFF,SCHO,MISSNM,AW,SCTYPE,BSTXPWR,EXTPEN,HYSTSEP,ISHOLEV,MAXISHO,FBOFFSP,FBOFFSN
+            from cdd_RLLOP_${date} where 1=1
+            <if test="bscs !=null">
+                and BSC in
+                <foreach collection="bscs" item="bsc" index="index" open="(" close=")" separator=",">
+                    '${bsc}'
+                </foreach>
+            </if>
+            <if test="cells !=null">
+                and CELL in
+                <foreach collection="cells" item="cell" index="index" open="(" close=")" separator=",">
+                    '${cell}'
+                </foreach>
+            </if>
+        </foreach>
+              ) A) B
+        where B.rownumber &gt;${startIndex}
+    </select>
+
+    <select id="selectRllopExtCount" parameterType="map" resultType="long">
+        select count(*) from (
+        <foreach collection="dates" item="date" index="index" separator="union all">
+            select Date,BSC,CELL,BSPWR,BSRXMIN,BSRXSUFF,
+            MSRXMIN,MSRXSUFF,SCHO,MISSNM,AW,SCTYPE,BSTXPWR,EXTPEN,HYSTSEP,ISHOLEV,MAXISHO,FBOFFSP,FBOFFSN
+            from cdd_RLLOP_EXT_${date} where 1=1
+            <if test="bscs !=null">
+                and BSC in
+                <foreach collection="bscs" item="bsc" index="index" open="(" close=")" separator=",">
+                    '${bsc}'
+                </foreach>
+            </if>
+            <if test="cells !=null">
+                and CELL in
+                <foreach collection="cells" item="cell" index="index" open="(" close=")" separator=",">
+                    '${cell}'
+                </foreach>
+            </if>
+        </foreach>
+        ) as AK
+    </select>
+    <select id="selectRllopExt" parameterType="map" resultType="java.util.LinkedHashMap">
+        <foreach collection="dates" item="date" index="index" separator="union all">
+            select Date,BSC,CELL,BSPWR,BSRXMIN,BSRXSUFF,
+            MSRXMIN,MSRXSUFF,SCHO,MISSNM,AW,SCTYPE,BSTXPWR,EXTPEN,HYSTSEP,ISHOLEV,MAXISHO,FBOFFSP,FBOFFSN
+            from cdd_RLLOP_EXT_${date} where 1=1
+            <if test="bscs !=null">
+                and BSC in
+                <foreach collection="bscs" item="bsc" index="index" open="(" close=")" separator=",">
+                    '${bsc}'
+                </foreach>
+            </if>
+            <if test="cells !=null">
+                and CELL in
+                <foreach collection="cells" item="cell" index="index" open="(" close=")" separator=",">
+                    '${cell}'
+                </foreach>
+            </if>
+        </foreach>
+    </select>
+    <select id="selectRllopExtByPage" parameterType="map" resultType="java.util.LinkedHashMap">
+         select top ${cnt} Date,BSC,CELL,BSPWR,BSRXMIN,BSRXSUFF,
+        MSRXMIN,MSRXSUFF,SCHO,MISSNM,AW,SCTYPE,BSTXPWR,EXTPEN,HYSTSEP,ISHOLEV,MAXISHO,FBOFFSP,FBOFFSN
+        from (select row_number() over(order by A.Date) as rownumber,*
+              from (
+        <foreach collection="dates" item="date" index="index" separator="union all">
+            select Date,BSC,CELL,BSPWR,BSRXMIN,BSRXSUFF,
+            MSRXMIN,MSRXSUFF,SCHO,MISSNM,AW,SCTYPE,BSTXPWR,EXTPEN,HYSTSEP,ISHOLEV,MAXISHO,FBOFFSP,FBOFFSN
+            from cdd_RLLOP_EXT_${date} where 1=1
+            <if test="bscs !=null">
+                and BSC in
+                <foreach collection="bscs" item="bsc" index="index" open="(" close=")" separator=",">
+                    '${bsc}'
+                </foreach>
+            </if>
+            <if test="cells !=null">
+                and CELL in
+                <foreach collection="cells" item="cell" index="index" open="(" close=")" separator=",">
+                    '${cell}'
+                </foreach>
+            </if>
+        </foreach>
+              ) A) B
+        where B.rownumber &gt;${startIndex}
+    </select>
+
+    <select id="selectRllppCount" parameterType="map" resultType="long">
+        select count(*) from (
+        <foreach collection="dates" item="date" index="index" separator="union all">
+            select Date,BSC,CELL,PTIMHF,PTIMBQ,PTIMTA,PSSHF,PSSBQ,PSSTA from cdd_RLLPP_${date} where 1=1
+            <if test="bscs !=null">
+                and BSC in
+                <foreach collection="bscs" item="bsc" index="index" open="(" close=")" separator=",">
+                    '${bsc}'
+                </foreach>
+            </if>
+            <if test="cells !=null">
+                and CELL in
+                <foreach collection="cells" item="cell" index="index" open="(" close=")" separator=",">
+                    '${cell}'
+                </foreach>
+            </if>
+        </foreach>
+        ) as AL
+    </select>
+    <select id="selectRllpp" parameterType="map" resultType="java.util.LinkedHashMap">
+        <foreach collection="dates" item="date" index="index" separator="union all">
+            select Date,BSC,CELL,PTIMHF,PTIMBQ,PTIMTA,PSSHF,PSSBQ,PSSTA from cdd_RLLPP_${date} where 1=1
+            <if test="bscs !=null">
+                and BSC in
+                <foreach collection="bscs" item="bsc" index="index" open="(" close=")" separator=",">
+                    '${bsc}'
+                </foreach>
+            </if>
+            <if test="cells !=null">
+                and CELL in
+                <foreach collection="cells" item="cell" index="index" open="(" close=")" separator=",">
+                    '${cell}'
+                </foreach>
+            </if>
+        </foreach>
+    </select>
+    <select id="selectRllppByPage" parameterType="map" resultType="java.util.LinkedHashMap">
+         select top ${cnt} Date,BSC,CELL,PTIMHF,PTIMBQ,PTIMTA,PSSHF,PSSBQ,PSSTA
+        from (select row_number() over(order by A.Date) as rownumber,*
+              from (
+        <foreach collection="dates" item="date" index="index" separator="union all">
+            select Date,BSC,CELL,PTIMHF,PTIMBQ,PTIMTA,PSSHF,PSSBQ,PSSTA from cdd_RLLPP_${date} where 1=1
+            <if test="bscs !=null">
+                and BSC in
+                <foreach collection="bscs" item="bsc" index="index" open="(" close=")" separator=",">
+                    '${bsc}'
+                </foreach>
+            </if>
+            <if test="cells !=null">
+                and CELL in
+                <foreach collection="cells" item="cell" index="index" open="(" close=")" separator=",">
+                    '${cell}'
+                </foreach>
+            </if>
+        </foreach>
+              ) A) B
+        where B.rownumber &gt;${startIndex}
+    </select>
+
+    <select id="selectRllupCount" parameterType="map" resultType="long">
+        select count(*) from (
+        <foreach collection="dates" item="date" index="index" separator="union all">
+            select Date,BSC,CELL,TALIM,CELLQ,SCTYPE,QLIMUL,QLIMDL,QLIMULAFR,QLIMDLAFR,QLIMULAWB,QLIMDLAWB
+            from cdd_RLLUP_${date} where 1=1
+            <if test="bscs !=null">
+                and BSC in
+                <foreach collection="bscs" item="bsc" index="index" open="(" close=")" separator=",">
+                    '${bsc}'
+                </foreach>
+            </if>
+            <if test="cells !=null">
+                and CELL in
+                <foreach collection="cells" item="cell" index="index" open="(" close=")" separator=",">
+                    '${cell}'
+                </foreach>
+            </if>
+        </foreach>
+        ) as AM
+    </select>
+    <select id="selectRllup" parameterType="map" resultType="java.util.LinkedHashMap">
+        <foreach collection="dates" item="date" index="index" separator="union all">
+            select Date,BSC,CELL,TALIM,CELLQ,SCTYPE,QLIMUL,QLIMDL,QLIMULAFR,QLIMDLAFR,QLIMULAWB,QLIMDLAWB
+            from cdd_RLLUP_${date} where 1=1
+            <if test="bscs !=null">
+                and BSC in
+                <foreach collection="bscs" item="bsc" index="index" open="(" close=")" separator=",">
+                    '${bsc}'
+                </foreach>
+            </if>
+            <if test="cells !=null">
+                and CELL in
+                <foreach collection="cells" item="cell" index="index" open="(" close=")" separator=",">
+                    '${cell}'
+                </foreach>
+            </if>
+        </foreach>
+    </select>
+    <select id="selectRllupByPage" parameterType="map" resultType="java.util.LinkedHashMap">
+         select top ${cnt} Date,BSC,CELL,TALIM,CELLQ,SCTYPE,QLIMUL,QLIMDL,QLIMULAFR,QLIMDLAFR,QLIMULAWB,QLIMDLAWB
+        from (select row_number() over(order by A.Date) as rownumber,*
+              from (
+        <foreach collection="dates" item="date" index="index" separator="union all">
+            select Date,BSC,CELL,TALIM,CELLQ,SCTYPE,QLIMUL,QLIMDL,QLIMULAFR,QLIMDLAFR,QLIMULAWB,QLIMDLAWB
+            from cdd_RLLUP_${date} where 1=1
+            <if test="bscs !=null">
+                and BSC in
+                <foreach collection="bscs" item="bsc" index="index" open="(" close=")" separator=",">
+                    '${bsc}'
+                </foreach>
+            </if>
+            <if test="cells !=null">
+                and CELL in
+                <foreach collection="cells" item="cell" index="index" open="(" close=")" separator=",">
+                    '${cell}'
+                </foreach>
+            </if>
+        </foreach>
+              ) A) B
+        where B.rownumber &gt;${startIndex}
+    </select>
+
+    <select id="selectRlmapCount" parameterType="map" resultType="long">
+        select count(*) from (
+        <foreach collection="dates" item="date" index="index" separator="union all">
+            select Date,BSC,DTXFUL,REGINTUL,SSLENUL,QLENUL from cdd_RLMAP_${date} where 1=1
+            <if test="bscs !=null">
+                and BSC in
+                <foreach collection="bscs" item="bsc" index="index" open="(" close=")" separator=",">
+                    '${bsc}'
+                </foreach>
+            </if>
+        </foreach>
+        ) as AN
+    </select>
+    <select id="selectRlmap" parameterType="map" resultType="java.util.LinkedHashMap">
+        <foreach collection="dates" item="date" index="index" separator="union all">
+            select Date,BSC,DTXFUL,REGINTUL,SSLENUL,QLENUL from cdd_RLMAP_${date} where 1=1
+            <if test="bscs !=null">
+                and BSC in
+                <foreach collection="bscs" item="bsc" index="index" open="(" close=")" separator=",">
+                    '${bsc}'
+                </foreach>
+            </if>
+        </foreach>
+    </select>
+    <select id="selectRlmapByPage" parameterType="map" resultType="java.util.LinkedHashMap">
+         select top ${cnt} Date,BSC,DTXFUL,REGINTUL,SSLENUL,QLENUL
+        from (select row_number() over(order by A.Date) as rownumber,*
+              from (
+        <foreach collection="dates" item="date" index="index" separator="union all">
+            select Date,BSC,DTXFUL,REGINTUL,SSLENUL,QLENUL from cdd_RLMAP_${date} where 1=1
+            <if test="bscs !=null">
+                and BSC in
+                <foreach collection="bscs" item="bsc" index="index" open="(" close=")" separator=",">
+                    '${bsc}'
+                </foreach>
+            </if>
+        </foreach>
+              ) A) B
+        where B.rownumber &gt;${startIndex}
+    </select>
+
+    <select id="selectRlmfpCount" parameterType="map" resultType="long">
+        select count(*) from (
+        <foreach collection="dates" item="date" index="index" separator="union all">
+            select Date,BSC,CELL,LISTTYPE,MBCCHNO from cdd_RLMFP_${date} where 1=1
+            <if test="bscs !=null">
+                and BSC in
+                <foreach collection="bscs" item="bsc" index="index" open="(" close=")" separator=",">
+                    '${bsc}'
+                </foreach>
+            </if>
+            <if test="cells !=null">
+                and CELL in
+                <foreach collection="cells" item="cell" index="index" open="(" close=")" separator=",">
+                    '${cell}'
+                </foreach>
+            </if>
+        </foreach>
+        ) as AO
+    </select>
+    <select id="selectRlmfp" parameterType="map" resultType="java.util.LinkedHashMap">
+        <foreach collection="dates" item="date" index="index" separator="union all">
+            select Date,BSC,CELL,LISTTYPE,MBCCHNO from cdd_RLMFP_${date} where 1=1
+            <if test="bscs !=null">
+                and BSC in
+                <foreach collection="bscs" item="bsc" index="index" open="(" close=")" separator=",">
+                    '${bsc}'
+                </foreach>
+            </if>
+            <if test="cells !=null">
+                and CELL in
+                <foreach collection="cells" item="cell" index="index" open="(" close=")" separator=",">
+                    '${cell}'
+                </foreach>
+            </if>
+        </foreach>
+    </select>
+    <select id="selectRlmfpByPage" parameterType="map" resultType="java.util.LinkedHashMap">
+         select top ${cnt} Date,BSC,CELL,LISTTYPE,MBCCHNO
+        from (select row_number() over(order by A.Date) as rownumber,*
+              from (
+        <foreach collection="dates" item="date" index="index" separator="union all">
+            select Date,BSC,CELL,LISTTYPE,MBCCHNO from cdd_RLMFP_${date} where 1=1
+            <if test="bscs !=null">
+                and BSC in
+                <foreach collection="bscs" item="bsc" index="index" open="(" close=")" separator=",">
+                    '${bsc}'
+                </foreach>
+            </if>
+            <if test="cells !=null">
+                and CELL in
+                <foreach collection="cells" item="cell" index="index" open="(" close=")" separator=",">
+                    '${cell}'
+                </foreach>
+            </if>
+        </foreach>
+              ) A) B
+        where B.rownumber &gt;${startIndex}
+    </select>
+
+    <select id="selectRlnmpCount" parameterType="map" resultType="long">
+        select count(*) from (
+        <foreach collection="dates" item="date" index="index" separator="union all">
+            select Date,BSC,CELL,NCSTAT,NCRPT from cdd_RLNMP_${date} where 1=1
+            <if test="bscs !=null">
+                and BSC in
+                <foreach collection="bscs" item="bsc" index="index" open="(" close=")" separator=",">
+                    '${bsc}'
+                </foreach>
+            </if>
+            <if test="cells !=null">
+                and CELL in
+                <foreach collection="cells" item="cell" index="index" open="(" close=")" separator=",">
+                    '${cell}'
+                </foreach>
+            </if>
+        </foreach>
+        ) as AP
+    </select>
+    <select id="selectRlnmp" parameterType="map" resultType="java.util.LinkedHashMap">
+        <foreach collection="dates" item="date" index="index" separator="union all">
+            select Date,BSC,CELL,NCSTAT,NCRPT from cdd_RLNMP_${date} where 1=1
+            <if test="bscs !=null">
+                and BSC in
+                <foreach collection="bscs" item="bsc" index="index" open="(" close=")" separator=",">
+                    '${bsc}'
+                </foreach>
+            </if>
+            <if test="cells !=null">
+                and CELL in
+                <foreach collection="cells" item="cell" index="index" open="(" close=")" separator=",">
+                    '${cell}'
+                </foreach>
+            </if>
+        </foreach>
+    </select>
+    <select id="selectRlnmpByPage" parameterType="map" resultType="java.util.LinkedHashMap">
+         select top ${cnt} Date,BSC,CELL,NCSTAT,NCRPT
+        from (select row_number() over(order by A.Date) as rownumber,*
+              from (
+        <foreach collection="dates" item="date" index="index" separator="union all">
+            select Date,BSC,CELL,NCSTAT,NCRPT from cdd_RLNMP_${date} where 1=1
+            <if test="bscs !=null">
+                and BSC in
+                <foreach collection="bscs" item="bsc" index="index" open="(" close=")" separator=",">
+                    '${bsc}'
+                </foreach>
+            </if>
+            <if test="cells !=null">
+                and CELL in
+                <foreach collection="cells" item="cell" index="index" open="(" close=")" separator=",">
+                    '${cell}'
+                </foreach>
+            </if>
+        </foreach>
+              ) A) B
+        where B.rownumber &gt;${startIndex}
+    </select>
+
+    <select id="selectRlnrpCount" parameterType="map" resultType="long">
+        select count(*) from (
+        <foreach collection="dates" item="date" index="index" separator="union all">
+            select Date,BSC,CELL,CELLR,DIR,CAND,CS,KHYST,KOFFSETP,KOFFSETN,LHYST,
+            LOFFSETP,LOFFSETN,TRHYST,TROFFSETP,TROFFSETN,AWOFFSET,BQOFFSET,HIHYST,LOHYST,OFFSETP,OFFSETN,BQOFFSETAFR,BQOFFSETAWB
+            from cdd_RLNRP_${date} where 1=1
+            <if test="bscs !=null">
+                and BSC in
+                <foreach collection="bscs" item="bsc" index="index" open="(" close=")" separator=",">
+                    '${bsc}'
+                </foreach>
+            </if>
+            <if test="cells !=null">
+                and CELL in
+                <foreach collection="cells" item="cell" index="index" open="(" close=")" separator=",">
+                    '${cell}'
+                </foreach>
+            </if>
+        </foreach>
+        ) as AQ
+    </select>
+    <select id="selectRlnrp" parameterType="map" resultType="java.util.LinkedHashMap">
+        <foreach collection="dates" item="date" index="index" separator="union all">
+            select Date,BSC,CELL,CELLR,DIR,CAND,CS,KHYST,KOFFSETP,KOFFSETN,LHYST,
+            LOFFSETP,LOFFSETN,TRHYST,TROFFSETP,TROFFSETN,AWOFFSET,BQOFFSET,HIHYST,LOHYST,OFFSETP,OFFSETN,BQOFFSETAFR,BQOFFSETAWB
+            from cdd_RLNRP_${date} where 1=1
+            <if test="bscs !=null">
+                and BSC in
+                <foreach collection="bscs" item="bsc" index="index" open="(" close=")" separator=",">
+                    '${bsc}'
+                </foreach>
+            </if>
+            <if test="cells !=null">
+                and CELL in
+                <foreach collection="cells" item="cell" index="index" open="(" close=")" separator=",">
+                    '${cell}'
+                </foreach>
+            </if>
+        </foreach>
+    </select>
+    <select id="selectRlnrpByPage" parameterType="map" resultType="java.util.LinkedHashMap">
+         select top ${cnt} Date,BSC,CELL,CELLR,DIR,CAND,CS,KHYST,KOFFSETP,KOFFSETN,LHYST,
+        LOFFSETP,LOFFSETN,TRHYST,TROFFSETP,TROFFSETN,AWOFFSET,BQOFFSET,HIHYST,LOHYST,OFFSETP,OFFSETN,BQOFFSETAFR,BQOFFSETAWB
+        from (select row_number() over(order by A.Date) as rownumber,*
+              from (
+        <foreach collection="dates" item="date" index="index" separator="union all">
+            select Date,BSC,CELL,CELLR,DIR,CAND,CS,KHYST,KOFFSETP,KOFFSETN,LHYST,
+            LOFFSETP,LOFFSETN,TRHYST,TROFFSETP,TROFFSETN,AWOFFSET,BQOFFSET,HIHYST,LOHYST,OFFSETP,OFFSETN,BQOFFSETAFR,BQOFFSETAWB
+            from cdd_RLNRP_${date} where 1=1
+            <if test="bscs !=null">
+                and BSC in
+                <foreach collection="bscs" item="bsc" index="index" open="(" close=")" separator=",">
+                    '${bsc}'
+                </foreach>
+            </if>
+            <if test="cells !=null">
+                and CELL in
+                <foreach collection="cells" item="cell" index="index" open="(" close=")" separator=",">
+                    '${cell}'
+                </foreach>
+            </if>
+        </foreach>
+              ) A) B
+        where B.rownumber &gt;${startIndex}
+    </select>
+
+    <select id="selectRlpbpCount" parameterType="map" resultType="long">
+        select count(*) from (
+        <foreach collection="dates" item="date" index="index" separator="union all">
+            select Date,BSC,CELL,HPBSTATE from cdd_RLPBP_${date} where 1=1
+            <if test="bscs !=null">
+                and BSC in
+                <foreach collection="bscs" item="bsc" index="index" open="(" close=")" separator=",">
+                    '${bsc}'
+                </foreach>
+            </if>
+            <if test="cells !=null">
+                and CELL in
+                <foreach collection="cells" item="cell" index="index" open="(" close=")" separator=",">
+                    '${cell}'
+                </foreach>
+            </if>
+        </foreach>
+        ) as AR
+    </select>
+    <select id="selectRlpbp" parameterType="map" resultType="java.util.LinkedHashMap">
+        <foreach collection="dates" item="date" index="index" separator="union all">
+            select Date,BSC,CELL,HPBSTATE from cdd_RLPBP_${date} where 1=1
+            <if test="bscs !=null">
+                and BSC in
+                <foreach collection="bscs" item="bsc" index="index" open="(" close=")" separator=",">
+                    '${bsc}'
+                </foreach>
+            </if>
+            <if test="cells !=null">
+                and CELL in
+                <foreach collection="cells" item="cell" index="index" open="(" close=")" separator=",">
+                    '${cell}'
+                </foreach>
+            </if>
+        </foreach>
+    </select>
+    <select id="selectRlpbpByPage" parameterType="map" resultType="java.util.LinkedHashMap">
+        select top ${cnt} Date,BSC,CELL,HPBSTATE
+        from (select row_number() over(order by A.Date) as rownumber,*
+        from (
+        <foreach collection="dates" item="date" index="index" separator="union all">
+            select Date,BSC,CELL,HPBSTATE from cdd_RLPBP_${date} where 1=1
+            <if test="bscs !=null">
+                and BSC in
+                <foreach collection="bscs" item="bsc" index="index" open="(" close=")" separator=",">
+                    '${bsc}'
+                </foreach>
+            </if>
+            <if test="cells !=null">
+                and CELL in
+                <foreach collection="cells" item="cell" index="index" open="(" close=")" separator=",">
+                    '${cell}'
+                </foreach>
+            </if>
+        </foreach>
+        ) A) B
+        where B.rownumber &gt;${startIndex}
+    </select>
+
+    <select id="selectRlpcpCount" parameterType="map" resultType="long">
+        select count(*) from (
+        <foreach collection="dates" item="date" index="index" separator="union all">
+            select Date,BSC,CELL,DMPSTATE,SCTYPE,SSDESUL,QDESUL,LCOMPUL,QCOMPUL from cdd_RLPCP_${date} where 1=1
+            <if test="bscs !=null">
+                and BSC in
+                <foreach collection="bscs" item="bsc" index="index" open="(" close=")" separator=",">
+                    '${bsc}'
+                </foreach>
+            </if>
+            <if test="cells !=null">
+                and CELL in
+                <foreach collection="cells" item="cell" index="index" open="(" close=")" separator=",">
+                    '${cell}'
+                </foreach>
+            </if>
+        </foreach>
+        ) as AST
+    </select>
+    <select id="selectRlpcp" parameterType="map" resultType="java.util.LinkedHashMap">
+        <foreach collection="dates" item="date" index="index" separator="union all">
+            select Date,BSC,CELL,DMPSTATE,SCTYPE,SSDESUL,QDESUL,LCOMPUL,QCOMPUL from cdd_RLPCP_${date} where 1=1
+            <if test="bscs !=null">
+                and BSC in
+                <foreach collection="bscs" item="bsc" index="index" open="(" close=")" separator=",">
+                    '${bsc}'
+                </foreach>
+            </if>
+            <if test="cells !=null">
+                and CELL in
+                <foreach collection="cells" item="cell" index="index" open="(" close=")" separator=",">
+                    '${cell}'
+                </foreach>
+            </if>
+        </foreach>
+    </select>
+    <select id="selectRlpcpByPage" parameterType="map" resultType="java.util.LinkedHashMap">
+         select top ${cnt} Date,BSC,CELL,DMPSTATE,SCTYPE,SSDESUL,QDESUL,LCOMPUL,QCOMPUL
+        from (select row_number() over(order by A.Date) as rownumber,*
+              from (
+        <foreach collection="dates" item="date" index="index" separator="union all">
+            select Date,BSC,CELL,DMPSTATE,SCTYPE,SSDESUL,QDESUL,LCOMPUL,QCOMPUL from cdd_RLPCP_${date} where 1=1
+            <if test="bscs !=null">
+                and BSC in
+                <foreach collection="bscs" item="bsc" index="index" open="(" close=")" separator=",">
+                    '${bsc}'
+                </foreach>
+            </if>
+            <if test="cells !=null">
+                and CELL in
+                <foreach collection="cells" item="cell" index="index" open="(" close=")" separator=",">
+                    '${cell}'
+                </foreach>
+            </if>
+        </foreach>
+              ) A) B
+        where B.rownumber &gt;${startIndex}
+    </select>
+
+    <select id="selectRlsbpCount" parameterType="map" resultType="long">
+        select count(*) from (
+        <foreach collection="dates" item="date" index="index" separator="union all">
+            select Date,BSC,CELL,CB,MAXRET,TX,ATT,T3212,CBQ,CRO,[TO],PT,ECSC,ACC
+            from cdd_RLSBP_${date} where 1=1
+            <if test="bscs !=null">
+                and BSC in
+                <foreach collection="bscs" item="bsc" index="index" open="(" close=")" separator=",">
+                    '${bsc}'
+                </foreach>
+            </if>
+            <if test="cells !=null">
+                and CELL in
+                <foreach collection="cells" item="cell" index="index" open="(" close=")" separator=",">
+                    '${cell}'
+                </foreach>
+            </if>
+        </foreach>
+        ) as ATT
+    </select>
+    <select id="selectRlsbp" parameterType="map" resultType="java.util.LinkedHashMap">
+        <foreach collection="dates" item="date" index="index" separator="union all">
+            select Date,BSC,CELL,CB,MAXRET,TX,ATT,T3212,CBQ,CRO,[TO],PT,ECSC,ACC
+            from cdd_RLSBP_${date} where 1=1
+            <if test="bscs !=null">
+                and BSC in
+                <foreach collection="bscs" item="bsc" index="index" open="(" close=")" separator=",">
+                    '${bsc}'
+                </foreach>
+            </if>
+            <if test="cells !=null">
+                and CELL in
+                <foreach collection="cells" item="cell" index="index" open="(" close=")" separator=",">
+                    '${cell}'
+                </foreach>
+            </if>
+        </foreach>
+    </select>
+    <select id="selectRlsbpByPage" parameterType="map" resultType="java.util.LinkedHashMap">
+         select top ${cnt} Date,BSC,CELL,CB,MAXRET,TX,ATT,T3212,CBQ,CRO,[TO],PT,ECSC,ACC
+        from (select row_number() over(order by A.Date) as rownumber,*
+              from (
+        <foreach collection="dates" item="date" index="index" separator="union all">
+            select Date,BSC,CELL,CB,MAXRET,TX,ATT,T3212,CBQ,CRO,[TO],PT,ECSC,ACC
+            from cdd_RLSBP_${date} where 1=1
+            <if test="bscs !=null">
+                and BSC in
+                <foreach collection="bscs" item="bsc" index="index" open="(" close=")" separator=",">
+                    '${bsc}'
+                </foreach>
+            </if>
+            <if test="cells !=null">
+                and CELL in
+                <foreach collection="cells" item="cell" index="index" open="(" close=")" separator=",">
+                    '${cell}'
+                </foreach>
+            </if>
+        </foreach>
+              ) A) B
+        where B.rownumber &gt;${startIndex}
+    </select>
+
+    <select id="selectRlsepCount" parameterType="map" resultType="long">
+        select count(*) from (
+        <foreach collection="dates" item="date" index="index" separator="union all">
+            select Date,BSC,CELL,EARFCN,PCIDG,PCID,PCIDP,PCIDPS from cdd_RLSEP_${date} where 1=1
+            <if test="bscs !=null">
+                and BSC in
+                <foreach collection="bscs" item="bsc" index="index" open="(" close=")" separator=",">
+                    '${bsc}'
+                </foreach>
+            </if>
+            <if test="cells !=null">
+                and CELL in
+                <foreach collection="cells" item="cell" index="index" open="(" close=")" separator=",">
+                    '${cell}'
+                </foreach>
+            </if>
+        </foreach>
+        ) as AU
+    </select>
+    <select id="selectRlsep" parameterType="map" resultType="java.util.LinkedHashMap">
+        <foreach collection="dates" item="date" index="index" separator="union all">
+            select Date,BSC,CELL,EARFCN,PCIDG,PCID,PCIDP,PCIDPS from cdd_RLSEP_${date} where 1=1
+            <if test="bscs !=null">
+                and BSC in
+                <foreach collection="bscs" item="bsc" index="index" open="(" close=")" separator=",">
+                    '${bsc}'
+                </foreach>
+            </if>
+            <if test="cells !=null">
+                and CELL in
+                <foreach collection="cells" item="cell" index="index" open="(" close=")" separator=",">
+                    '${cell}'
+                </foreach>
+            </if>
+        </foreach>
+    </select>
+    <select id="selectRlsepByPage" parameterType="map" resultType="java.util.LinkedHashMap">
+         select top ${cnt} Date,BSC,CELL,EARFCN,PCIDG,PCID,PCIDP,PCIDPS
+        from (select row_number() over(order by A.Date) as rownumber,*
+              from (
+        <foreach collection="dates" item="date" index="index" separator="union all">
+            select Date,BSC,CELL,EARFCN,PCIDG,PCID,PCIDP,PCIDPS from cdd_RLSEP_${date} where 1=1
+            <if test="bscs !=null">
+                and BSC in
+                <foreach collection="bscs" item="bsc" index="index" open="(" close=")" separator=",">
+                    '${bsc}'
+                </foreach>
+            </if>
+            <if test="cells !=null">
+                and CELL in
+                <foreach collection="cells" item="cell" index="index" open="(" close=")" separator=",">
+                    '${cell}'
+                </foreach>
+            </if>
+        </foreach>
+              ) A) B
+        where B.rownumber &gt;${startIndex}
+    </select>
+
+    <select id="selectRlsmpCount" parameterType="map" resultType="long">
+        select count(*) from (
+        <foreach collection="dates" item="date" index="index" separator="union all">
+            select Date,BSC,CELL,SIMSG,MSGDIST from cdd_RLSMP_${date} where 1=1
+            <if test="bscs !=null">
+                and BSC in
+                <foreach collection="bscs" item="bsc" index="index" open="(" close=")" separator=",">
+                    '${bsc}'
+                </foreach>
+            </if>
+            <if test="cells !=null">
+                and CELL in
+                <foreach collection="cells" item="cell" index="index" open="(" close=")" separator=",">
+                    '${cell}'
+                </foreach>
+            </if>
+        </foreach>
+        ) as AVV
+    </select>
+    <select id="selectRlsmp" parameterType="map" resultType="java.util.LinkedHashMap">
+        <foreach collection="dates" item="date" index="index" separator="union all">
+            select Date,BSC,CELL,SIMSG,MSGDIST from cdd_RLSMP_${date} where 1=1
+            <if test="bscs !=null">
+                and BSC in
+                <foreach collection="bscs" item="bsc" index="index" open="(" close=")" separator=",">
+                    '${bsc}'
+                </foreach>
+            </if>
+            <if test="cells !=null">
+                and CELL in
+                <foreach collection="cells" item="cell" index="index" open="(" close=")" separator=",">
+                    '${cell}'
+                </foreach>
+            </if>
+        </foreach>
+    </select>
+    <select id="selectRlsmpByPage" parameterType="map" resultType="java.util.LinkedHashMap">
+         select top ${cnt} Date,BSC,CELL,SIMSG,MSGDIST
+        from (select row_number() over(order by A.Date) as rownumber,*
+              from (
+        <foreach collection="dates" item="date" index="index" separator="union all">
+            select Date,BSC,CELL,SIMSG,MSGDIST from cdd_RLSMP_${date} where 1=1
+            <if test="bscs !=null">
+                and BSC in
+                <foreach collection="bscs" item="bsc" index="index" open="(" close=")" separator=",">
+                    '${bsc}'
+                </foreach>
+            </if>
+            <if test="cells !=null">
+                and CELL in
+                <foreach collection="cells" item="cell" index="index" open="(" close=")" separator=",">
+                    '${cell}'
+                </foreach>
+            </if>
+        </foreach>
+              ) A) B
+        where B.rownumber &gt;${startIndex}
+    </select>
+
+    <select id="selectRlsrpEarfcnCount" parameterType="map" resultType="long">
+        select count(*) from (
+        <foreach collection="dates" item="date" index="index" separator="union all">
+            select Date,BSC,CELL,PRIOCR,BCAST,FREE,REQ,RATPRIO,MEASTHR,PRIOTHR,
+            HPRIO,TRES,EARFCN,RATPRIO2,HPRIOTHR,LPRIOTHR,QRXLEVMINE,MINCHBW
+            from cdd_RLSRP_EARFCN_${date} where 1=1
+            <if test="bscs !=null">
+                and BSC in
+                <foreach collection="bscs" item="bsc" index="index" open="(" close=")" separator=",">
+                    '${bsc}'
+                </foreach>
+            </if>
+            <if test="cells !=null">
+                and CELL in
+                <foreach collection="cells" item="cell" index="index" open="(" close=")" separator=",">
+                    '${cell}'
+                </foreach>
+            </if>
+        </foreach>
+        ) as AWW
+    </select>
+    <select id="selectRlsrpEarfcn" parameterType="map" resultType="java.util.LinkedHashMap">
+        <foreach collection="dates" item="date" index="index" separator="union all">
+            select Date,BSC,CELL,PRIOCR,BCAST,FREE,REQ,RATPRIO,MEASTHR,PRIOTHR,
+            HPRIO,TRES,EARFCN,RATPRIO2,HPRIOTHR,LPRIOTHR,QRXLEVMINE,MINCHBW
+            from cdd_RLSRP_EARFCN_${date} where 1=1
+            <if test="bscs !=null">
+                and BSC in
+                <foreach collection="bscs" item="bsc" index="index" open="(" close=")" separator=",">
+                    '${bsc}'
+                </foreach>
+            </if>
+            <if test="cells !=null">
+                and CELL in
+                <foreach collection="cells" item="cell" index="index" open="(" close=")" separator=",">
+                    '${cell}'
+                </foreach>
+            </if>
+        </foreach>
+    </select>
+    <select id="selectRlsrpEarfcnByPage" parameterType="map" resultType="java.util.LinkedHashMap">
+        select top ${cnt} Date,BSC,CELL,PRIOCR,BCAST,FREE,REQ,RATPRIO,MEASTHR,PRIOTHR,
+        HPRIO,TRES,EARFCN,RATPRIO2,HPRIOTHR,LPRIOTHR,QRXLEVMINE,MINCHBW
+        from (select row_number() over(order by A.Date) as rownumber,*
+        from (
+        <foreach collection="dates" item="date" index="index" separator="union all">
+            select Date,BSC,CELL,PRIOCR,BCAST,FREE,REQ,RATPRIO,MEASTHR,PRIOTHR,
+            HPRIO,TRES,EARFCN,RATPRIO2,HPRIOTHR,LPRIOTHR,QRXLEVMINE,MINCHBW
+            from cdd_RLSRP_EARFCN_${date} where 1=1
+            <if test="bscs !=null">
+                and BSC in
+                <foreach collection="bscs" item="bsc" index="index" open="(" close=")" separator=",">
+                    '${bsc}'
+                </foreach>
+            </if>
+            <if test="cells !=null">
+                and CELL in
+                <foreach collection="cells" item="cell" index="index" open="(" close=")" separator=",">
+                    '${cell}'
+                </foreach>
+            </if>
+        </foreach>
+        ) A) B
+        where B.rownumber &gt;${startIndex}
+    </select>
+
+    <select id="selectRlsrpFddCount" parameterType="map" resultType="long">
+        select count(*) from (
+        <foreach collection="dates" item="date" index="index" separator="union all">
+            select Date,BSC,CELL,PRIOCR,BCAST,FREE,
+            REQ,RATPRIO,MEASTHR,PRIOTHR,HPRIO,TRES,FDDARFCN,RATPRIO2,HPRIOTHR,LPRIOTHR,QRXLEVMINU
+            from cdd_RLSRP_FDD_${date} where 1=1
+            <if test="bscs !=null">
+                and BSC in
+                <foreach collection="bscs" item="bsc" index="index" open="(" close=")" separator=",">
+                    '${bsc}'
+                </foreach>
+            </if>
+            <if test="cells !=null">
+                and CELL in
+                <foreach collection="cells" item="cell" index="index" open="(" close=")" separator=",">
+                    '${cell}'
+                </foreach>
+            </if>
+        </foreach>
+        ) as AXX
+    </select>
+    <select id="selectRlsrpFdd" parameterType="map" resultType="java.util.LinkedHashMap">
+        <foreach collection="dates" item="date" index="index" separator="union all">
+            select Date,BSC,CELL,PRIOCR,BCAST,FREE,
+            REQ,RATPRIO,MEASTHR,PRIOTHR,HPRIO,TRES,FDDARFCN,RATPRIO2,HPRIOTHR,LPRIOTHR,QRXLEVMINU
+            from cdd_RLSRP_FDD_${date} where 1=1
+            <if test="bscs !=null">
+                and BSC in
+                <foreach collection="bscs" item="bsc" index="index" open="(" close=")" separator=",">
+                    '${bsc}'
+                </foreach>
+            </if>
+            <if test="cells !=null">
+                and CELL in
+                <foreach collection="cells" item="cell" index="index" open="(" close=")" separator=",">
+                    '${cell}'
+                </foreach>
+            </if>
+        </foreach>
+    </select>
+    <select id="selectRlsrpFddByPage" parameterType="map" resultType="java.util.LinkedHashMap">
+         select top ${cnt} Date,BSC,CELL,PRIOCR,BCAST,FREE,
+        REQ,RATPRIO,MEASTHR,PRIOTHR,HPRIO,TRES,FDDARFCN,RATPRIO2,HPRIOTHR,LPRIOTHR,QRXLEVMINU
+        from (select row_number() over(order by A.Date) as rownumber,*
+              from (
+        <foreach collection="dates" item="date" index="index" separator="union all">
+            select Date,BSC,CELL,PRIOCR,BCAST,FREE,
+            REQ,RATPRIO,MEASTHR,PRIOTHR,HPRIO,TRES,FDDARFCN,RATPRIO2,HPRIOTHR,LPRIOTHR,QRXLEVMINU
+            from cdd_RLSRP_FDD_${date} where 1=1
+            <if test="bscs !=null">
+                and BSC in
+                <foreach collection="bscs" item="bsc" index="index" open="(" close=")" separator=",">
+                    '${bsc}'
+                </foreach>
+            </if>
+            <if test="cells !=null">
+                and CELL in
+                <foreach collection="cells" item="cell" index="index" open="(" close=")" separator=",">
+                    '${cell}'
+                </foreach>
+            </if>
+        </foreach>
+              ) A) B
+        where B.rownumber &gt;${startIndex}
+    </select>
+
+    <select id="selectRlsrpTddCount" parameterType="map" resultType="long">
+        select count(*) from (
+        <foreach collection="dates" item="date" index="index" separator="union all">
+            select Date,BSC,CELL,PRIOCR,BCAST,FREE,REQ,RATPRIO,MEASTHR,PRIOTHR,HPRIO,TRES,TDDARFCN,
+            RATPRIO2,HPRIOTHR,LPRIOTHR,QRXLEVMINU
+            from cdd_RLSRP_TDD_${date} where 1=1
+            <if test="bscs !=null">
+                and BSC in
+                <foreach collection="bscs" item="bsc" index="index" open="(" close=")" separator=",">
+                    '${bsc}'
+                </foreach>
+            </if>
+            <if test="cells !=null">
+                and CELL in
+                <foreach collection="cells" item="cell" index="index" open="(" close=")" separator=",">
+                    '${cell}'
+                </foreach>
+            </if>
+        </foreach>
+        ) as AYY
+    </select>
+    <select id="selectRlsrpTdd" parameterType="map" resultType="java.util.LinkedHashMap">
+        <foreach collection="dates" item="date" index="index" separator="union all">
+            select Date,BSC,CELL,PRIOCR,BCAST,FREE,REQ,RATPRIO,MEASTHR,PRIOTHR,HPRIO,TRES,TDDARFCN,
+            RATPRIO2,HPRIOTHR,LPRIOTHR,QRXLEVMINU
+            from cdd_RLSRP_TDD_${date} where 1=1
+            <if test="bscs !=null">
+                and BSC in
+                <foreach collection="bscs" item="bsc" index="index" open="(" close=")" separator=",">
+                    '${bsc}'
+                </foreach>
+            </if>
+            <if test="cells !=null">
+                and CELL in
+                <foreach collection="cells" item="cell" index="index" open="(" close=")" separator=",">
+                    '${cell}'
+                </foreach>
+            </if>
+        </foreach>
+    </select>
+    <select id="selectRlsrpTddByPage" parameterType="map" resultType="java.util.LinkedHashMap">
+         select top ${cnt} Date,BSC,CELL,PRIOCR,BCAST,FREE,REQ,RATPRIO,MEASTHR,PRIOTHR,HPRIO,TRES,TDDARFCN,
+        RATPRIO2,HPRIOTHR,LPRIOTHR,QRXLEVMINU
+        from (select row_number() over(order by A.Date) as rownumber,*
+              from (
+        <foreach collection="dates" item="date" index="index" separator="union all">
+            select Date,BSC,CELL,PRIOCR,BCAST,FREE,REQ,RATPRIO,MEASTHR,PRIOTHR,HPRIO,TRES,TDDARFCN,
+            RATPRIO2,HPRIOTHR,LPRIOTHR,QRXLEVMINU
+            from cdd_RLSRP_TDD_${date} where 1=1
+            <if test="bscs !=null">
+                and BSC in
+                <foreach collection="bscs" item="bsc" index="index" open="(" close=")" separator=",">
+                    '${bsc}'
+                </foreach>
+            </if>
+            <if test="cells !=null">
+                and CELL in
+                <foreach collection="cells" item="cell" index="index" open="(" close=")" separator=",">
+                    '${cell}'
+                </foreach>
+            </if>
+        </foreach>
+              ) A) B
+        where B.rownumber &gt;${startIndex}
+    </select>
+
+    <select id="selectRlsspCount" parameterType="map" resultType="long">
+        select count(*) from (
+        <foreach collection="dates" item="date" index="index" separator="union all">
+            select  Date,BSC,CELL,ACCMIN,CCHPWR,CRH,DTXU,RLINKT,NECI,MBCR,NCCPERM,RLINKTAFR,RLINKTAHR,RLINKTAWB
+            from cdd_RLSSP_${date} where 1=1
+            <if test="bscs !=null">
+                and BSC in
+                <foreach collection="bscs" item="bsc" index="index" open="(" close=")" separator=",">
+                    '${bsc}'
+                </foreach>
+            </if>
+            <if test="cells !=null">
+                and CELL in
+                <foreach collection="cells" item="cell" index="index" open="(" close=")" separator=",">
+                    '${cell}'
+                </foreach>
+            </if>
+        </foreach>
+        ) as AZZ
+    </select>
+    <select id="selectRlssp" parameterType="map" resultType="java.util.LinkedHashMap">
+        <foreach collection="dates" item="date" index="index" separator="union all">
+            select  Date,BSC,CELL,ACCMIN,CCHPWR,CRH,DTXU,RLINKT,NECI,MBCR,NCCPERM,RLINKTAFR,RLINKTAHR,RLINKTAWB
+            from cdd_RLSSP_${date} where 1=1
+            <if test="bscs !=null">
+                and BSC in
+                <foreach collection="bscs" item="bsc" index="index" open="(" close=")" separator=",">
+                    '${bsc}'
+                </foreach>
+            </if>
+            <if test="cells !=null">
+                and CELL in
+                <foreach collection="cells" item="cell" index="index" open="(" close=")" separator=",">
+                    '${cell}'
+                </foreach>
+            </if>
+        </foreach>
+    </select>
+    <select id="selectRlsspByPage" parameterType="map" resultType="java.util.LinkedHashMap">
+         select top ${cnt} Date,BSC,CELL,ACCMIN,CCHPWR,CRH,DTXU,RLINKT,NECI,MBCR,NCCPERM,RLINKTAFR,RLINKTAHR,RLINKTAWB
+        from (select row_number() over(order by A.Date) as rownumber,*
+              from (
+        <foreach collection="dates" item="date" index="index" separator="union all">
+            select  Date,BSC,CELL,ACCMIN,CCHPWR,CRH,DTXU,RLINKT,NECI,MBCR,NCCPERM,RLINKTAFR,RLINKTAHR,RLINKTAWB
+            from cdd_RLSSP_${date} where 1=1
+            <if test="bscs !=null">
+                and BSC in
+                <foreach collection="bscs" item="bsc" index="index" open="(" close=")" separator=",">
+                    '${bsc}'
+                </foreach>
+            </if>
+            <if test="cells !=null">
+                and CELL in
+                <foreach collection="cells" item="cell" index="index" open="(" close=")" separator=",">
+                    '${cell}'
+                </foreach>
+            </if>
+        </foreach>
+              ) A) B
+        where B.rownumber &gt;${startIndex}
+    </select>
+
+    <select id="selectRlstpCount" parameterType="map" resultType="long">
+        select count(*) from (
+        <foreach collection="dates" item="date" index="index" separator="union all">
+            select Date,BSC,CELL,STATE1,CHGR,STATE2 from cdd_RLSTP_${date} where 1=1
+            <if test="bscs !=null">
+                and BSC in
+                <foreach collection="bscs" item="bsc" index="index" open="(" close=")" separator=",">
+                    '${bsc}'
+                </foreach>
+            </if>
+            <if test="cells !=null">
+                and CELL in
+                <foreach collection="cells" item="cell" index="index" open="(" close=")" separator=",">
+                    '${cell}'
+                </foreach>
+            </if>
+        </foreach>
+        ) as BAA
+    </select>
+    <select id="selectRlstp" parameterType="map" resultType="java.util.LinkedHashMap">
+        <foreach collection="dates" item="date" index="index" separator="union all">
+            select Date,BSC,CELL,STATE1,CHGR,STATE2 from cdd_RLSTP_${date} where 1=1
+            <if test="bscs !=null">
+                and BSC in
+                <foreach collection="bscs" item="bsc" index="index" open="(" close=")" separator=",">
+                    '${bsc}'
+                </foreach>
+            </if>
+            <if test="cells !=null">
+                and CELL in
+                <foreach collection="cells" item="cell" index="index" open="(" close=")" separator=",">
+                    '${cell}'
+                </foreach>
+            </if>
+        </foreach>
+    </select>
+    <select id="selectRlstpByPage" parameterType="map" resultType="java.util.LinkedHashMap">
+         select top ${cnt} Date,BSC,CELL,STATE1,CHGR,STATE2
+        from (select row_number() over(order by A.Date) as rownumber,*
+              from (
+        <foreach collection="dates" item="date" index="index" separator="union all">
+            select Date,BSC,CELL,STATE1,CHGR,STATE2 from cdd_RLSTP_${date} where 1=1
+            <if test="bscs !=null">
+                and BSC in
+                <foreach collection="bscs" item="bsc" index="index" open="(" close=")" separator=",">
+                    '${bsc}'
+                </foreach>
+            </if>
+            <if test="cells !=null">
+                and CELL in
+                <foreach collection="cells" item="cell" index="index" open="(" close=")" separator=",">
+                    '${cell}'
+                </foreach>
+            </if>
+        </foreach>
+              ) A) B
+        where B.rownumber &gt;${startIndex}
+    </select>
+
+    <select id="selectRlsupCount" parameterType="map" resultType="long">
+        select count(*) from (
+        <foreach collection="dates" item="date" index="index" separator="union all">
+            select Date,BSC,CELL,QSC,QSCI,QSI,FDDMRR,FDDQMIN,FDDQOFF,SPRIO,FDDQMINOFF,FDDRSCPMIN,TQSI,TDDMRR,TDDQOFF,TSPRIO
+            from cdd_RLSUP_${date} where 1=1
+            <if test="bscs !=null">
+                and BSC in
+                <foreach collection="bscs" item="bsc" index="index" open="(" close=")" separator=",">
+                    '${bsc}'
+                </foreach>
+            </if>
+            <if test="cells !=null">
+                and CELL in
+                <foreach collection="cells" item="cell" index="index" open="(" close=")" separator=",">
+                    '${cell}'
+                </foreach>
+            </if>
+        </foreach>
+        ) as BBB
+    </select>
+    <select id="selectRlsup" parameterType="map" resultType="java.util.LinkedHashMap">
+        <foreach collection="dates" item="date" index="index" separator="union all">
+            select Date,BSC,CELL,QSC,QSCI,QSI,FDDMRR,FDDQMIN,FDDQOFF,SPRIO,FDDQMINOFF,FDDRSCPMIN,TQSI,TDDMRR,TDDQOFF,TSPRIO
+            from cdd_RLSUP_${date} where 1=1
+            <if test="bscs !=null">
+                and BSC in
+                <foreach collection="bscs" item="bsc" index="index" open="(" close=")" separator=",">
+                    '${bsc}'
+                </foreach>
+            </if>
+            <if test="cells !=null">
+                and CELL in
+                <foreach collection="cells" item="cell" index="index" open="(" close=")" separator=",">
+                    '${cell}'
+                </foreach>
+            </if>
+        </foreach>
+    </select>
+    <select id="selectRlsupByPage" parameterType="map" resultType="java.util.LinkedHashMap">
+         select top ${cnt} Date,BSC,CELL,QSC,QSCI,QSI,FDDMRR,FDDQMIN,FDDQOFF,SPRIO,FDDQMINOFF,FDDRSCPMIN,TQSI,TDDMRR,TDDQOFF,TSPRIO
+        from (select row_number() over(order by A.Date) as rownumber,*
+              from (
+        <foreach collection="dates" item="date" index="index" separator="union all">
+            select Date,BSC,CELL,QSC,QSCI,QSI,FDDMRR,FDDQMIN,FDDQOFF,SPRIO,FDDQMINOFF,FDDRSCPMIN,TQSI,TDDMRR,TDDQOFF,TSPRIO
+            from cdd_RLSUP_${date} where 1=1
+            <if test="bscs !=null">
+                and BSC in
+                <foreach collection="bscs" item="bsc" index="index" open="(" close=")" separator=",">
+                    '${bsc}'
+                </foreach>
+            </if>
+            <if test="cells !=null">
+                and CELL in
+                <foreach collection="cells" item="cell" index="index" open="(" close=")" separator=",">
+                    '${cell}'
+                </foreach>
+            </if>
+        </foreach>
+              ) A) B
+        where B.rownumber &gt;${startIndex}
+    </select>
+
+    <select id="selectRltdpCount" parameterType="map" resultType="long">
+        select count(*) from (
+        <foreach collection="dates" item="date" index="index" separator="union all">
+            select Date,BSC,MSC,MODE,CAP,RELCAP,RAND,PART,PLMNNAME from cdd_RLTDP_${date} where 1=1
+            <if test="bscs !=null">
+                and BSC in
+                <foreach collection="bscs" item="bsc" index="index" open="(" close=")" separator=",">
+                    '${bsc}'
+                </foreach>
+            </if>
+        </foreach>
+        ) as BCC
+    </select>
+    <select id="selectRltdp" parameterType="map" resultType="java.util.LinkedHashMap">
+        <foreach collection="dates" item="date" index="index" separator="union all">
+            select Date,BSC,MSC,MODE,CAP,RELCAP,RAND,PART,PLMNNAME from cdd_RLTDP_${date} where 1=1
+            <if test="bscs !=null">
+                and BSC in
+                <foreach collection="bscs" item="bsc" index="index" open="(" close=")" separator=",">
+                    '${bsc}'
+                </foreach>
+            </if>
+        </foreach>
+    </select>
+    <select id="selectRltdpByPage" parameterType="map" resultType="java.util.LinkedHashMap">
+         select top ${cnt} Date,BSC,MSC,MODE,CAP,RELCAP,RAND,PART,PLMNNAME
+        from (select row_number() over(order by A.Date) as rownumber,*
+              from (
+        <foreach collection="dates" item="date" index="index" separator="union all">
+            select Date,BSC,MSC,MODE,CAP,RELCAP,RAND,PART,PLMNNAME from cdd_RLTDP_${date} where 1=1
+            <if test="bscs !=null">
+                and BSC in
+                <foreach collection="bscs" item="bsc" index="index" open="(" close=")" separator=",">
+                    '${bsc}'
+                </foreach>
+            </if>
+        </foreach>
+              ) A) B
+        where B.rownumber &gt;${startIndex}
+    </select>
+
+    <select id="selectRltypCount" parameterType="map" resultType="long">
+        select count(*) from (
+        <foreach collection="dates" item="date" index="index" separator="union all">
+            select Date,BSC,GSYSTYPE from cdd_RLTYP_${date} where 1=1
+            <if test="bscs !=null">
+                and BSC in
+                <foreach collection="bscs" item="bsc" index="index" open="(" close=")" separator=",">
+                    '${bsc}'
+                </foreach>
+            </if>
+        </foreach>
+        ) as BDD
+    </select>
+    <select id="selectRltyp" parameterType="map" resultType="java.util.LinkedHashMap">
+        <foreach collection="dates" item="date" index="index" separator="union all">
+            select Date,BSC,GSYSTYPE from cdd_RLTYP_${date} where 1=1
+            <if test="bscs !=null">
+                and BSC in
+                <foreach collection="bscs" item="bsc" index="index" open="(" close=")" separator=",">
+                    '${bsc}'
+                </foreach>
+            </if>
+        </foreach>
+    </select>
+    <select id="selectRltypByPage" parameterType="map" resultType="java.util.LinkedHashMap">
+         select top ${cnt} Date,BSC,GSYSTYPE
+        from (select row_number() over(order by A.Date desc) as rownumber,*
+              from (
+        <foreach collection="dates" item="date" index="index" separator="union all">
+            select Date,BSC,GSYSTYPE from cdd_RLTYP_${date} where 1=1
+            <if test="bscs !=null">
+                and BSC in
+                <foreach collection="bscs" item="bsc" index="index" open="(" close=")" separator=",">
+                    '${bsc}'
+                </foreach>
+            </if>
+        </foreach>
+              ) A) B
+        where B.rownumber &gt;${startIndex}
+    </select>
+
+    <select id="selectRlumpCount" parameterType="map" resultType="long">
+        select count(*) from (
+        <foreach collection="dates" item="date" index="index" separator="union all">
+            select Date,BSC,CELL,LISTTYPE,TMFI from cdd_RLUMP_${date} where 1=1
+            <if test="bscs !=null">
+                and BSC in
+                <foreach collection="bscs" item="bsc" index="index" open="(" close=")" separator=",">
+                    '${bsc}'
+                </foreach>
+            </if>
+            <if test="cells !=null">
+                and CELL in
+                <foreach collection="cells" item="cell" index="index" open="(" close=")" separator=",">
+                    '${cell}'
+                </foreach>
+            </if>
+        </foreach>
+        ) as BEE
+    </select>
+    <select id="selectRlump" parameterType="map" resultType="java.util.LinkedHashMap">
+        <foreach collection="dates" item="date" index="index" separator="union all">
+            select Date,BSC,CELL,LISTTYPE,TMFI from cdd_RLUMP_${date} where 1=1
+            <if test="bscs !=null">
+                and BSC in
+                <foreach collection="bscs" item="bsc" index="index" open="(" close=")" separator=",">
+                    '${bsc}'
+                </foreach>
+            </if>
+            <if test="cells !=null">
+                and CELL in
+                <foreach collection="cells" item="cell" index="index" open="(" close=")" separator=",">
+                    '${cell}'
+                </foreach>
+            </if>
+        </foreach>
+    </select>
+    <select id="selectRlumpByPage" parameterType="map" resultType="java.util.LinkedHashMap">
+         select top ${cnt} Date,BSC,CELL,LISTTYPE,TMFI
+        from (select row_number() over(order by A.Date) as rownumber,*
+              from (
+        <foreach collection="dates" item="date" index="index" separator="union all">
+            select Date,BSC,CELL,LISTTYPE,TMFI from cdd_RLUMP_${date} where 1=1
+            <if test="bscs !=null">
+                and BSC in
+                <foreach collection="bscs" item="bsc" index="index" open="(" close=")" separator=",">
+                    '${bsc}'
+                </foreach>
+            </if>
+            <if test="cells !=null">
+                and CELL in
+                <foreach collection="cells" item="cell" index="index" open="(" close=")" separator=",">
+                    '${cell}'
+                </foreach>
+            </if>
+        </foreach>
+              ) A) B
+        where B.rownumber &gt;${startIndex}
+    </select>
+
+    <select id="selectRrtppCount" parameterType="map" resultType="long">
+         select count(*) from (
+        <foreach collection="dates" item="date" index="index" separator="union all">
+            select Date,BSC,TRAPOOL,CHRATE,SPV,RNOTRA,POOLACT,POOLIDLE,POOLTRAF,SUBPOOL,SUBACT,SUBIDLE,SUBTRAF
+            from cdd_RRTPP_${date} where 1=1
+            <if test="bscs !=null">
+                and BSC in
+                <foreach collection="bscs" item="bsc" index="index" open="(" close=")" separator=",">
+                    '${bsc}'
+                </foreach>
+            </if>
+        </foreach>
+        ) as BFF
+    </select>
+    <select id="selectRrtpp" parameterType="map" resultType="java.util.LinkedHashMap">
+        <foreach collection="dates" item="date" index="index" separator="union all">
+            select Date,BSC,TRAPOOL,CHRATE,SPV,RNOTRA,POOLACT,POOLIDLE,POOLTRAF,SUBPOOL,SUBACT,SUBIDLE,SUBTRAF
+            from cdd_RRTPP_${date} where 1=1
+            <if test="bscs !=null">
+                and BSC in
+                <foreach collection="bscs" item="bsc" index="index" open="(" close=")" separator=",">
+                    '${bsc}'
+                </foreach>
+            </if>
+        </foreach>
+    </select>
+    <select id="selectRrtppByPage" parameterType="map" resultType="java.util.LinkedHashMap">
+         select top ${cnt} Date,BSC,TRAPOOL,CHRATE,SPV,RNOTRA,POOLACT,POOLIDLE,POOLTRAF,SUBPOOL,SUBACT,SUBIDLE,SUBTRAF
+        from (select row_number() over(order by A.Date desc) as rownumber,*
+              from (
+        <foreach collection="dates" item="date" index="index" separator="union all">
+            select Date,BSC,TRAPOOL,CHRATE,SPV,RNOTRA,POOLACT,POOLIDLE,POOLTRAF,SUBPOOL,SUBACT,SUBIDLE,SUBTRAF
+            from cdd_RRTPP_${date} where 1=1
+            <if test="bscs !=null">
+                and BSC in
+                <foreach collection="bscs" item="bsc" index="index" open="(" close=")" separator=",">
+                    '${bsc}'
+                </foreach>
+            </if>
+        </foreach>
+              ) A) B
+        where B.rownumber &gt;${startIndex}
+    </select>
+
+    <select id="selectRxappCount" parameterType="map" resultType="long">
+         select count(*) from (
+        <foreach collection="dates" item="date" index="index" separator="union all">
+            select Date,BSC,MO,DEV,DCP,APUSAGE,APSTATE,[64K] from cdd_RXAPP_${date} where 1=1
+            <if test="bscs !=null">
+                and BSC in
+                <foreach collection="bscs" item="bsc" index="index" open="(" close=")" separator=",">
+                    '${bsc}'
+                </foreach>
+            </if>
+        </foreach>
+        ) as BGG
+    </select>
+    <select id="selectRxapp" parameterType="map" resultType="java.util.LinkedHashMap">
+        <foreach collection="dates" item="date" index="index" separator="union all">
+            select Date,BSC,MO,DEV,DCP,APUSAGE,APSTATE,[64K] from cdd_RXAPP_${date} where 1=1
+            <if test="bscs !=null">
+                and BSC in
+                <foreach collection="bscs" item="bsc" index="index" open="(" close=")" separator=",">
+                    '${bsc}'
+                </foreach>
+            </if>
+        </foreach>
+    </select>
+    <select id="selectRxappByPage" parameterType="map" resultType="java.util.LinkedHashMap">
+         select top ${cnt} Date,BSC,MO,DEV,DCP,APUSAGE,APSTATE,[64K]
+        from (select row_number() over(order by A.Date) as rownumber,*
+              from (
+        <foreach collection="dates" item="date" index="index" separator="union all">
+            select Date,BSC,MO,DEV,DCP,APUSAGE,APSTATE,[64K] from cdd_RXAPP_${date} where 1=1
+            <if test="bscs !=null">
+                and BSC in
+                <foreach collection="bscs" item="bsc" index="index" open="(" close=")" separator=",">
+                    '${bsc}'
+                </foreach>
+            </if>
+        </foreach>
+              ) A) B
+        where B.rownumber &gt;${startIndex}
+    </select>
+
+    <select id="selectRxaspTgCount" parameterType="map" resultType="long">
+         select count(*) from (
+        <foreach collection="dates" item="date" index="index" separator="union all">
+            select Date,BSC,MO,SCGR,SC,RSITE,ALARM_SITUATION from cdd_RXASP_TG_${date} where 1=1
+            <if test="bscs !=null">
+                and BSC in
+                <foreach collection="bscs" item="bsc" index="index" open="(" close=")" separator=",">
+                    '${bsc}'
+                </foreach>
+            </if>
+        </foreach>
+        ) as BHH
+    </select>
+    <select id="selectRxaspTg" parameterType="map" resultType="java.util.LinkedHashMap">
+        <foreach collection="dates" item="date" index="index" separator="union all">
+            select Date,BSC,MO,SCGR,SC,RSITE,ALARM_SITUATION from cdd_RXASP_TG_${date} where 1=1
+            <if test="bscs !=null">
+                and BSC in
+                <foreach collection="bscs" item="bsc" index="index" open="(" close=")" separator=",">
+                    '${bsc}'
+                </foreach>
+            </if>
+        </foreach>
+    </select>
+    <select id="selectRxaspTgByPage" parameterType="map" resultType="java.util.LinkedHashMap">
+         select top ${cnt} Date,BSC,MO,SCGR,SC,RSITE,ALARM_SITUATION
+        from (select row_number() over(order by A.Date) as rownumber,*
+              from (
+        <foreach collection="dates" item="date" index="index" separator="union all">
+            select Date,BSC,MO,SCGR,SC,RSITE,ALARM_SITUATION from cdd_RXASP_TG_${date} where 1=1
+            <if test="bscs !=null">
+                and BSC in
+                <foreach collection="bscs" item="bsc" index="index" open="(" close=")" separator=",">
+                    '${bsc}'
+                </foreach>
+            </if>
+        </foreach>
+              ) A) B
+        where B.rownumber &gt;${startIndex}
+    </select>
+
+    <select id="selectRxelpTgCount" parameterType="map" resultType="long">
+         select count(*) from (
+        <foreach collection="dates" item="date" index="index" separator="union all">
+            select  Date,BSC,MO,BTSSWVER,DATEs,TIME,BTS,REPLMAP,[1AMAP],[1BMAP],[2AMAP],EXT1BMAP,EXT2BMAP,EXT2BMAPEXT
+            from cdd_RXELP_TG_${date} where 1=1
+            <if test="bscs !=null">
+                and BSC in
+                <foreach collection="bscs" item="bsc" index="index" open="(" close=")" separator=",">
+                    '${bsc}'
+                </foreach>
+            </if>
+        </foreach>
+        ) as BII
+    </select>
+    <select id="selectRxelpTg" parameterType="map" resultType="java.util.LinkedHashMap">
+        <foreach collection="dates" item="date" index="index" separator="union all">
+            select  Date,BSC,MO,BTSSWVER,DATEs,TIME,BTS,REPLMAP,[1AMAP],[1BMAP],[2AMAP],EXT1BMAP,EXT2BMAP,EXT2BMAPEXT
+            from cdd_RXELP_TG_${date} where 1=1
+            <if test="bscs !=null">
+                and BSC in
+                <foreach collection="bscs" item="bsc" index="index" open="(" close=")" separator=",">
+                    '${bsc}'
+                </foreach>
+            </if>
+        </foreach>
+    </select>
+    <select id="selectRxelpTgByPage" parameterType="map" resultType="java.util.LinkedHashMap">
+         select top ${cnt} Date,BSC,MO,BTSSWVER,DATEs,TIME,BTS,REPLMAP,[1AMAP],[1BMAP],[2AMAP],EXT1BMAP,EXT2BMAP,EXT2BMAPEXT
+        from (select row_number() over(order by A.Date) as rownumber,*
+              from (
+        <foreach collection="dates" item="date" index="index" separator="union all">
+            select  Date,BSC,MO,BTSSWVER,DATEs,TIME,BTS,REPLMAP,[1AMAP],[1BMAP],[2AMAP],EXT1BMAP,EXT2BMAP,EXT2BMAPEXT
+            from cdd_RXELP_TG_${date} where 1=1
+            <if test="bscs !=null">
+                and BSC in
+                <foreach collection="bscs" item="bsc" index="index" open="(" close=")" separator=",">
+                    '${bsc}'
+                </foreach>
+            </if>
+        </foreach>
+              ) A) B
+        where B.rownumber &gt;${startIndex}
+    </select>
+
+    <select id="selectRxmfpCfCount" parameterType="map" resultType="long">
+         select count(*) from (
+        <foreach collection="dates" item="date" index="index" separator="union all">
+            select Date,BSC,MO,TYPE,DU,RUSERIALNO from cdd_RXMFP_CF_${date} where 1=1
+            <if test="bscs !=null">
+                and BSC in
+                <foreach collection="bscs" item="bsc" index="index" open="(" close=")" separator=",">
+                    '${bsc}'
+                </foreach>
+            </if>
+        </foreach>
+        ) as BJJ
+    </select>
+    <select id="selectRxmfpCf" parameterType="map" resultType="java.util.LinkedHashMap">
+        <foreach collection="dates" item="date" index="index" separator="union all">
+            select Date,BSC,MO,TYPE,DU,RUSERIALNO from cdd_RXMFP_CF_${date} where 1=1
+            <if test="bscs !=null">
+                and BSC in
+                <foreach collection="bscs" item="bsc" index="index" open="(" close=")" separator=",">
+                    '${bsc}'
+                </foreach>
+            </if>
+        </foreach>
+    </select>
+    <select id="selectRxmfpCfByPage" parameterType="map" resultType="java.util.LinkedHashMap">
+        select top ${cnt} Date,BSC,MO,TYPE,DU,RUSERIALNO
+        from (select row_number() over(order by A.Date) as rownumber,*
+        from (
+        <foreach collection="dates" item="date" index="index" separator="union all">
+            select Date,BSC,MO,TYPE,DU,RUSERIALNO from cdd_RXMFP_CF_${date} where 1=1
+            <if test="bscs !=null">
+                and BSC in
+                <foreach collection="bscs" item="bsc" index="index" open="(" close=")" separator=",">
+                    '${bsc}'
+                </foreach>
+            </if>
+        </foreach>
+        ) A) B
+        where B.rownumber &gt;${startIndex}
+    </select>
+
+    <select id="selectRxmfpCfFCount" parameterType="map" resultType="long">
+         select count(*) from (
+        <foreach collection="dates" item="date" index="index" separator="union all">
+            select Date,BSC,MO,STATE,Fault_Codes,Data from cdd_RXMFP_CF_F_${date} where 1=1
+            <if test="bscs !=null">
+                and BSC in
+                <foreach collection="bscs" item="bsc" index="index" open="(" close=")" separator=",">
+                    '${bsc}'
+                </foreach>
+            </if>
+        </foreach>
+        ) as BKK
+    </select>
+    <select id="selectRxmfpCfF" parameterType="map" resultType="java.util.LinkedHashMap">
+        <foreach collection="dates" item="date" index="index" separator="union all">
+            select Date,BSC,MO,STATE,Fault_Codes,Data from cdd_RXMFP_CF_F_${date} where 1=1
+            <if test="bscs !=null">
+                and BSC in
+                <foreach collection="bscs" item="bsc" index="index" open="(" close=")" separator=",">
+                    '${bsc}'
+                </foreach>
+            </if>
+        </foreach>
+    </select>
+    <select id="selectRxmfpCfFByPage" parameterType="map" resultType="java.util.LinkedHashMap">
+         select top ${cnt} Date,BSC,MO,STATE,Fault_Codes,Data
+        from (select row_number() over(order by A.Date) as rownumber,*
+              from (
+        <foreach collection="dates" item="date" index="index" separator="union all">
+            select Date,BSC,MO,STATE,Fault_Codes,Data from cdd_RXMFP_CF_F_${date} where 1=1
+            <if test="bscs !=null">
+                and BSC in
+                <foreach collection="bscs" item="bsc" index="index" open="(" close=")" separator=",">
+                    '${bsc}'
+                </foreach>
+            </if>
+        </foreach>
+              ) A) B
+        where B.rownumber &gt;${startIndex}
+    </select>
+
+    <select id="selectRxmfpMctrCount" parameterType="map" resultType="long">
+         select count(*) from (
+        <foreach collection="dates" item="date" index="index" separator="union all">
+            select Date,BSC,MO,Fault_Codes,Data from cdd_RXMFP_MCTR_${date} where 1=1
+            <if test="bscs !=null">
+                and BSC in
+                <foreach collection="bscs" item="bsc" index="index" open="(" close=")" separator=",">
+                    '${bsc}'
+                </foreach>
+            </if>
+        </foreach>
+        ) as BLL
+    </select>
+    <select id="selectRxmfpMctr" parameterType="map" resultType="java.util.LinkedHashMap">
+        <foreach collection="dates" item="date" index="index" separator="union all">
+            select Date,BSC,MO,Fault_Codes,Data from cdd_RXMFP_MCTR_${date} where 1=1
+            <if test="bscs !=null">
+                and BSC in
+                <foreach collection="bscs" item="bsc" index="index" open="(" close=")" separator=",">
+                    '${bsc}'
+                </foreach>
+            </if>
+        </foreach>
+    </select>
+    <select id="selectRxmfpMctrByPage" parameterType="map" resultType="java.util.LinkedHashMap">
+         select top ${cnt} Date,BSC,MO,Fault_Codes,Data
+        from (select row_number() over(order by A.Date) as rownumber,*
+              from (
+        <foreach collection="dates" item="date" index="index" separator="union all">
+            select Date,BSC,MO,Fault_Codes,Data from cdd_RXMFP_MCTR_${date} where 1=1
+            <if test="bscs !=null">
+                and BSC in
+                <foreach collection="bscs" item="bsc" index="index" open="(" close=")" separator=",">
+                    '${bsc}'
+                </foreach>
+            </if>
+        </foreach>
+              ) A) B
+        where B.rownumber &gt;${startIndex}
+    </select>
+
+    <select id="selectRxmfpRxFCount" parameterType="map" resultType="long">
+         select count(*) from (
+        <foreach collection="dates" item="date" index="index" separator="union all">
+            select Date,BSC,MO,STATE,Fault_Codes,Data from cdd_RXMFP_RX_F_${date} where 1=1
+            <if test="bscs !=null">
+                and BSC in
+                <foreach collection="bscs" item="bsc" index="index" open="(" close=")" separator=",">
+                    '${bsc}'
+                </foreach>
+            </if>
+        </foreach>
+        ) as BMM
+    </select>
+    <select id="selectRxmfpRxF" parameterType="map" resultType="java.util.LinkedHashMap">
+        <foreach collection="dates" item="date" index="index" separator="union all">
+            select Date,BSC,MO,STATE,Fault_Codes,Data from cdd_RXMFP_RX_F_${date} where 1=1
+            <if test="bscs !=null">
+                and BSC in
+                <foreach collection="bscs" item="bsc" index="index" open="(" close=")" separator=",">
+                    '${bsc}'
+                </foreach>
+            </if>
+        </foreach>
+    </select>
+    <select id="selectRxmfpRxFByPage" parameterType="map" resultType="java.util.LinkedHashMap">
+        select top ${cnt} Date,BSC,MO,STATE,Fault_Codes,Data
+        from (select row_number() over(order by A.Date desc) as rownumber,*
+        from (
+        <foreach collection="dates" item="date" index="index" separator="union all">
+            select Date,BSC,MO,STATE,Fault_Codes,Data from cdd_RXMFP_RX_F_${date} where 1=1
+            <if test="bscs !=null">
+                and BSC in
+                <foreach collection="bscs" item="bsc" index="index" open="(" close=")" separator=",">
+                    '${bsc}'
+                </foreach>
+            </if>
+        </foreach>
+        ) A) B
+        where B.rownumber &gt;${startIndex}
+    </select>
+
+    <select id="selectRxmfpTrxCount" parameterType="map" resultType="long">
+         select count(*) from (
+        <foreach collection="dates" item="date" index="index" separator="union all">
+            select Date,BSC,MO,RUSERIALNO,RULOGICALID,STATE from cdd_RXMFP_TRX_${date} where 1=1
+            <if test="bscs !=null">
+                and BSC in
+                <foreach collection="bscs" item="bsc" index="index" open="(" close=")" separator=",">
+                    '${bsc}'
+                </foreach>
+            </if>
+        </foreach>
+        ) as BNN
+    </select>
+    <select id="selectRxmfpTrx" parameterType="map" resultType="java.util.LinkedHashMap">
+        <foreach collection="dates" item="date" index="index" separator="union all">
+            select Date,BSC,MO,RUSERIALNO,RULOGICALID,STATE from cdd_RXMFP_TRX_${date} where 1=1
+            <if test="bscs !=null">
+                and BSC in
+                <foreach collection="bscs" item="bsc" index="index" open="(" close=")" separator=",">
+                    '${bsc}'
+                </foreach>
+            </if>
+        </foreach>
+    </select>
+    <select id="selectRxmfpTrxByPage" parameterType="map" resultType="java.util.LinkedHashMap">
+         select top ${cnt} Date,BSC,MO,RUSERIALNO,RULOGICALID,STATE
+        from (select row_number() over(order by A.Date) as rownumber,*
+              from (
+        <foreach collection="dates" item="date" index="index" separator="union all">
+            select Date,BSC,MO,RUSERIALNO,RULOGICALID,STATE from cdd_RXMFP_TRX_${date} where 1=1
+            <if test="bscs !=null">
+                and BSC in
+                <foreach collection="bscs" item="bsc" index="index" open="(" close=")" separator=",">
+                    '${bsc}'
+                </foreach>
+            </if>
+        </foreach>
+              ) A) B
+        where B.rownumber &gt;${startIndex}
+    </select>
+
+
+    <select id="selectRxmfpTrxFCount" parameterType="map" resultType="long">
+        select count(*) from (
+        <foreach collection="dates" item="date" index="index" separator="union all">
+            select Date,BSC,MO,STATE,Fault_Codes,Data from cdd_RXMFP_TRX_F_${date} where 1=1
+            <if test="bscs !=null">
+                and BSC in
+                <foreach collection="bscs" item="bsc" index="index" open="(" close=")" separator=",">
+                    '${bsc}'
+                </foreach>
+            </if>
+        </foreach>
+        ) as BOO
+    </select>
+    <select id="selectRxmfpTrxF" parameterType="map" resultType="java.util.LinkedHashMap">
+        <foreach collection="dates" item="date" index="index" separator="union all">
+            select Date,BSC,MO,STATE,Fault_Codes,Data from cdd_RXMFP_TRX_F_${date} where 1=1
+            <if test="bscs !=null">
+                and BSC in
+                <foreach collection="bscs" item="bsc" index="index" open="(" close=")" separator=",">
+                    '${bsc}'
+                </foreach>
+            </if>
+        </foreach>
+    </select>
+    <select id="selectRxmfpTrxFByPage" parameterType="map" resultType="java.util.LinkedHashMap">
+         select top ${cnt} Date,BSC,MO,STATE,Fault_Codes,Data
+        from (select row_number() over(order by A.Date desc) as rownumber,*
+              from (
+        <foreach collection="dates" item="date" index="index" separator="union all">
+            select Date,BSC,MO,STATE,Fault_Codes,Data from cdd_RXMFP_TRX_F_${date} where 1=1
+            <if test="bscs !=null">
+                and BSC in
+                <foreach collection="bscs" item="bsc" index="index" open="(" close=")" separator=",">
+                    '${bsc}'
+                </foreach>
+            </if>
+        </foreach>
+              ) A) B
+        where B.rownumber &gt;${startIndex}
+    </select>
+
+    <select id="selectRxmfpTxFCount" parameterType="map" resultType="long">
+         select count(*) from (
+        <foreach collection="dates" item="date" index="index" separator="union all">
+            select Date,BSC,MO,STATE,Fault_Codes,Data from cdd_RXMFP_TX_F_${date} where 1=1
+            <if test="bscs !=null">
+                and BSC in
+                <foreach collection="bscs" item="bsc" index="index" open="(" close=")" separator=",">
+                    '${bsc}'
+                </foreach>
+            </if>
+        </foreach>
+        ) as BPP
+    </select>
+    <select id="selectRxmfpTxF" parameterType="map" resultType="java.util.LinkedHashMap">
+        <foreach collection="dates" item="date" index="index" separator="union all">
+            select Date,BSC,MO,STATE,Fault_Codes,Data from cdd_RXMFP_TX_F_${date} where 1=1
+            <if test="bscs !=null">
+                and BSC in
+                <foreach collection="bscs" item="bsc" index="index" open="(" close=")" separator=",">
+                    '${bsc}'
+                </foreach>
+            </if>
+        </foreach>
+    </select>
+    <select id="selectRxmfpTxFByPage" parameterType="map" resultType="java.util.LinkedHashMap">
+        select top ${cnt} Date,BSC,MO,STATE,Fault_Codes,Data
+        from (select row_number() over(order by A.Date) as rownumber,*
+        from (
+        <foreach collection="dates" item="date" index="index" separator="union all">
+            select Date,BSC,MO,STATE,Fault_Codes,Data from cdd_RXMFP_TX_F_${date} where 1=1
+            <if test="bscs !=null">
+                and BSC in
+                <foreach collection="bscs" item="bsc" index="index" open="(" close=")" separator=",">
+                    '${bsc}'
+                </foreach>
+            </if>
+        </foreach>
+        ) A) B
+        where B.rownumber &gt;${startIndex}
+    </select>
+
+    <select id="selectRxmopCfCount" parameterType="map" resultType="long">
+         select count(*) from (
+        <foreach collection="dates" item="date" index="index" separator="union all">
+            select Date,BSC,MO,TEI,SIG,SWVERREPL,SWVERDLD,SWVERACT,BSSWANTED,NEGSTATUS
+            from cdd_RXMOP_CF_${date} where 1=1
+            <if test="bscs !=null">
+                and BSC in
+                <foreach collection="bscs" item="bsc" index="index" open="(" close=")" separator=",">
+                    '${bsc}'
+                </foreach>
+            </if>
+        </foreach>
+        ) as BQQ
+    </select>
+    <select id="selectRxmopCf" parameterType="map" resultType="java.util.LinkedHashMap">
+        <foreach collection="dates" item="date" index="index" separator="union all">
+            select Date,BSC,MO,TEI,SIG,SWVERREPL,SWVERDLD,SWVERACT,BSSWANTED,NEGSTATUS
+            from cdd_RXMOP_CF_${date} where 1=1
+            <if test="bscs !=null">
+                and BSC in
+                <foreach collection="bscs" item="bsc" index="index" open="(" close=")" separator=",">
+                    '${bsc}'
+                </foreach>
+            </if>
+        </foreach>
+    </select>
+    <select id="selectRxmopCfByPage" parameterType="map" resultType="java.util.LinkedHashMap">
+         select top ${cnt} Date,BSC,MO,TEI,SIG,SWVERREPL,SWVERDLD,SWVERACT,BSSWANTED,NEGSTATUS
+        from (select row_number() over(order by A.Date) as rownumber,*
+              from (
+        <foreach collection="dates" item="date" index="index" separator="union all">
+            select Date,BSC,MO,TEI,SIG,SWVERREPL,SWVERDLD,SWVERACT,BSSWANTED,NEGSTATUS
+            from cdd_RXMOP_CF_${date} where 1=1
+            <if test="bscs !=null">
+                and BSC in
+                <foreach collection="bscs" item="bsc" index="index" open="(" close=")" separator=",">
+                    '${bsc}'
+                </foreach>
+            </if>
+        </foreach>
+              ) A) B
+        where B.rownumber &gt;${startIndex}
+    </select>
+
+    <select id="selectRxmopMctrCount" parameterType="map" resultType="long">
+         select count(*) from (
+        <foreach collection="dates" item="date" index="index" separator="union all">
+            select Date,BSC,MO,MAXPWR,MAXTRX,PAO,TXMPWR,IPM,MIXEDMODE,MINFREQ,MAXFREQ,CCMD,CCTP,EMTP,EMDI,EMRA
+            from cdd_RXMOP_MCTR_${date} where 1=1
+            <if test="bscs !=null">
+                and BSC in
+                <foreach collection="bscs" item="bsc" index="index" open="(" close=")" separator=",">
+                    '${bsc}'
+                </foreach>
+            </if>
+        </foreach>
+        ) as BRR
+    </select>
+    <select id="selectRxmopMctr" parameterType="map" resultType="java.util.LinkedHashMap">
+        <foreach collection="dates" item="date" index="index" separator="union all">
+            select Date,BSC,MO,MAXPWR,MAXTRX,PAO,TXMPWR,IPM,MIXEDMODE,MINFREQ,MAXFREQ,CCMD,CCTP,EMTP,EMDI,EMRA
+            from cdd_RXMOP_MCTR_${date} where 1=1
+            <if test="bscs !=null">
+                and BSC in
+                <foreach collection="bscs" item="bsc" index="index" open="(" close=")" separator=",">
+                    '${bsc}'
+                </foreach>
+            </if>
+        </foreach>
+    </select>
+    <select id="selectRxmopMctrByPage" parameterType="map" resultType="java.util.LinkedHashMap">
+         select top ${cnt} Date,BSC,MO,MAXPWR,MAXTRX,PAO,TXMPWR,IPM,MIXEDMODE,MINFREQ,MAXFREQ,CCMD,CCTP,EMTP,EMDI,EMRA
+        from (select row_number() over(order by A.Date) as rownumber,*
+              from (
+        <foreach collection="dates" item="date" index="index" separator="union all">
+            select Date,BSC,MO,MAXPWR,MAXTRX,PAO,TXMPWR,IPM,MIXEDMODE,MINFREQ,MAXFREQ,CCMD,CCTP,EMTP,EMDI,EMRA
+            from cdd_RXMOP_MCTR_${date} where 1=1
+            <if test="bscs !=null">
+                and BSC in
+                <foreach collection="bscs" item="bsc" index="index" open="(" close=")" separator=",">
+                    '${bsc}'
+                </foreach>
+            </if>
+        </foreach>
+              ) A) B
+        where B.rownumber &gt;${startIndex}
+    </select>
+
+    <select id="selectRxmopRxCount" parameterType="map" resultType="long">
+         select count(*) from (
+        <foreach collection="dates" item="date" index="index" separator="union all">
+            select Date,BSC,MO,RXD,BAND,ANTA,ANTB from cdd_RXMOP_RX_${date} where 1=1
+            <if test="bscs !=null">
+                and BSC in
+                <foreach collection="bscs" item="bsc" index="index" open="(" close=")" separator=",">
+                    '${bsc}'
+                </foreach>
+            </if>
+        </foreach>
+        ) as BSS
+    </select>
+    <select id="selectRxmopRx" parameterType="map" resultType="java.util.LinkedHashMap">
+        <foreach collection="dates" item="date" index="index" separator="union all">
+            select Date,BSC,MO,RXD,BAND,ANTA,ANTB from cdd_RXMOP_RX_${date} where 1=1
+            <if test="bscs !=null">
+                and BSC in
+                <foreach collection="bscs" item="bsc" index="index" open="(" close=")" separator=",">
+                    '${bsc}'
+                </foreach>
+            </if>
+        </foreach>
+    </select>
+    <select id="selectRxmopRxByPage" parameterType="map" resultType="java.util.LinkedHashMap">
+        select top ${cnt} Date,BSC,MO,RXD,BAND,ANTA,ANTB
+        from (select row_number() over(order by A.Date) as rownumber,*
+        from (
+        <foreach collection="dates" item="date" index="index" separator="union all">
+            select Date,BSC,MO,RXD,BAND,ANTA,ANTB from cdd_RXMOP_RX_${date} where 1=1
+            <if test="bscs !=null">
+                and BSC in
+                <foreach collection="bscs" item="bsc" index="index" open="(" close=")" separator=",">
+                    '${bsc}'
+                </foreach>
+            </if>
+        </foreach>
+        ) A) B
+        where B.rownumber &gt;${startIndex}
+    </select>
+
+    <select id="selectRxmopTgCount" parameterType="map" resultType="long">
+         select count(*) from (
+        <foreach collection="dates" item="date" index="index" separator="union all">
+            select Date,BSC,MO,RSITE,AHOP,COMB,FHOP,MODEL,SWVERREPL,SWVERDLD,SWVERACT,TMODE,CONFMD,
+            CONFACT,TRACO,ABISALLOC,CCCHCMD from cdd_RXMOP_TG_${date} where 1=1
+            <if test="bscs !=null">
+                and BSC in
+                <foreach collection="bscs" item="bsc" index="index" open="(" close=")" separator=",">
+                    '${bsc}'
+                </foreach>
+            </if>
+        </foreach>
+        ) as BTT
+    </select>
+    <select id="selectRxmopTg" parameterType="map" resultType="java.util.LinkedHashMap">
+        <foreach collection="dates" item="date" index="index" separator="union all">
+            select Date,BSC,MO,RSITE,AHOP,COMB,FHOP,MODEL,SWVERREPL,SWVERDLD,SWVERACT,TMODE,CONFMD,
+            CONFACT,TRACO,ABISALLOC,CCCHCMD from cdd_RXMOP_TG_${date} where 1=1
+            <if test="bscs !=null">
+                and BSC in
+                <foreach collection="bscs" item="bsc" index="index" open="(" close=")" separator=",">
+                    '${bsc}'
+                </foreach>
+            </if>
+        </foreach>
+    </select>
+    <select id="selectRxmopTgByPage" parameterType="map" resultType="java.util.LinkedHashMap">
+         select top ${cnt} Date,BSC,MO,RSITE,AHOP,COMB,FHOP,MODEL,SWVERREPL,SWVERDLD,SWVERACT,TMODE,CONFMD,
+        CONFACT,TRACO,ABISALLOC,CCCHCMD
+        from (select row_number() over(order by A.Date desc) as rownumber,*
+              from (
+        <foreach collection="dates" item="date" index="index" separator="union all">
+            select Date,BSC,MO,RSITE,AHOP,COMB,FHOP,MODEL,SWVERREPL,SWVERDLD,SWVERACT,TMODE,CONFMD,
+            CONFACT,TRACO,ABISALLOC,CCCHCMD from cdd_RXMOP_TG_${date} where 1=1
+            <if test="bscs !=null">
+                and BSC in
+                <foreach collection="bscs" item="bsc" index="index" open="(" close=")" separator=",">
+                    '${bsc}'
+                </foreach>
+            </if>
+        </foreach>
+              ) A) B
+        where B.rownumber &gt;${startIndex}
+    </select>
+
+    <select id="selectRxmopTrxCount" parameterType="map" resultType="long">
+        select count(*) from (
+        <foreach collection="dates" item="date" index="index" separator="union all">
+            select Date,BSC,MO,CELL,CHGR,TEI,SIG,MCTRI,SWVERREPL,SWVERDLD,SWVERACT,DCP1,DCP2
+            from cdd_RXMOP_TRX_${date} where 1=1
+            <if test="bscs !=null">
+                and BSC in
+                <foreach collection="bscs" item="bsc" index="index" open="(" close=")" separator=",">
+                    '${bsc}'
+                </foreach>
+            </if>
+            <if test="cells !=null">
+                and CELL in
+                <foreach collection="cells" item="cell" index="index" open="(" close=")" separator=",">
+                    '${cell}'
+                </foreach>
+            </if>
+        </foreach>
+        ) as BUU
+    </select>
+    <select id="selectRxmopTrx" parameterType="map" resultType="java.util.LinkedHashMap">
+        <foreach collection="dates" item="date" index="index" separator="union all">
+            select Date,BSC,MO,CELL,CHGR,TEI,SIG,MCTRI,SWVERREPL,SWVERDLD,SWVERACT,DCP1,DCP2
+            from cdd_RXMOP_TRX_${date} where 1=1
+            <if test="bscs !=null">
+                and BSC in
+                <foreach collection="bscs" item="bsc" index="index" open="(" close=")" separator=",">
+                    '${bsc}'
+                </foreach>
+            </if>
+            <if test="cells !=null">
+                and CELL in
+                <foreach collection="cells" item="cell" index="index" open="(" close=")" separator=",">
+                    '${cell}'
+                </foreach>
+            </if>
+        </foreach>
+    </select>
+    <select id="selectRxmopTrxByPage" parameterType="map" resultType="java.util.LinkedHashMap">
+         select top ${cnt} Date,BSC,MO,CELL,CHGR,TEI,SIG,MCTRI,SWVERREPL,SWVERDLD,SWVERACT,DCP1,DCP2
+        from (select row_number() over(order by A.Date) as rownumber,*
+              from (
+        <foreach collection="dates" item="date" index="index" separator="union all">
+            select Date,BSC,MO,CELL,CHGR,TEI,SIG,MCTRI,SWVERREPL,SWVERDLD,SWVERACT,DCP1,DCP2
+            from cdd_RXMOP_TRX_${date} where 1=1
+            <if test="bscs !=null">
+                and BSC in
+                <foreach collection="bscs" item="bsc" index="index" open="(" close=")" separator=",">
+                    '${bsc}'
+                </foreach>
+            </if>
+            <if test="cells !=null">
+                and CELL in
+                <foreach collection="cells" item="cell" index="index" open="(" close=")" separator=",">
+                    '${cell}'
+                </foreach>
+            </if>
+        </foreach>
+              ) A) B
+        where B.rownumber &gt;${startIndex}
+    </select>
+
+    <select id="selectRxmopTxCount" parameterType="map" resultType="long">
+         select count(*) from (
+        <foreach collection="dates" item="date" index="index" separator="union all">
+            select Date,BSC,MO,CELL,CHGR,BAND,ANT,MPWR from cdd_RXMOP_TX_${date} where 1=1
+            <if test="bscs !=null">
+                and BSC in
+                <foreach collection="bscs" item="bsc" index="index" open="(" close=")" separator=",">
+                    '${bsc}'
+                </foreach>
+            </if>
+            <if test="cells !=null">
+                and CELL in
+                <foreach collection="cells" item="cell" index="index" open="(" close=")" separator=",">
+                    '${cell}'
+                </foreach>
+            </if>
+        </foreach>
+        ) as BVV
+    </select>
+    <select id="selectRxmopTx" parameterType="map" resultType="java.util.LinkedHashMap">
+        <foreach collection="dates" item="date" index="index" separator="union all">
+            select Date,BSC,MO,CELL,CHGR,BAND,ANT,MPWR from cdd_RXMOP_TX_${date} where 1=1
+            <if test="bscs !=null">
+                and BSC in
+                <foreach collection="bscs" item="bsc" index="index" open="(" close=")" separator=",">
+                    '${bsc}'
+                </foreach>
+            </if>
+            <if test="cells !=null">
+                and CELL in
+                <foreach collection="cells" item="cell" index="index" open="(" close=")" separator=",">
+                    '${cell}'
+                </foreach>
+            </if>
+        </foreach>
+    </select>
+    <select id="selectRxmopTxByPage" parameterType="map" resultType="java.util.LinkedHashMap">
+         select top ${cnt} Date,BSC,MO,CELL,CHGR,BAND,ANT,MPWR
+        from (select row_number() over(order by A.Date) as rownumber,*
+              from (
+        <foreach collection="dates" item="date" index="index" separator="union all">
+            select Date,BSC,MO,CELL,CHGR,BAND,ANT,MPWR from cdd_RXMOP_TX_${date} where 1=1
+            <if test="bscs !=null">
+                and BSC in
+                <foreach collection="bscs" item="bsc" index="index" open="(" close=")" separator=",">
+                    '${bsc}'
+                </foreach>
+            </if>
+            <if test="cells !=null">
+                and CELL in
+                <foreach collection="cells" item="cell" index="index" open="(" close=")" separator=",">
+                    '${cell}'
+                </foreach>
+            </if>
+        </foreach>
+              ) A) B
+        where B.rownumber &gt;${startIndex}
+    </select>
+
+    <select id="selectRxmspMctrCount" parameterType="map" resultType="long">
+         select count(*) from (
+        <foreach collection="dates" item="date" index="index" separator="union all">
+            select Date,BSC,MO,STATE,BLSTATE from cdd_RXMSP_MCTR_${date} where 1=1
+            <if test="bscs !=null">
+                and BSC in
+                <foreach collection="bscs" item="bsc" index="index" open="(" close=")" separator=",">
+                    '${bsc}'
+                </foreach>
+            </if>
+        </foreach>
+        ) as BWW
+    </select>
+    <select id="selectRxmspMctr" parameterType="map" resultType="java.util.LinkedHashMap">
+        <foreach collection="dates" item="date" index="index" separator="union all">
+            select Date,BSC,MO,STATE,BLSTATE from cdd_RXMSP_MCTR_${date} where 1=1
+            <if test="bscs !=null">
+                and BSC in
+                <foreach collection="bscs" item="bsc" index="index" open="(" close=")" separator=",">
+                    '${bsc}'
+                </foreach>
+            </if>
+        </foreach>
+    </select>
+    <select id="selectRxmspMctrByPage" parameterType="map" resultType="java.util.LinkedHashMap">
+        select top ${cnt} Date,BSC,MO,STATE,BLSTATE
+        from (select row_number() over(order by A.Date) as rownumber,*
+        from (
+        <foreach collection="dates" item="date" index="index" separator="union all">
+            select Date,BSC,MO,STATE,BLSTATE from cdd_RXMSP_MCTR_${date} where 1=1
+            <if test="bscs !=null">
+                and BSC in
+                <foreach collection="bscs" item="bsc" index="index" open="(" close=")" separator=",">
+                    '${bsc}'
+                </foreach>
+            </if>
+        </foreach>
+        ) A) B
+        where B.rownumber &gt;${startIndex}
+    </select>
+
+    <select id="selectRxmspTgCount" parameterType="map" resultType="long">
+         select count(*) from (
+        <foreach collection="dates" item="date" index="index" separator="union all">
+            select Date,BSC,MO,STATE,BLSTATE,BLO,BLA,LMO,BTS,CONF from cdd_RXMSP_TG_${date} where 1=1
+            <if test="bscs !=null">
+                and BSC in
+                <foreach collection="bscs" item="bsc" index="index" open="(" close=")" separator=",">
+                    '${bsc}'
+                </foreach>
+            </if>
+        </foreach>
+        ) as BXX
+    </select>
+    <select id="selectRxmspTg" parameterType="map" resultType="java.util.LinkedHashMap">
+        <foreach collection="dates" item="date" index="index" separator="union all">
+            select Date,BSC,MO,STATE,BLSTATE,BLO,BLA,LMO,BTS,CONF from cdd_RXMSP_TG_${date} where 1=1
+            <if test="bscs !=null">
+                and BSC in
+                <foreach collection="bscs" item="bsc" index="index" open="(" close=")" separator=",">
+                    '${bsc}'
+                </foreach>
+            </if>
+        </foreach>
+    </select>
+    <select id="selectRxmspTgByPage" parameterType="map" resultType="java.util.LinkedHashMap">
+         select top ${cnt} Date,BSC,MO,STATE,BLSTATE,BLO,BLA,LMO,BTS,CONF
+        from (select row_number() over(order by A.Date) as rownumber,*
+              from (
+        <foreach collection="dates" item="date" index="index" separator="union all">
+            select Date,BSC,MO,STATE,BLSTATE,BLO,BLA,LMO,BTS,CONF from cdd_RXMSP_TG_${date} where 1=1
+            <if test="bscs !=null">
+                and BSC in
+                <foreach collection="bscs" item="bsc" index="index" open="(" close=")" separator=",">
+                    '${bsc}'
+                </foreach>
+            </if>
+        </foreach>
+              ) A) B
+        where B.rownumber &gt;${startIndex}
+    </select>
+
+    <select id="selectRxtcpCount" parameterType="map" resultType="long">
+         select count(*) from (
+        <foreach collection="dates" item="date" index="index" separator="union all">
+            select Date,BSC,MO,CELL,CHGR from cdd_RXTCP_${date} where 1=1
+            <if test="bscs !=null">
+                and BSC in
+                <foreach collection="bscs" item="bsc" index="index" open="(" close=")" separator=",">
+                    '${bsc}'
+                </foreach>
+            </if>
+            <if test="cells !=null">
+                and CELL in
+                <foreach collection="cells" item="cell" index="index" open="(" close=")" separator=",">
+                    '${cell}'
+                </foreach>
+            </if>
+        </foreach>
+        ) as BYY
+    </select>
+    <select id="selectRxtcp" parameterType="map" resultType="java.util.LinkedHashMap">
+        <foreach collection="dates" item="date" index="index" separator="union all">
+            select Date,BSC,MO,CELL,CHGR from cdd_RXTCP_${date} where 1=1
+            <if test="bscs !=null">
+                and BSC in
+                <foreach collection="bscs" item="bsc" index="index" open="(" close=")" separator=",">
+                    '${bsc}'
+                </foreach>
+            </if>
+            <if test="cells !=null">
+                and CELL in
+                <foreach collection="cells" item="cell" index="index" open="(" close=")" separator=",">
+                    '${cell}'
+                </foreach>
+            </if>
+        </foreach>
+    </select>
+    <select id="selectRxtcpByPage" parameterType="map" resultType="java.util.LinkedHashMap">
+         select top ${cnt} Date,BSC,MO,CELL,CHGR
+        from (select row_number() over(order by A.Date) as rownumber,*
+              from (
+        <foreach collection="dates" item="date" index="index" separator="union all">
+            select Date,BSC,MO,CELL,CHGR from cdd_RXTCP_${date} where 1=1
+            <if test="bscs !=null">
+                and BSC in
+                <foreach collection="bscs" item="bsc" index="index" open="(" close=")" separator=",">
+                    '${bsc}'
+                </foreach>
+            </if>
+            <if test="cells !=null">
+                and CELL in
+                <foreach collection="cells" item="cell" index="index" open="(" close=")" separator=",">
+                    '${cell}'
+                </foreach>
+            </if>
+        </foreach>
+              ) A) B
+        where B.rownumber &gt;${startIndex}
+    </select>
+
+</mapper>

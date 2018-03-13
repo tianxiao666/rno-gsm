@@ -1,0 +1,343 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hgicreate.rno.gsm.mapper.measure.MrrQualityMapper">
+	<select id="getQualityByCell" parameterType="map"
+		resultType="java.util.LinkedHashMap">
+		<foreach collection="date" item="date" separator="union all">
+			select 日期,
+			BSC,
+			CELL,
+			convert(decimal(18,2),100 *
+			(RxQualUL0 * ${RXQ0} +
+			RxQualUL1 * ${RXQ1} + RxQualUL2 * ${RXQ2} + RxQualUL3 *
+			${RXQ3} +
+			RxQualUL4 * ${RXQ4} + RxQualUL5 * ${RXQ5} + RxQualUL6 * ${RXQ6} +
+			RxQualUL7 *
+			${RXQ7}) /
+			(RxQualUL0 + RxQualUL1 + RxQualUL2 + RxQualUL3 +
+			RxQualUL4 +
+			RxQualUL5 + RxQualUL6 + RxQualUL7 + 0.000001)) as UL语音质量,
+			convert(decimal(18,2),100 *
+			(RxQualDL0 * ${RXQ0} + RxQualDL1 * ${RXQ1}
+			+ RxQualDL2 * ${RXQ2} + RxQualDL3 *
+			${RXQ3} +
+			RxQualDL4 * ${RXQ4} +
+			RxQualDL5 * ${RXQ5} + RxQualDL6 * ${RXQ6} + RxQualDL7 *
+			${RXQ7}) /
+			(RxQualDL0 + RxQualDL1 + RxQualDL2 + RxQualDL3 + RxQualDL4 +
+			RxQualDL5 + RxQualDL6 + RxQualDL7 + 0.000001)) as DL语音质量,
+			RxQualUL0 as
+			UL0,
+			RxQualUL1 as UL1,
+			RxQualUL2 as UL2,
+			RxQualUL3 as UL3,
+			RxQualUL4 as
+			UL4,
+			RxQualUL5 as UL5,
+			RxQualUL6 as UL6,
+			RxQualUL7 as UL7,
+			RxQualDL0 as
+			DL0,
+			RxQualDL1 as DL1,
+			RxQualDL2 as DL2,
+			RxQualDL3 as DL3,
+			RxQualDL4 as
+			DL4,
+			RxQualDL5 as DL5,
+			RxQualDL6 as DL6,
+			RxQualDL7 as DL7
+			from (select
+			日期,
+			BSC,
+			CELL,
+			sum(RxQualUL0) as RxQualUL0,
+			sum(RxQualUL1) as RxQualUL1,
+			sum(RxQualUL2) as RxQualUL2,
+			sum(RxQualUL3) as RxQualUL3,
+			sum(RxQualUL4) as RxQualUL4,
+			sum(RxQualUL5) as RxQualUL5,
+			sum(RxQualUL6) as RxQualUL6,
+			sum(RxQualUL7) as RxQualUL7,
+			sum(RxQualDL0) as RxQualDL0,
+			sum(RxQualDL1) as RxQualDL1,
+			sum(RxQualDL2) as RxQualDL2,
+			sum(RxQualDL3) as RxQualDL3,
+			sum(RxQualDL4) as RxQualDL4,
+			sum(RxQualDL5) as RxQualDL5,
+			sum(RxQualDL6) as RxQualDL6,
+			sum(RxQualDL7) as RxQualDL7
+			from
+			rno_MRR_RxQual_${date}
+			where 1=1
+			<if test="bsc!=null">
+				and BSC in
+				<foreach collection="bsc" item="bsc1" open="(" close=")"
+					separator=",">
+					'${bsc1}'
+				</foreach>
+			</if>
+			<if test="cell!=null">
+				and CELL in
+				<foreach collection="cell" item="cell1" open="(" close=")"
+					separator=",">
+					'${cell1}'
+				</foreach>
+			</if>
+			group by 日期, BSC, CELL) RxQual
+		</foreach>
+	</select>
+
+	<select id="getQualityByBsc" parameterType="map"
+		resultType="java.util.LinkedHashMap">
+		<foreach collection="date" item="date" separator="union all">
+			select 日期,
+			BSC,
+			convert(decimal(18,2),100 *
+			(RxQualUL0 * ${RXQ0} +
+			RxQualUL1 * ${RXQ1} + RxQualUL2 * ${RXQ2} + RxQualUL3 *
+			${RXQ3} +
+			RxQualUL4 * ${RXQ4} + RxQualUL5 * ${RXQ5} + RxQualUL6 * ${RXQ6} +
+			RxQualUL7 *
+			${RXQ7}) /
+			(RxQualUL0 + RxQualUL1 + RxQualUL2 + RxQualUL3 +
+			RxQualUL4 +
+			RxQualUL5 + RxQualUL6 + RxQualUL7 + 0.000001)) as UL语音质量,
+			convert(decimal(18,2),100 *
+			(RxQualDL0 * ${RXQ0} + RxQualDL1 * ${RXQ1}
+			+ RxQualDL2 * ${RXQ2} + RxQualDL3 *
+			${RXQ3} +
+			RxQualDL4 * ${RXQ4} +
+			RxQualDL5 * ${RXQ5} + RxQualDL6 * ${RXQ6} + RxQualDL7 *
+			${RXQ7}) /
+			(RxQualDL0 + RxQualDL1 + RxQualDL2 + RxQualDL3 + RxQualDL4 +
+			RxQualDL5 + RxQualDL6 + RxQualDL7 + 0.000001)) as DL语音质量,
+			RxQualUL0 as
+			UL0,
+			RxQualUL1 as UL1,
+			RxQualUL2 as UL2,
+			RxQualUL3 as UL3,
+			RxQualUL4 as
+			UL4,
+			RxQualUL5 as UL5,
+			RxQualUL6 as UL6,
+			RxQualUL7 as UL7,
+			RxQualDL0 as
+			DL0,
+			RxQualDL1 as DL1,
+			RxQualDL2 as DL2,
+			RxQualDL3 as DL3,
+			RxQualDL4 as
+			DL4,
+			RxQualDL5 as DL5,
+			RxQualDL6 as DL6,
+			RxQualDL7 as DL7
+			from (select
+			日期,
+			BSC,
+			sum(RxQualUL0) as RxQualUL0,
+			sum(RxQualUL1) as RxQualUL1,
+			sum(RxQualUL2) as RxQualUL2,
+			sum(RxQualUL3) as RxQualUL3,
+			sum(RxQualUL4) as RxQualUL4,
+			sum(RxQualUL5) as RxQualUL5,
+			sum(RxQualUL6) as RxQualUL6,
+			sum(RxQualUL7) as RxQualUL7,
+			sum(RxQualDL0) as RxQualDL0,
+			sum(RxQualDL1) as RxQualDL1,
+			sum(RxQualDL2) as RxQualDL2,
+			sum(RxQualDL3) as RxQualDL3,
+			sum(RxQualDL4) as RxQualDL4,
+			sum(RxQualDL5) as RxQualDL5,
+			sum(RxQualDL6) as RxQualDL6,
+			sum(RxQualDL7) as RxQualDL7
+			from
+			rno_MRR_RxQual_${date}
+			where 1=1
+			<if test="bsc!=null">
+				and BSC in
+				<foreach collection="bsc" item="bsc1" open="(" close=")"
+					separator=",">
+					'${bsc1}'
+				</foreach>
+			</if>
+			<if test="cell!=null">
+				and CELL in
+				<foreach collection="cell" item="cell1" open="(" close=")"
+					separator=",">
+					'${cell1}'
+				</foreach>
+			</if>
+			group by 日期, BSC) RxQual
+		</foreach>
+	</select>
+
+	<select id="getQualityByDate" parameterType="map"
+		resultType="java.util.LinkedHashMap">
+		<foreach collection="date" item="date" separator="union all">
+			select 日期,
+			convert(decimal(18,2),100 *
+			(RxQualUL0 * ${RXQ0} + RxQualUL1
+			* ${RXQ1} + RxQualUL2 * ${RXQ2} +
+			RxQualUL3 *
+			${RXQ3} +
+			RxQualUL4 *
+			${RXQ4} + RxQualUL5 * ${RXQ5} +
+			RxQualUL6 * ${RXQ6} + RxQualUL7 *
+			${RXQ7}) /
+			(RxQualUL0 + RxQualUL1 +
+			RxQualUL2 + RxQualUL3 + RxQualUL4 +
+			RxQualUL5 + RxQualUL6 + RxQualUL7
+			+ 0.000001)) as UL语音质量,
+			convert(decimal(18,2),100 *
+			(RxQualDL0 *
+			${RXQ0} + RxQualDL1 * ${RXQ1}
+			+ RxQualDL2 * ${RXQ2} + RxQualDL3 *
+			${RXQ3} +
+			RxQualDL4 * ${RXQ4} +
+			RxQualDL5 * ${RXQ5} + RxQualDL6 *
+			${RXQ6} + RxQualDL7 *
+			${RXQ7}) /
+			(RxQualDL0 + RxQualDL1 + RxQualDL2 +
+			RxQualDL3 + RxQualDL4 +
+			RxQualDL5
+			+ RxQualDL6 + RxQualDL7 + 0.000001))
+			as DL语音质量,
+			RxQualUL0 as UL0,
+			RxQualUL1 as UL1,
+			RxQualUL2 as UL2,
+			RxQualUL3 as UL3,
+			RxQualUL4 as UL4,
+			RxQualUL5 as UL5,
+			RxQualUL6 as UL6,
+			RxQualUL7 as UL7,
+			RxQualDL0 as DL0,
+			RxQualDL1 as DL1,
+			RxQualDL2 as DL2,
+			RxQualDL3 as DL3,
+			RxQualDL4 as DL4,
+			RxQualDL5 as DL5,
+			RxQualDL6 as DL6,
+			RxQualDL7 as DL7
+			from (select 日期,
+			sum(RxQualUL0) as RxQualUL0,
+			sum(RxQualUL1) as RxQualUL1,
+			sum(RxQualUL2) as RxQualUL2,
+			sum(RxQualUL3) as RxQualUL3,
+			sum(RxQualUL4) as RxQualUL4,
+			sum(RxQualUL5) as RxQualUL5,
+			sum(RxQualUL6) as RxQualUL6,
+			sum(RxQualUL7) as RxQualUL7,
+			sum(RxQualDL0) as RxQualDL0,
+			sum(RxQualDL1) as RxQualDL1,
+			sum(RxQualDL2) as RxQualDL2,
+			sum(RxQualDL3) as RxQualDL3,
+			sum(RxQualDL4) as RxQualDL4,
+			sum(RxQualDL5) as RxQualDL5,
+			sum(RxQualDL6) as RxQualDL6,
+			sum(RxQualDL7) as RxQualDL7
+			from
+			rno_MRR_RxQual_${date}
+			where 1=1
+			<if test="bsc!=null">
+				and BSC in
+				<foreach collection="bsc" item="bsc1" open="(" close=")"
+					separator=",">
+					'${bsc1}'
+				</foreach>
+			</if>
+			<if test="cell!=null">
+				and CELL in
+				<foreach collection="cell" item="cell1" open="(" close=")"
+					separator=",">
+					'${cell1}'
+				</foreach>
+			</if>
+			group by 日期) RxQual
+		</foreach>
+	</select>
+
+	<select id="getQualityByAll" parameterType="map"
+		resultType="java.util.LinkedHashMap">
+		<foreach collection="date" item="date" separator="union all">
+			select convert(decimal(18,2),100 *
+			(RxQualUL0 * ${RXQ0} + RxQualUL1 *
+			${RXQ1} + RxQualUL2 * ${RXQ2} +
+			RxQualUL3 *
+			${RXQ3} +
+			RxQualUL4 *
+			${RXQ4} + RxQualUL5 * ${RXQ5} +
+			RxQualUL6 * ${RXQ6} + RxQualUL7 *
+			${RXQ7}) /
+			(RxQualUL0 + RxQualUL1 +
+			RxQualUL2 + RxQualUL3 + RxQualUL4 +
+			RxQualUL5 + RxQualUL6 + RxQualUL7
+			+ 0.000001)) as UL语音质量,
+			convert(decimal(18,2),100 *
+			(RxQualDL0 *
+			${RXQ0} + RxQualDL1 * ${RXQ1}
+			+ RxQualDL2 * ${RXQ2} + RxQualDL3 *
+			${RXQ3} +
+			RxQualDL4 * ${RXQ4} +
+			RxQualDL5 * ${RXQ5} + RxQualDL6 *
+			${RXQ6} + RxQualDL7 *
+			${RXQ7}) /
+			(RxQualDL0 + RxQualDL1 + RxQualDL2 +
+			RxQualDL3 + RxQualDL4 +
+			RxQualDL5
+			+ RxQualDL6 + RxQualDL7 + 0.000001))
+			as DL语音质量,
+			RxQualUL0 as UL0,
+			RxQualUL1 as UL1,
+			RxQualUL2 as UL2,
+			RxQualUL3 as UL3,
+			RxQualUL4 as UL4,
+			RxQualUL5 as UL5,
+			RxQualUL6 as UL6,
+			RxQualUL7 as UL7,
+			RxQualDL0 as DL0,
+			RxQualDL1 as DL1,
+			RxQualDL2 as DL2,
+			RxQualDL3 as DL3,
+			RxQualDL4 as DL4,
+			RxQualDL5 as DL5,
+			RxQualDL6 as DL6,
+			RxQualDL7 as DL7
+			from (select sum(RxQualUL0) as RxQualUL0,
+			sum(RxQualUL1) as RxQualUL1,
+			sum(RxQualUL2) as RxQualUL2,
+			sum(RxQualUL3) as RxQualUL3,
+			sum(RxQualUL4) as RxQualUL4,
+			sum(RxQualUL5) as RxQualUL5,
+			sum(RxQualUL6) as RxQualUL6,
+			sum(RxQualUL7) as RxQualUL7,
+			sum(RxQualDL0) as RxQualDL0,
+			sum(RxQualDL1) as RxQualDL1,
+			sum(RxQualDL2) as RxQualDL2,
+			sum(RxQualDL3) as RxQualDL3,
+			sum(RxQualDL4) as RxQualDL4,
+			sum(RxQualDL5) as RxQualDL5,
+			sum(RxQualDL6) as RxQualDL6,
+			sum(RxQualDL7) as RxQualDL7
+			from rno_MRR_RxQual_${date}
+			where 1=1
+			<if test="bsc!=null">
+				and BSC in
+				<foreach collection="bsc" item="bsc1" open="(" close=")"
+					separator=",">
+					'${bsc1}'
+				</foreach>
+			</if>
+			<if test="cell!=null">
+				and CELL in
+				<foreach collection="cell" item="cell1" open="(" close=")"
+					separator=",">
+					'${cell1}'
+				</foreach>
+			</if>
+			) RxQual
+		</foreach>
+	</select>
+</mapper>

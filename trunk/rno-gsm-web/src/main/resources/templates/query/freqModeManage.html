@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="base :: common_header(~{::title},~{::link},~{::meta},~{::script})">
+    <title>频模管理</title>
+    <!--自定义-->
+    <script src="/static/js/query/freqModeManage.js" th:src="@{/js/query/freqModeManage.js}"></script>
+    <script src="/static/js/common.js" th:src="@{/js/common.js}"></script>
+    <!--link为通用方法识别标志-->
+    <link>
+</head>
+<body>
+<div id="loading" class="loading" style="display:none">加载中...</div>
+<div id="info" class="info-style" style="display:none"></div>
+<div class="bs-callout bs-callout-danger" id="callout-tables-striped-ie8">
+    <form id="freqModeForm" action="exportData" method="post">
+        <input type="hidden" id="hiddenPageSize" name="hiddenPageSize" value="25"/>
+        <input type="hidden" id="hiddenCurrentPage" name="hiddenCurrentPage" value="1"/>
+        <input type="hidden" id="hiddenTotalPageCnt" name="hiddenTotalPageCnt"/>
+        <input type="hidden" id="hiddenTotalCnt" name="hiddenTotalCnt"/>
+        <!--/*@thymesVar id="linage" type="java"*/-->
+        <input type="hidden" id="linage" name="linage" th:value="${linage}"/>
+        <table>
+            <tr>
+                <td class="td-style">
+                    <button type="button" id="searchBtn" class="btn btn-default btn-width">查询</button>
+                    <button type="button" id="exportBtn" class="btn btn-default btn-width">导出</button>
+                </td>
+            </tr>
+        </table>
+    </form>
+</div>
+<div class="bs-example form-bottom-style" data-example-id="striped-table">
+    <table id="freqModeTable" class="table table-hover"></table>
+</div>
+<nav aria-label="...">
+    <ul class="pagination page-style" style="margin-top: 0px;margin-bottom: 20px" id="freqModeDiv">
+        <li><a href="javascript:return false;" style="cursor: default">记录数：<span id="emTotalCnt">0</span> 条</a></li>
+        <li><a href="javascript:return false;" style="cursor: default">共 <span id="emTotalPageCnt">0</span> 页</a></li>
+        <li><a ondragstart="return false" href="javascript:void(0);" style="cursor: pointer"
+               onclick="showListViewByPage('first',submitCondition,'freqModeForm','freqModeDiv')">首页</a></li>
+
+        <li><a ondragstart="return false" href="javascript:void(0);" style="cursor: pointer"
+               onclick="showListViewByPage('back',submitCondition,'freqModeForm','freqModeDiv')" aria-label="Previous">
+            <span aria-hidden="true">上一页</span></a></li>
+
+        <li><a disabled="true">第 <input type="text" id="showCurrentPage" class="paging_input_text form-control"
+                                        value="0"/> 页</a></li>
+        <li><a ondragstart="return false" href="javascript:void(0);" style="cursor: pointer"
+               onclick="showListViewByPage('num',submitCondition,'freqModeForm','freqModeDiv')">GO</a></li>
+
+        <li><a ondragstart="return false" href="javascript:void(0);" style="cursor: pointer"
+               onclick="showListViewByPage('next',submitCondition,'freqModeForm','freqModeDiv')" aria-label="Next">
+            <span aria-hidden="true">下一页</span></a></li>
+
+        <li><a ondragstart="return false" href="javascript:void(0);" style="cursor: pointer"
+               onclick="showListViewByPage('last',submitCondition,'freqModeForm','freqModeDiv')">末页</a></li>
+    </ul>
+</nav>
+</body>
+</html>

@@ -1,0 +1,115 @@
+<ion-header>
+  <ion-navbar>
+    <button ion-button menuToggle>
+      <ion-icon name="menu"></ion-icon>
+    </button>
+    <ion-title>指标监控</ion-title>
+    <ion-buttons end (click)="toIndex()">
+      <button ion-button icon-only>
+        <ion-icon name="md-home">
+        </ion-icon>
+      </button>
+    </ion-buttons>
+  </ion-navbar>
+</ion-header>
+
+<ion-content class="cards-bg" >
+  <form (ngSubmit)="onSubmit()" #indicatorForm="ngForm">
+    <ion-card class="cards-list-demo">
+      <ion-card-header class="ionCardHeader">
+        查询条件
+      </ion-card-header>
+
+      <ion-list>
+        <ion-item>
+          <ion-label style="color:black">指标</ion-label>
+          <ion-select id="index" [(ngModel)]="indicator.index" name="index" #index="ngModel" interface="action-sheet">
+            <ion-option value="指标" selected>综合指标</ion-option>
+            <ion-option value="掉话">掉话</ion-option>
+            <ion-option value="ICM">ICM</ion-option>
+            <ion-option value="S掉话">S掉话</ion-option>
+            <ion-option value="SQI">SQI</ion-option>
+            <ion-option value="无线接入性">无线接入性</ion-option>
+            <ion-option value="信道完好率">信道完好率</ion-option>
+            <ion-option value="0话务">0话务</ion-option>
+            <ion-option value="0流量">0流量</ion-option>
+            <ion-option value="切出">切出</ion-option>
+            <ion-option value="切入">切入</ion-option>
+            <ion-option value="A1A2">A1A2</ion-option>
+            <ion-option value="RXMFP">RXMFP</ion-option>
+            <ion-option value="S拥塞">S拥塞</ion-option>
+            <ion-option value="TBF">TBF</ion-option>
+            <ion-option value="传输断链">传输断链</ion-option>
+            <ion-option value="倒站BCCH=0">倒站BCCH=0</ion-option>
+            <ion-option value="误码滑码">误码滑码</ion-option>
+            <ion-option value="寻呼拥塞">寻呼拥塞</ion-option>
+            <ion-option value="拥塞">拥塞</ion-option>
+            <ion-option value="质量">质量</ion-option>
+          </ion-select>
+        </ion-item>
+
+        <ion-item>
+          <ion-label style="color:black">小区</ion-label>
+          <ion-input type="text" id="cell" [(ngModel)]="indicator.cell"
+                     name="cell" #cell="ngModel" placeholder="输入CELL,逗号隔开"></ion-input>
+        </ion-item>
+
+        <ion-item>
+          <ion-label style="color:black">中文名</ion-label>
+          <ion-input type="search"  id="chinese" [(ngModel)]="indicator.chinese"
+                     name="chinese" #chinese="ngModel" placeholder="输入小区名,逗号隔开"></ion-input>
+        </ion-item>
+
+        <ion-item>
+          <ion-label style="color:black">TopX</ion-label>
+          <ion-select [(ngModel)]="indicator.topx" id="topx" name="topx" #topx="ngModel"  interface="action-sheet">
+            <ion-option value="20">20</ion-option>
+            <ion-option value="30" selected>30</ion-option>
+            <ion-option value="40">40</ion-option>
+            <ion-option value="50">50</ion-option>
+            <ion-option value="60">60</ion-option>
+            <ion-option value="ALL">ALL</ion-option>
+          </ion-select>
+        </ion-item>
+        <ion-item>
+          <ion-label style="color:black">粒度</ion-label>
+          <ion-select [(ngModel)]="indicator.sts" id="sts" name="sts" #sts="ngModel" interface="action-sheet">
+            <ion-option value="60" selected>STS60</ion-option>
+            <ion-option value="15" disabled="disabled">STS15</ion-option>
+          </ion-select>
+        </ion-item>
+        <ion-item>
+          <ion-label style="color:black">时间</ion-label>
+          <ion-select [(ngModel)]="indicator.time" id="time" name="time" #time="ngModel" interface="action-sheet">
+            <ion-option value="1" selected>最近1小时</ion-option>
+            <ion-option value="3">最近3小时</ion-option>
+            <ion-option value="6">最近6小时</ion-option>
+            <ion-option value="12">最近12小时</ion-option>
+            <ion-option value="24">最近24小时</ion-option>
+          </ion-select>
+        </ion-item>
+      </ion-list>
+    </ion-card>
+
+
+    <button ion-button type="submit" color="secondary" class="button-work" (click)="doSearch()">查询</button>
+
+    <a target="_self" href="#" ion-button color="danger" class="button-work" (click)="doExport()">提取</a>
+  </form>
+</ion-content>
+<style>
+  .cards-bg{
+    background: #efeff4;
+  }
+  .ionCardHeader{
+    color: #00f;
+  }
+  .button-work{
+    margin: 10px;
+    border-radius: 2px;
+    width: calc(100% - 20px);
+  }
+  input.text-input{
+    text-align:right
+  }
+</style>

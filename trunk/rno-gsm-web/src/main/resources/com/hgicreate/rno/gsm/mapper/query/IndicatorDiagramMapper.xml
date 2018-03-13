@@ -1,0 +1,1588 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hgicreate.rno.gsm.mapper.query.IndicatorDiagramMapper">
+    <!--网元-->
+    <select id="queryBSCEdge" parameterType="map" resultType="map">
+        select CELLQOSEG.BSC as BSC,
+                cast(sum(round((CELLQOSEG.DLTHP3EGDATA + CELLQOSEG.DLTHP2EGDATA +
+                CELLQOSEG.DLTHP1EGDATA + CELLQOSEG.DLBGEGDATA) / (8 * 1024), 2)) as decimal(15,2)) as EDGE下行流量M
+        from (select *
+                from <foreach collection="indicatordate" item="date" index="index" open="" close="" separator=",">sts_CELLQOSEG_${date}</foreach>
+                where 1 = 1
+                <if test="indicatortime!=null">
+                    and Time in
+                    <foreach collection="indicatortime" item="time" index="index" open="(" close=")" separator=",">
+                        '${time}'
+                    </foreach>
+                </if>
+                <if test="indicatorbsc!=null">
+                    and BSC in
+                    <foreach collection="indicatorbsc" item="bsc" index="index" open="(" close=")" separator=",">
+                        '${bsc}'
+                    </foreach>
+                </if> ) CELLQOSEG
+        where  CELLQOSEG.ObjectID = CELLQOSEG.ObjectID
+                and CELLQOSEG.DATE = CELLQOSEG.DATE
+                and CELLQOSEG.TIME = CELLQOSEG.TIME
+                and CELLQOSEG.BSC = CELLQOSEG.BSC
+        GROUP BY CELLQOSEG.BSC
+        order by 1
+    </select>
+    <select id="queryBSCGPRS" parameterType="map" resultType="map">
+        select CELLQOSG.BSC as BSC,
+        cast(sum(round((CELLQOSG.DLBGGDATA + CELLQOSG.DLTHP1GDATA +
+        CELLQOSG.DLTHP2GDATA + CELLQOSG.DLTHP3GDATA) / (8 * 1024), 2)) as decimal(15,2)) as GPRS下行流量M
+        from (select *
+        from <foreach collection="indicatordate" item="date" index="index" open="" close="" separator=",">sts_CELLQOSG_${date}</foreach>
+        where 1 = 1
+        <if test="indicatortime!=null">
+            and Time in
+            <foreach collection="indicatortime" item="time" index="index" open="(" close=")" separator=",">
+                '${time}'
+            </foreach>
+        </if>
+        <if test="indicatorbsc!=null">
+            and BSC in
+            <foreach collection="indicatorbsc" item="bsc" index="index" open="(" close=")" separator=",">
+                '${bsc}'
+            </foreach>
+        </if>) CELLQOSG
+        where CELLQOSG.ObjectID = CELLQOSG.ObjectID
+        and CELLQOSG.DATE = CELLQOSG.DATE
+        and CELLQOSG.TIME = CELLQOSG.TIME
+        and CELLQOSG.BSC = CELLQOSG.BSC
+        GROUP BY CELLQOSG.BSC
+        order by 1
+    </select>
+    <select id="queryBSCICM45" parameterType="map" resultType="map">
+        select IDLEUTCHF.BSC as BSC,
+        cast(sum(round(100 * (IDLEUTCHF.ITFUSIB4 + IDLEUTCHF.ITFUSIB5) /
+        (IDLEUTCHF.ITFUSIB1 + IDLEUTCHF.ITFUSIB2 +
+        IDLEUTCHF.ITFUSIB3 + IDLEUTCHF.ITFUSIB4 +
+        IDLEUTCHF.ITFUSIB5 + 0.00001),
+        2)) as decimal(15,2)) as ICM45比例
+        from (select *
+        from <foreach collection="indicatordate" item="date" index="index" open="" close="" separator=",">sts_IDLEUTCHF_${date}</foreach>
+        where 1 = 1
+        <if test="indicatortime!=null">
+            and Time in
+            <foreach collection="indicatortime" item="time" index="index" open="(" close=")" separator=",">
+                '${time}'
+            </foreach>
+        </if>
+        <if test="indicatorbsc!=null">
+            and BSC in
+            <foreach collection="indicatorbsc" item="bsc" index="index" open="(" close=")" separator=",">
+                '${bsc}'
+            </foreach>
+        </if>) IDLEUTCHF
+        where IDLEUTCHF.ObjectID = IDLEUTCHF.ObjectID
+        and IDLEUTCHF.DATE = IDLEUTCHF.DATE
+        and IDLEUTCHF.TIME = IDLEUTCHF.TIME
+        and IDLEUTCHF.BSC = IDLEUTCHF.BSC
+        GROUP BY IDLEUTCHF.BSC
+        order by 1
+    </select>
+    <select id="queryBSCSQI" parameterType="map" resultType="map">
+        select CELLSQI.BSC as BSC,
+        cast(sum(round(100 * (CELLSQI.TSQIGOOD + 0.5 * CELLSQI.TSQIACCPT) /
+        (CELLSQI.TSQIGOOD + CELLSQI.TSQIACCPT + CELLSQI.TSQIBAD +
+        0.00001),
+        2)) as decimal(15,2)) as SQI
+        from (select *
+        from <foreach collection="indicatordate" item="date" index="index" open="" close="" separator=",">sts_CELLSQI_${date}</foreach>
+        where 1 = 1
+        <if test="indicatortime!=null">
+            and Time in
+            <foreach collection="indicatortime" item="time" index="index" open="(" close=")" separator=",">
+                '${time}'
+            </foreach>
+        </if>
+        <if test="indicatorbsc!=null">
+            and BSC in
+            <foreach collection="indicatorbsc" item="bsc" index="index" open="(" close=")" separator=",">
+                '${bsc}'
+            </foreach>
+        </if>) CELLSQI
+        where CELLSQI.ObjectID = CELLSQI.ObjectID
+        and CELLSQI.DATE = CELLSQI.DATE
+        and CELLSQI.TIME = CELLSQI.TIME
+        and CELLSQI.BSC = CELLSQI.BSC
+        GROUP BY CELLSQI.BSC
+        order by 1
+    </select>
+    <select id="queryBSCS" parameterType="map" resultType="map">
+        select CLSDCCH.BSC as BSC,
+        cast(sum(round(CLSDCCH.CTRALACC / CLSDCCH.CNSCAN, 2)) as decimal(15,2)) as S话务量
+        from (select *
+        from <foreach collection="indicatordate" item="date" index="index" open="" close="" separator=",">sts_CLSDCCH_${date}</foreach>
+        where 1 = 1
+        <if test="indicatortime!=null">
+            and Time in
+            <foreach collection="indicatortime" item="time" index="index" open="(" close=")" separator=",">
+                '${time}'
+            </foreach>
+        </if>
+        <if test="indicatorbsc!=null">
+            and BSC in
+            <foreach collection="indicatorbsc" item="bsc" index="index" open="(" close=")" separator=",">
+                '${bsc}'
+            </foreach>
+        </if>) CLSDCCH
+        where CLSDCCH.ObjectID = CLSDCCH.ObjectID
+        and CLSDCCH.DATE = CLSDCCH.DATE
+        and CLSDCCH.TIME = CLSDCCH.TIME
+        and CLSDCCH.BSC = CLSDCCH.BSC
+        GROUP BY CLSDCCH.BSC
+        order by 1
+    </select>
+    <select id="queryBSCUp" parameterType="map" resultType="map">
+        select CLRXQUAL.BSC as BSC,
+        cast(sum(round((CLRXQUAL.QUAL00UL + CLRXQUAL.QUAL10UL + CLRXQUAL.QUAL20UL +
+        CLRXQUAL.QUAL30UL + CLRXQUAL.QUAL40UL + CLRXQUAL.QUAL50UL) /
+        (CLRXQUAL.QUAL00UL + CLRXQUAL.QUAL10UL + CLRXQUAL.QUAL20UL +
+        CLRXQUAL.QUAL30UL + CLRXQUAL.QUAL40UL + CLRXQUAL.QUAL50UL +
+        CLRXQUAL.QUAL60UL + CLRXQUAL.QUAL70UL + 0.00001) * 100,
+        2)) as decimal(15,2)) as 上行语音质量
+        from (select *
+        from <foreach collection="indicatordate" item="date" index="index" open="" close="" separator=",">sts_CLRXQUAL_${date}</foreach>
+        where 1 = 1
+        <if test="indicatortime!=null">
+            and Time in
+            <foreach collection="indicatortime" item="time" index="index" open="(" close=")" separator=",">
+                '${time}'
+            </foreach>
+        </if>
+        <if test="indicatorbsc!=null">
+            and BSC in
+            <foreach collection="indicatorbsc" item="bsc" index="index" open="(" close=")" separator=",">
+                '${bsc}'
+            </foreach>
+        </if>) CLRXQUAL
+        where CLRXQUAL.ObjectID = CLRXQUAL.ObjectID
+        and CLRXQUAL.DATE = CLRXQUAL.DATE
+        and CLRXQUAL.TIME = CLRXQUAL.TIME
+        and CLRXQUAL.BSC = CLRXQUAL.BSC
+        GROUP BY CLRXQUAL.BSC
+        order by 1
+    </select>
+    <select id="queryBSCAcess" parameterType="map" resultType="map">
+        select CELTCHFP.BSC as BSC,
+        cast(sum(round(100 * (CELTCHFP.TFCONGPGSM * CLTCH.TCASSALL) /
+        (((RANDOMACC.CNROCNT + RANDOMACC.RAACCFA) * CLTCH.TASSALL) +
+        0.00001),
+        2)) as decimal(15,2)) as 无线接入性
+        from (select *
+        from <foreach collection="indicatordate" item="date" index="index" open="" close="" separator=",">sts_CELTCHFP_${date}</foreach>
+        where 1 = 1
+        <if test="indicatortime!=null">
+            and Time in
+            <foreach collection="indicatortime" item="time" index="index" open="(" close=")" separator=",">
+                '${time}'
+            </foreach>
+        </if>
+        <if test="indicatorbsc!=null">
+            and BSC in
+            <foreach collection="indicatorbsc" item="bsc" index="index" open="(" close=")" separator=",">
+                '${bsc}'
+            </foreach>
+        </if>) CELTCHFP,
+        (select *
+        from <foreach collection="indicatordate" item="date" index="index" open="" close="" separator=",">sts_CLTCH_${date}</foreach>
+        where 1 = 1
+        <if test="indicatortime!=null">
+            and Time in
+            <foreach collection="indicatortime" item="time" index="index" open="(" close=")" separator=",">
+                '${time}'
+            </foreach>
+        </if>
+        <if test="indicatorbsc!=null">
+            and BSC in
+            <foreach collection="indicatorbsc" item="bsc" index="index" open="(" close=")" separator=",">
+                '${bsc}'
+            </foreach>
+        </if>) CLTCH,
+        (select *
+        from <foreach collection="indicatordate" item="date" index="index" open="" close="" separator=",">sts_RANDOMACC_${date}</foreach>
+        where 1 = 1
+        <if test="indicatortime!=null">
+            and Time in
+            <foreach collection="indicatortime" item="time" index="index" open="(" close=")" separator=",">
+                '${time}'
+            </foreach>
+        </if>
+        <if test="indicatorbsc!=null">
+            and BSC in
+            <foreach collection="indicatorbsc" item="bsc" index="index" open="(" close=")" separator=",">
+                '${bsc}'
+            </foreach>
+        </if>) RANDOMACC
+        where CELTCHFP.ObjectID = CELTCHFP.ObjectID
+        and CELTCHFP.DATE = CELTCHFP.DATE
+        and CELTCHFP.TIME = CELTCHFP.TIME
+        and CELTCHFP.BSC = CELTCHFP.BSC
+        and CELTCHFP.ObjectID = CLTCH.ObjectID
+        and CELTCHFP.DATE = CLTCH.DATE
+        and CELTCHFP.TIME = CLTCH.TIME
+        and CELTCHFP.BSC = CLTCH.BSC
+        and CELTCHFP.ObjectID = RANDOMACC.ObjectID
+        and CELTCHFP.DATE = RANDOMACC.DATE
+        and CELTCHFP.TIME = RANDOMACC.TIME
+        and CELTCHFP.BSC = RANDOMACC.BSC
+        GROUP BY CELTCHFP.BSC
+        order by 1
+    </select>
+    <select id="queryBSCDrop" parameterType="map" resultType="map">
+        select CELTCHF.BSC as BSC,
+               cast(sum(round(CELTCHF.TFNDROP + CELTCHH.THNDROP, 2)) as decimal(15,2)) as 无线总掉话
+          from (select *
+                  from <foreach collection="indicatordate" item="date" index="index" open="" close="" separator=",">sts_CELTCHF_${date}</foreach>
+                 where 1 = 1
+            <if test="indicatortime!=null">
+                and Time in
+                <foreach collection="indicatortime" item="time" index="index" open="(" close=")" separator=",">
+                    '${time}'
+                </foreach>
+            </if>
+            <if test="indicatorbsc!=null">
+                and BSC in
+                <foreach collection="indicatorbsc" item="bsc" index="index" open="(" close=")" separator=",">
+                    '${bsc}'
+                </foreach>
+            </if>) CELTCHF,
+               (select *
+                  from <foreach collection="indicatordate" item="date" index="index" open="" close="" separator=",">sts_CELTCHH_${date}</foreach>
+                 where 1 = 1
+            <if test="indicatortime!=null">
+                and Time in
+                <foreach collection="indicatortime" item="time" index="index" open="(" close=")" separator=",">
+                    '${time}'
+                </foreach>
+            </if>
+            <if test="indicatorbsc!=null">
+                and BSC in
+                <foreach collection="indicatorbsc" item="bsc" index="index" open="(" close=")" separator=",">
+                    '${bsc}'
+                </foreach>
+            </if>) CELTCHH
+         where CELTCHF.ObjectID = CELTCHF.ObjectID
+           and CELTCHF.DATE = CELTCHF.DATE
+           and CELTCHF.TIME = CELTCHF.TIME
+           and CELTCHF.BSC = CELTCHF.BSC
+           and CELTCHF.ObjectID = CELTCHH.ObjectID
+           and CELTCHF.DATE = CELTCHH.DATE
+           and CELTCHF.TIME = CELTCHH.TIME
+           and CELTCHF.BSC = CELTCHH.BSC
+         GROUP BY CELTCHF.BSC
+         order by 1
+    </select>
+    <select id="queryBSCDown" parameterType="map" resultType="map">
+        select CLRXQUAL.BSC as BSC,
+        cast(sum(round((CLRXQUAL.QUAL00DL + CLRXQUAL.QUAL10DL + CLRXQUAL.QUAL20DL +
+        CLRXQUAL.QUAL30DL + CLRXQUAL.QUAL40DL + CLRXQUAL.QUAL50DL) /
+        (CLRXQUAL.QUAL00DL + CLRXQUAL.QUAL10DL + CLRXQUAL.QUAL20DL +
+        CLRXQUAL.QUAL30DL + CLRXQUAL.QUAL40DL + CLRXQUAL.QUAL50DL +
+        CLRXQUAL.QUAL60DL + CLRXQUAL.QUAL70DL + 0.00001) * 100,
+        2)) as decimal(15,2)) as 下行语音质量
+        from (select *
+        from <foreach collection="indicatordate" item="date" index="index" open="" close="" separator=",">sts_CLRXQUAL_${date}</foreach>
+        where 1 = 1
+        <if test="indicatortime!=null">
+            and Time in
+            <foreach collection="indicatortime" item="time" index="index" open="(" close=")" separator=",">
+                '${time}'
+            </foreach>
+        </if>
+        <if test="indicatorbsc!=null">
+            and BSC in
+            <foreach collection="indicatorbsc" item="bsc" index="index" open="(" close=")" separator=",">
+                '${bsc}'
+            </foreach>
+        </if>) CLRXQUAL
+        where CLRXQUAL.ObjectID = CLRXQUAL.ObjectID
+        and CLRXQUAL.DATE = CLRXQUAL.DATE
+        and CLRXQUAL.TIME = CLRXQUAL.TIME
+        and CLRXQUAL.BSC = CLRXQUAL.BSC
+        GROUP BY CLRXQUAL.BSC
+        order by 1
+    </select>
+    <select id="queryBSCTatol" parameterType="map" resultType="map">
+        select CELTCHF.BSC as BSC,
+        cast(sum(round((CELTCHF.TFTRALACC + CELTCHH.THTRALACC) / CELTCHH.THNSCAN,
+        2)) as decimal(15,2)) as 总话务量
+        from (select *
+        from <foreach collection="indicatordate" item="date" index="index" open="" close="" separator=",">sts_CELTCHF_${date}</foreach>
+        where 1 = 1
+        <if test="indicatortime!=null">
+            and Time in
+            <foreach collection="indicatortime" item="time" index="index" open="(" close=")" separator=",">
+                '${time}'
+            </foreach>
+        </if>
+        <if test="indicatorbsc!=null">
+            and BSC in
+            <foreach collection="indicatorbsc" item="bsc" index="index" open="(" close=")" separator=",">
+                '${bsc}'
+            </foreach>
+        </if>) CELTCHF,
+        (select *
+        from <foreach collection="indicatordate" item="date" index="index" open="" close="" separator=",">sts_CELTCHH_${date}</foreach>
+        where 1 = 1
+        <if test="indicatortime!=null">
+            and Time in
+            <foreach collection="indicatortime" item="time" index="index" open="(" close=")" separator=",">
+                '${time}'
+            </foreach>
+        </if>
+        <if test="indicatorbsc!=null">
+            and BSC in
+            <foreach collection="indicatorbsc" item="bsc" index="index" open="(" close=")" separator=",">
+                '${bsc}'
+            </foreach>
+        </if>) CELTCHH
+        where CELTCHF.ObjectID = CELTCHF.ObjectID
+        and CELTCHF.DATE = CELTCHF.DATE
+        and CELTCHF.TIME = CELTCHF.TIME
+        and CELTCHF.BSC = CELTCHF.BSC
+        and CELTCHF.ObjectID = CELTCHH.ObjectID
+        and CELTCHF.DATE = CELTCHH.DATE
+        and CELTCHF.TIME = CELTCHH.TIME
+        and CELTCHF.BSC = CELTCHH.BSC
+        GROUP BY CELTCHF.BSC
+        order by 1
+    </select>
+
+    <!--小区-->
+    <select id="queryObjectIDEdge" parameterType="map" resultType="map">
+        select CELLQOSEG.ObjectID as ObjectID,
+        cast(sum(round((CELLQOSEG.DLTHP3EGDATA + CELLQOSEG.DLTHP2EGDATA +
+        CELLQOSEG.DLTHP1EGDATA + CELLQOSEG.DLBGEGDATA) /
+        (8 * 1024),
+        2)) as decimal(15,2)) as EDGE下行流量M
+        from (select *
+        from <foreach collection="indicatordate" item="date" index="index" open="" close="" separator=",">sts_CELLQOSEG_${date}</foreach>
+        where 1 = 1
+        <if test="indicatortime!=null">
+            and Time in
+            <foreach collection="indicatortime" item="time" index="index" open="(" close=")" separator=",">
+                '${time}'
+            </foreach>
+        </if>
+        <if test="indicatorbcell!=null">
+            and ObjectID in
+            <foreach collection="indicatorbcell" item="cell" index="index" open="(" close=")" separator=",">
+                '${cell}'
+            </foreach>
+        </if> ) CELLQOSEG
+        where CELLQOSEG.ObjectID = CELLQOSEG.ObjectID
+        and CELLQOSEG.DATE = CELLQOSEG.DATE
+        and CELLQOSEG.TIME = CELLQOSEG.TIME
+        and CELLQOSEG.BSC = CELLQOSEG.BSC
+        GROUP BY CELLQOSEG.ObjectID
+        order by 1
+    </select>
+    <select id="queryObjectIDGPRS" parameterType="map" resultType="map">
+        select CELLQOSG.ObjectID as ObjectID,
+        cast(sum(round((CELLQOSG.DLBGGDATA + CELLQOSG.DLTHP1GDATA +
+        CELLQOSG.DLTHP2GDATA + CELLQOSG.DLTHP3GDATA) / (8 * 1024),
+        2)) as decimal(15,2)) as GPRS下行流量M
+        from (select *
+        from <foreach collection="indicatordate" item="date" index="index" open="" close="" separator=",">sts_CELLQOSG_${date}</foreach>
+        where 1 = 1
+        <if test="indicatortime!=null">
+            and Time in
+            <foreach collection="indicatortime" item="time" index="index" open="(" close=")" separator=",">
+                '${time}'
+            </foreach>
+        </if>
+        <if test="indicatorbcell!=null">
+            and ObjectID in
+            <foreach collection="indicatorbcell" item="cell" index="index" open="(" close=")" separator=",">
+                '${cell}'
+            </foreach>
+        </if> ) CELLQOSG
+        where CELLQOSG.ObjectID = CELLQOSG.ObjectID
+        and CELLQOSG.DATE = CELLQOSG.DATE
+        and CELLQOSG.TIME = CELLQOSG.TIME
+        and CELLQOSG.BSC = CELLQOSG.BSC
+        GROUP BY CELLQOSG.ObjectID
+        order by 1
+    </select>
+    <select id="queryObjectIDICM45" parameterType="map" resultType="map">
+        select IDLEUTCHF.ObjectID as ObjectID,
+        cast(sum(round(100 * (IDLEUTCHF.ITFUSIB4 + IDLEUTCHF.ITFUSIB5) /
+        (IDLEUTCHF.ITFUSIB1 + IDLEUTCHF.ITFUSIB2 +
+        IDLEUTCHF.ITFUSIB3 + IDLEUTCHF.ITFUSIB4 +
+        IDLEUTCHF.ITFUSIB5 + 0.00001),
+        2)) as decimal(15,2)) as ICM45比例
+        from (select *
+        from <foreach collection="indicatordate" item="date" index="index" open="" close="" separator=",">sts_IDLEUTCHF_${date}</foreach>
+        where 1 = 1
+        <if test="indicatortime!=null">
+            and Time in
+            <foreach collection="indicatortime" item="time" index="index" open="(" close=")" separator=",">
+                '${time}'
+            </foreach>
+        </if>
+        <if test="indicatorbcell!=null">
+            and ObjectID in
+            <foreach collection="indicatorbcell" item="cell" index="index" open="(" close=")" separator=",">
+                '${cell}'
+            </foreach>
+        </if> ) IDLEUTCHF
+        where IDLEUTCHF.ObjectID = IDLEUTCHF.ObjectID
+        and IDLEUTCHF.DATE = IDLEUTCHF.DATE
+        and IDLEUTCHF.TIME = IDLEUTCHF.TIME
+        and IDLEUTCHF.BSC = IDLEUTCHF.BSC
+        GROUP BY IDLEUTCHF.ObjectID
+        order by 1
+    </select>
+    <select id="queryObjectIDSQI" parameterType="map" resultType="map">
+        select CELLSQI.ObjectID as ObjectID,
+        cast(sum(round(100 * (CELLSQI.TSQIGOOD + 0.5 * CELLSQI.TSQIACCPT) /
+        (CELLSQI.TSQIGOOD + CELLSQI.TSQIACCPT + CELLSQI.TSQIBAD +
+        0.00001),
+        2)) as decimal(15,2)) as SQI
+        from (select *
+        from <foreach collection="indicatordate" item="date" index="index" open="" close="" separator=",">sts_CELLSQI_${date}</foreach>
+        where 1 = 1
+        <if test="indicatortime!=null">
+            and Time in
+            <foreach collection="indicatortime" item="time" index="index" open="(" close=")" separator=",">
+                '${time}'
+            </foreach>
+        </if>
+        <if test="indicatorbcell!=null">
+            and ObjectID in
+            <foreach collection="indicatorbcell" item="cell" index="index" open="(" close=")" separator=",">
+                '${cell}'
+            </foreach>
+        </if> ) CELLSQI
+        where CELLSQI.ObjectID = CELLSQI.ObjectID
+        and CELLSQI.DATE = CELLSQI.DATE
+        and CELLSQI.TIME = CELLSQI.TIME
+        and CELLSQI.BSC = CELLSQI.BSC
+        GROUP BY CELLSQI.ObjectID
+        order by 1
+    </select>
+    <select id="queryObjectIDS" parameterType="map" resultType="map">
+        select CLSDCCH.ObjectID as ObjectID,
+        cast(sum(round(CLSDCCH.CTRALACC / CLSDCCH.CNSCAN, 2)) as decimal(15,2)) as S话务量
+        from (select *
+        from <foreach collection="indicatordate" item="date" index="index" open="" close="" separator=",">sts_CLSDCCH_${date}</foreach>
+        where 1 = 1
+        <if test="indicatortime!=null">
+            and Time in
+            <foreach collection="indicatortime" item="time" index="index" open="(" close=")" separator=",">
+                '${time}'
+            </foreach>
+        </if>
+        <if test="indicatorbcell!=null">
+            and ObjectID in
+            <foreach collection="indicatorbcell" item="cell" index="index" open="(" close=")" separator=",">
+                '${cell}'
+            </foreach>
+        </if>) CLSDCCH
+        where CLSDCCH.ObjectID = CLSDCCH.ObjectID
+        and CLSDCCH.DATE = CLSDCCH.DATE
+        and CLSDCCH.TIME = CLSDCCH.TIME
+        and CLSDCCH.BSC = CLSDCCH.BSC
+        GROUP BY CLSDCCH.ObjectID
+        order by 1
+    </select>
+    <select id="queryObjectIDUp" parameterType="map" resultType="map">
+        select CLRXQUAL.ObjectID as ObjectID,
+        cast(sum(round((CLRXQUAL.QUAL00UL + CLRXQUAL.QUAL10UL + CLRXQUAL.QUAL20UL +
+        CLRXQUAL.QUAL30UL + CLRXQUAL.QUAL40UL + CLRXQUAL.QUAL50UL) /
+        (CLRXQUAL.QUAL00UL + CLRXQUAL.QUAL10UL + CLRXQUAL.QUAL20UL +
+        CLRXQUAL.QUAL30UL + CLRXQUAL.QUAL40UL + CLRXQUAL.QUAL50UL +
+        CLRXQUAL.QUAL60UL + CLRXQUAL.QUAL70UL + 0.00001) * 100,
+        2)) as decimal(15,2)) as 上行语音质量
+        from (select *
+        from <foreach collection="indicatordate" item="date" index="index" open="" close="" separator=",">sts_CLRXQUAL_${date}</foreach>
+        where 1 = 1
+        <if test="indicatortime!=null">
+            and Time in
+            <foreach collection="indicatortime" item="time" index="index" open="(" close=")" separator=",">
+                '${time}'
+            </foreach>
+        </if>
+        <if test="indicatorbcell!=null">
+            and ObjectID in
+            <foreach collection="indicatorbcell" item="cell" index="index" open="(" close=")" separator=",">
+                '${cell}'
+            </foreach>
+        </if>) CLRXQUAL
+        where CLRXQUAL.ObjectID = CLRXQUAL.ObjectID
+        and CLRXQUAL.DATE = CLRXQUAL.DATE
+        and CLRXQUAL.TIME = CLRXQUAL.TIME
+        and CLRXQUAL.BSC = CLRXQUAL.BSC
+        GROUP BY CLRXQUAL.ObjectID
+        order by 1
+    </select>
+    <select id="queryObjectIDAcess" parameterType="map" resultType="map">
+        select CELTCHFP.ObjectID as ObjectID,
+        cast(sum(round(100 * (CELTCHFP.TFCONGPGSM * CLTCH.TCASSALL) /
+        (((RANDOMACC.CNROCNT + RANDOMACC.RAACCFA) * CLTCH.TASSALL) +
+        0.00001),
+        2)) as decimal(15,2)) as 无线接入性
+        from (select *
+        from <foreach collection="indicatordate" item="date" index="index" open="" close="" separator=",">sts_CELTCHFP_${date}</foreach>
+        where 1 = 1
+        <if test="indicatortime!=null">
+            and Time in
+            <foreach collection="indicatortime" item="time" index="index" open="(" close=")" separator=",">
+                '${time}'
+            </foreach>
+        </if>
+        <if test="indicatorbcell!=null">
+            and ObjectID in
+            <foreach collection="indicatorbcell" item="cell" index="index" open="(" close=")" separator=",">
+                '${cell}'
+            </foreach>
+        </if>) CELTCHFP,
+        (select *
+        from <foreach collection="indicatordate" item="date" index="index" open="" close="" separator=",">sts_CLTCH_${date}</foreach>
+        where 1 = 1
+        <if test="indicatortime!=null">
+            and Time in
+            <foreach collection="indicatortime" item="time" index="index" open="(" close=")" separator=",">
+                '${time}'
+            </foreach>
+        </if>
+        <if test="indicatorbcell!=null">
+            and ObjectID in
+            <foreach collection="indicatorbcell" item="cell" index="index" open="(" close=")" separator=",">
+                '${cell}'
+            </foreach>
+        </if>) CLTCH,
+        (select *
+        from <foreach collection="indicatordate" item="date" index="index" open="" close="" separator=",">sts_RANDOMACC_${date}</foreach>
+        where 1 = 1
+        <if test="indicatortime!=null">
+            and Time in
+            <foreach collection="indicatortime" item="time" index="index" open="(" close=")" separator=",">
+                '${time}'
+            </foreach>
+        </if>
+        <if test="indicatorbcell!=null">
+            and ObjectID in
+            <foreach collection="indicatorbcell" item="cell" index="index" open="(" close=")" separator=",">
+                '${cell}'
+            </foreach>
+        </if>) RANDOMACC
+        where CELTCHFP.ObjectID = CELTCHFP.ObjectID
+        and CELTCHFP.DATE = CELTCHFP.DATE
+        and CELTCHFP.TIME = CELTCHFP.TIME
+        and CELTCHFP.BSC = CELTCHFP.BSC
+        and CELTCHFP.ObjectID = CLTCH.ObjectID
+        and CELTCHFP.DATE = CLTCH.DATE
+        and CELTCHFP.TIME = CLTCH.TIME
+        and CELTCHFP.BSC = CLTCH.BSC
+        and CELTCHFP.ObjectID = RANDOMACC.ObjectID
+        and CELTCHFP.DATE = RANDOMACC.DATE
+        and CELTCHFP.TIME = RANDOMACC.TIME
+        and CELTCHFP.BSC = RANDOMACC.BSC
+        GROUP BY CELTCHFP.ObjectID
+        order by 1
+    </select>
+    <select id="queryObjectIDDrop" parameterType="map" resultType="map">
+        select CELTCHF.ObjectID as ObjectID,
+        cast(sum(round(CELTCHF.TFNDROP + CELTCHH.THNDROP, 2)) as decimal(15,2)) as 无线总掉话
+        from (select *
+        from <foreach collection="indicatordate" item="date" index="index" open="" close="" separator=",">sts_CELTCHF_${date}</foreach>
+        where 1 = 1
+        <if test="indicatortime!=null">
+            and Time in
+            <foreach collection="indicatortime" item="time" index="index" open="(" close=")" separator=",">
+                '${time}'
+            </foreach>
+        </if>
+        <if test="indicatorbcell!=null">
+            and ObjectID in
+            <foreach collection="indicatorbcell" item="cell" index="index" open="(" close=")" separator=",">
+                '${cell}'
+            </foreach>
+        </if>) CELTCHF,
+        (select *
+        from <foreach collection="indicatordate" item="date" index="index" open="" close="" separator=",">sts_CELTCHH_${date}</foreach>
+        where 1 = 1
+        <if test="indicatortime!=null">
+            and Time in
+            <foreach collection="indicatortime" item="time" index="index" open="(" close=")" separator=",">
+                '${time}'
+            </foreach>
+        </if>
+        <if test="indicatorbcell!=null">
+            and ObjectID in
+            <foreach collection="indicatorbcell" item="cell" index="index" open="(" close=")" separator=",">
+                '${cell}'
+            </foreach>
+        </if>) CELTCHH
+        where CELTCHF.ObjectID = CELTCHF.ObjectID
+        and CELTCHF.DATE = CELTCHF.DATE
+        and CELTCHF.TIME = CELTCHF.TIME
+        and CELTCHF.BSC = CELTCHF.BSC
+        and CELTCHF.ObjectID = CELTCHH.ObjectID
+        and CELTCHF.DATE = CELTCHH.DATE
+        and CELTCHF.TIME = CELTCHH.TIME
+        and CELTCHF.BSC = CELTCHH.BSC
+        GROUP BY CELTCHF.ObjectID
+        order by 1
+    </select>
+    <select id="queryObjectIDDown" parameterType="map" resultType="map">
+        select CLRXQUAL.ObjectID as ObjectID,
+        cast(sum(round((CLRXQUAL.QUAL00DL + CLRXQUAL.QUAL10DL + CLRXQUAL.QUAL20DL +
+        CLRXQUAL.QUAL30DL + CLRXQUAL.QUAL40DL + CLRXQUAL.QUAL50DL) /
+        (CLRXQUAL.QUAL00DL + CLRXQUAL.QUAL10DL + CLRXQUAL.QUAL20DL +
+        CLRXQUAL.QUAL30DL + CLRXQUAL.QUAL40DL + CLRXQUAL.QUAL50DL +
+        CLRXQUAL.QUAL60DL + CLRXQUAL.QUAL70DL + 0.00001) * 100,
+        2)) as decimal(15,2)) as 下行语音质量
+        from (select *
+        from <foreach collection="indicatordate" item="date" index="index" open="" close="" separator=",">sts_CLRXQUAL_${date}</foreach>
+        where 1 = 1
+        <if test="indicatortime!=null">
+            and Time in
+            <foreach collection="indicatortime" item="time" index="index" open="(" close=")" separator=",">
+                '${time}'
+            </foreach>
+        </if>
+        <if test="indicatorbcell!=null">
+            and ObjectID in
+            <foreach collection="indicatorbcell" item="cell" index="index" open="(" close=")" separator=",">
+                '${cell}'
+            </foreach>
+        </if>) CLRXQUAL
+        where CLRXQUAL.ObjectID = CLRXQUAL.ObjectID
+        and CLRXQUAL.DATE = CLRXQUAL.DATE
+        and CLRXQUAL.TIME = CLRXQUAL.TIME
+        and CLRXQUAL.BSC = CLRXQUAL.BSC
+        GROUP BY CLRXQUAL.ObjectID
+        order by 1
+    </select>
+    <select id="queryObjectIDTatol" parameterType="map" resultType="map">
+        select CELTCHF.ObjectID as ObjectID,
+        cast(sum(round((CELTCHF.TFTRALACC + CELTCHH.THTRALACC) / CELTCHH.THNSCAN,
+        2)) as decimal(15,2)) as 总话务量
+        from (select *
+        from <foreach collection="indicatordate" item="date" index="index" open="" close="" separator=",">sts_CELTCHF_${date}</foreach>
+        where 1 = 1
+        <if test="indicatortime!=null">
+            and Time in
+            <foreach collection="indicatortime" item="time" index="index" open="(" close=")" separator=",">
+                '${time}'
+            </foreach>
+        </if>
+        <if test="indicatorbcell!=null">
+            and ObjectID in
+            <foreach collection="indicatorbcell" item="cell" index="index" open="(" close=")" separator=",">
+                '${cell}'
+            </foreach>
+        </if>) CELTCHF,
+        (select *
+        from <foreach collection="indicatordate" item="date" index="index" open="" close="" separator=",">sts_CELTCHH_${date}</foreach>
+        where 1 = 1
+        <if test="indicatortime!=null">
+            and Time in
+            <foreach collection="indicatortime" item="time" index="index" open="(" close=")" separator=",">
+                '${time}'
+            </foreach>
+        </if>
+        <if test="indicatorbcell!=null">
+            and ObjectID in
+            <foreach collection="indicatorbcell" item="cell" index="index" open="(" close=")" separator=",">
+                '${cell}'
+            </foreach>
+        </if>) CELTCHH
+        where CELTCHF.ObjectID = CELTCHF.ObjectID
+        and CELTCHF.DATE = CELTCHF.DATE
+        and CELTCHF.TIME = CELTCHF.TIME
+        and CELTCHF.BSC = CELTCHF.BSC
+        and CELTCHF.ObjectID = CELTCHH.ObjectID
+        and CELTCHF.DATE = CELTCHH.DATE
+        and CELTCHF.TIME = CELTCHH.TIME
+        and CELTCHF.BSC = CELTCHH.BSC
+        GROUP BY CELTCHF.ObjectID
+        order by 1
+    </select>
+
+    <!--日期-->
+    <select id="queryDateEdge" parameterType="map" resultType="map">
+        select substring(CELLQOSEG.Date, 1, 8) as Date,
+        cast(sum(round((CELLQOSEG.DLTHP3EGDATA + CELLQOSEG.DLTHP2EGDATA +
+        CELLQOSEG.DLTHP1EGDATA + CELLQOSEG.DLBGEGDATA) /
+        (8 * 1024),
+        2)) as decimal(15,2)) as EDGE下行流量M
+        from (select *
+        from <foreach collection="indicatordate" item="date" index="index" open="" close="" separator=",">sts_CELLQOSEG_${date}</foreach>
+        where 1 = 1
+        <if test="indicatortime!=null">
+            and Time in
+            <foreach collection="indicatortime" item="time" index="index" open="(" close=")" separator=",">
+                '${time}'
+            </foreach>
+        </if>
+        <if test="indicatorbcell!=null">
+            and ObjectID in
+            <foreach collection="indicatorbcell" item="cell" index="index" open="(" close=")" separator=",">
+                '${cell}'
+            </foreach>
+        </if>
+        <if test="indicatorbsc!=null">
+            and BSC in
+            <foreach collection="indicatorbsc" item="bsc" index="index" open="(" close=")" separator=",">
+                '${bsc}'
+            </foreach>
+        </if>) CELLQOSEG
+        where CELLQOSEG.ObjectID = CELLQOSEG.ObjectID
+        and CELLQOSEG.DATE = CELLQOSEG.DATE
+        and CELLQOSEG.TIME = CELLQOSEG.TIME
+        and CELLQOSEG.BSC = CELLQOSEG.BSC
+        GROUP BY CELLQOSEG.Date
+        order by 1
+    </select>
+    <select id="queryDateGPRS" parameterType="map" resultType="map">
+        select substring(CELLQOSG.Date, 1, 8) as Date,
+        cast(sum(round((CELLQOSG.DLBGGDATA + CELLQOSG.DLTHP1GDATA +
+        CELLQOSG.DLTHP2GDATA + CELLQOSG.DLTHP3GDATA) / (8 * 1024),
+        2)) as decimal(15,2)) as GPRS下行流量M
+        from (select *
+        from <foreach collection="indicatordate" item="date" index="index" open="" close="" separator=",">sts_CELLQOSG_${date}</foreach>
+        where 1 = 1
+        <if test="indicatortime!=null">
+            and Time in
+            <foreach collection="indicatortime" item="time" index="index" open="(" close=")" separator=",">
+                '${time}'
+            </foreach>
+        </if>
+        <if test="indicatorbcell!=null">
+            and ObjectID in
+            <foreach collection="indicatorbcell" item="cell" index="index" open="(" close=")" separator=",">
+                '${cell}'
+            </foreach>
+        </if>
+        <if test="indicatorbsc!=null">
+            and BSC in
+            <foreach collection="indicatorbsc" item="bsc" index="index" open="(" close=")" separator=",">
+                '${bsc}'
+            </foreach>
+        </if>) CELLQOSG
+        where CELLQOSG.ObjectID = CELLQOSG.ObjectID
+        and CELLQOSG.DATE = CELLQOSG.DATE
+        and CELLQOSG.TIME = CELLQOSG.TIME
+        and CELLQOSG.BSC = CELLQOSG.BSC
+        GROUP BY CELLQOSG.Date
+        order by 1
+    </select>
+    <select id="queryDateICM45" parameterType="map" resultType="map">
+        select substring(IDLEUTCHF.Date, 1, 8) as Date,
+        cast(sum(round(100 * (IDLEUTCHF.ITFUSIB4 + IDLEUTCHF.ITFUSIB5) /
+        (IDLEUTCHF.ITFUSIB1 + IDLEUTCHF.ITFUSIB2 +
+        IDLEUTCHF.ITFUSIB3 + IDLEUTCHF.ITFUSIB4 +
+        IDLEUTCHF.ITFUSIB5 + 0.00001),
+        2)) as decimal(15,2)) as ICM45比例
+        from (select *
+        from <foreach collection="indicatordate" item="date" index="index" open="" close="" separator=",">sts_IDLEUTCHF_${date}</foreach>
+        where 1 = 1
+        <if test="indicatortime!=null">
+            and Time in
+            <foreach collection="indicatortime" item="time" index="index" open="(" close=")" separator=",">
+                '${time}'
+            </foreach>
+        </if>
+        <if test="indicatorbcell!=null">
+            and ObjectID in
+            <foreach collection="indicatorbcell" item="cell" index="index" open="(" close=")" separator=",">
+                '${cell}'
+            </foreach>
+        </if>
+        <if test="indicatorbsc!=null">
+            and BSC in
+            <foreach collection="indicatorbsc" item="bsc" index="index" open="(" close=")" separator=",">
+                '${bsc}'
+            </foreach>
+        </if>) IDLEUTCHF
+        where IDLEUTCHF.ObjectID = IDLEUTCHF.ObjectID
+        and IDLEUTCHF.DATE = IDLEUTCHF.DATE
+        and IDLEUTCHF.TIME = IDLEUTCHF.TIME
+        and IDLEUTCHF.BSC = IDLEUTCHF.BSC
+        GROUP BY IDLEUTCHF.Date
+        order by 1
+    </select>
+    <select id="queryDateSQI" parameterType="map" resultType="map">
+        select substring(CELLSQI.Date, 1, 8) as Date,
+        cast(sum(round(100 * (CELLSQI.TSQIGOOD + 0.5 * CELLSQI.TSQIACCPT) /
+        (CELLSQI.TSQIGOOD + CELLSQI.TSQIACCPT + CELLSQI.TSQIBAD +
+        0.00001),
+        2)) as decimal(15,2)) as SQI
+        from (select *
+        from <foreach collection="indicatordate" item="date" index="index" open="" close="" separator=",">sts_CELLSQI_${date}</foreach>
+        where 1 = 1
+        <if test="indicatortime!=null">
+            and Time in
+            <foreach collection="indicatortime" item="time" index="index" open="(" close=")" separator=",">
+                '${time}'
+            </foreach>
+        </if>
+        <if test="indicatorbcell!=null">
+            and ObjectID in
+            <foreach collection="indicatorbcell" item="cell" index="index" open="(" close=")" separator=",">
+                '${cell}'
+            </foreach>
+        </if>
+        <if test="indicatorbsc!=null">
+            and BSC in
+            <foreach collection="indicatorbsc" item="bsc" index="index" open="(" close=")" separator=",">
+                '${bsc}'
+            </foreach>
+        </if>) CELLSQI
+        where CELLSQI.ObjectID = CELLSQI.ObjectID
+        and CELLSQI.DATE = CELLSQI.DATE
+        and CELLSQI.TIME = CELLSQI.TIME
+        and CELLSQI.BSC = CELLSQI.BSC
+        GROUP BY CELLSQI.Date
+        order by 1
+    </select>
+    <select id="queryDateS" parameterType="map" resultType="map">
+        select substring(CLSDCCH.Date, 1, 8) as Date,
+        cast(sum(round(CLSDCCH.CTRALACC / CLSDCCH.CNSCAN, 2)) as decimal(15,2)) as S话务量
+        from (select *
+        from <foreach collection="indicatordate" item="date" index="index" open="" close="" separator=",">sts_CLSDCCH_${date}</foreach>
+        where 1 = 1
+        <if test="indicatortime!=null">
+            and Time in
+            <foreach collection="indicatortime" item="time" index="index" open="(" close=")" separator=",">
+                '${time}'
+            </foreach>
+        </if>
+        <if test="indicatorbcell!=null">
+            and ObjectID in
+            <foreach collection="indicatorbcell" item="cell" index="index" open="(" close=")" separator=",">
+                '${cell}'
+            </foreach>
+        </if>
+        <if test="indicatorbsc!=null">
+            and BSC in
+            <foreach collection="indicatorbsc" item="bsc" index="index" open="(" close=")" separator=",">
+                '${bsc}'
+            </foreach>
+        </if>) CLSDCCH
+        where CLSDCCH.ObjectID = CLSDCCH.ObjectID
+        and CLSDCCH.DATE = CLSDCCH.DATE
+        and CLSDCCH.TIME = CLSDCCH.TIME
+        and CLSDCCH.BSC = CLSDCCH.BSC
+        GROUP BY CLSDCCH.Date
+        order by 1
+    </select>
+    <select id="queryDateUp" parameterType="map" resultType="map">
+        select substring(CLRXQUAL.Date, 1, 8) as Date,
+        cast(sum(round((CLRXQUAL.QUAL00UL + CLRXQUAL.QUAL10UL + CLRXQUAL.QUAL20UL +
+        CLRXQUAL.QUAL30UL + CLRXQUAL.QUAL40UL + CLRXQUAL.QUAL50UL) /
+        (CLRXQUAL.QUAL00UL + CLRXQUAL.QUAL10UL + CLRXQUAL.QUAL20UL +
+        CLRXQUAL.QUAL30UL + CLRXQUAL.QUAL40UL + CLRXQUAL.QUAL50UL +
+        CLRXQUAL.QUAL60UL + CLRXQUAL.QUAL70UL + 0.00001) * 100,
+        2)) as decimal(15,2)) as 上行语音质量
+        from (select *
+        from <foreach collection="indicatordate" item="date" index="index" open="" close="" separator=",">sts_CLRXQUAL_${date}</foreach>
+        where 1 = 1
+        <if test="indicatortime!=null">
+            and Time in
+            <foreach collection="indicatortime" item="time" index="index" open="(" close=")" separator=",">
+                '${time}'
+            </foreach>
+        </if>
+        <if test="indicatorbcell!=null">
+            and ObjectID in
+            <foreach collection="indicatorbcell" item="cell" index="index" open="(" close=")" separator=",">
+                '${cell}'
+            </foreach>
+        </if>
+        <if test="indicatorbsc!=null">
+            and BSC in
+            <foreach collection="indicatorbsc" item="bsc" index="index" open="(" close=")" separator=",">
+                '${bsc}'
+            </foreach>
+        </if>) CLRXQUAL
+        where CLRXQUAL.ObjectID = CLRXQUAL.ObjectID
+        and CLRXQUAL.DATE = CLRXQUAL.DATE
+        and CLRXQUAL.TIME = CLRXQUAL.TIME
+        and CLRXQUAL.BSC = CLRXQUAL.BSC
+        GROUP BY CLRXQUAL.Date
+        order by 1
+    </select>
+    <select id="queryDateAcess" parameterType="map" resultType="map">
+        select substring(CELTCHFP.Date, 1, 8) as Date,
+        cast(sum(round(100 * (CELTCHFP.TFCONGPGSM * CLTCH.TCASSALL) /
+        (((RANDOMACC.CNROCNT + RANDOMACC.RAACCFA) * CLTCH.TASSALL) +
+        0.00001),
+        2)) as decimal(15,2)) as 无线接入性
+        from (select *
+        from <foreach collection="indicatordate" item="date" index="index" open="" close="" separator=",">sts_CELTCHFP_${date}</foreach>
+        where 1 = 1
+        <if test="indicatortime!=null">
+            and Time in
+            <foreach collection="indicatortime" item="time" index="index" open="(" close=")" separator=",">
+                '${time}'
+            </foreach>
+        </if>
+        <if test="indicatorbcell!=null">
+            and ObjectID in
+            <foreach collection="indicatorbcell" item="cell" index="index" open="(" close=")" separator=",">
+                '${cell}'
+            </foreach>
+        </if>
+        <if test="indicatorbsc!=null">
+            and BSC in
+            <foreach collection="indicatorbsc" item="bsc" index="index" open="(" close=")" separator=",">
+                '${bsc}'
+            </foreach>
+        </if>) CELTCHFP,
+        (select *
+        from <foreach collection="indicatordate" item="date" index="index" open="" close="" separator=",">sts_CLTCH_${date}</foreach>
+        where 1 = 1
+        <if test="indicatortime!=null">
+            and Time in
+            <foreach collection="indicatortime" item="time" index="index" open="(" close=")" separator=",">
+                '${time}'
+            </foreach>
+        </if>
+        <if test="indicatorbcell!=null">
+            and ObjectID in
+            <foreach collection="indicatorbcell" item="cell" index="index" open="(" close=")" separator=",">
+                '${cell}'
+            </foreach>
+        </if>
+        <if test="indicatorbsc!=null">
+            and BSC in
+            <foreach collection="indicatorbsc" item="bsc" index="index" open="(" close=")" separator=",">
+                '${bsc}'
+            </foreach>
+        </if>) CLTCH,
+        (select *
+        from <foreach collection="indicatordate" item="date" index="index" open="" close="" separator=",">sts_RANDOMACC_${date}</foreach>
+        where 1 = 1
+        <if test="indicatortime!=null">
+            and Time in
+            <foreach collection="indicatortime" item="time" index="index" open="(" close=")" separator=",">
+                '${time}'
+            </foreach>
+        </if>
+        <if test="indicatorbcell!=null">
+            and ObjectID in
+            <foreach collection="indicatorbcell" item="cell" index="index" open="(" close=")" separator=",">
+                '${cell}'
+            </foreach>
+        </if>
+        <if test="indicatorbsc!=null">
+            and BSC in
+            <foreach collection="indicatorbsc" item="bsc" index="index" open="(" close=")" separator=",">
+                '${bsc}'
+            </foreach>
+        </if>) RANDOMACC
+        where CELTCHFP.ObjectID = CELTCHFP.ObjectID
+        and CELTCHFP.DATE = CELTCHFP.DATE
+        and CELTCHFP.TIME = CELTCHFP.TIME
+        and CELTCHFP.BSC = CELTCHFP.BSC
+        and CELTCHFP.ObjectID = CLTCH.ObjectID
+        and CELTCHFP.DATE = CLTCH.DATE
+        and CELTCHFP.TIME = CLTCH.TIME
+        and CELTCHFP.BSC = CLTCH.BSC
+        and CELTCHFP.ObjectID = RANDOMACC.ObjectID
+        and CELTCHFP.DATE = RANDOMACC.DATE
+        and CELTCHFP.TIME = RANDOMACC.TIME
+        and CELTCHFP.BSC = RANDOMACC.BSC
+        GROUP BY CELTCHFP.Date
+        order by 1
+   </select>
+    <select id="queryDateDrop" parameterType="map" resultType="map">
+        select substring(CELTCHF.Date, 1, 8) as Date,
+          cast(sum(round(CELTCHF.TFNDROP + CELTCHH.THNDROP, 2)) as decimal(15,2)) as 无线总掉话
+          from (select *
+                  from <foreach collection="indicatordate" item="date" index="index" open="" close="" separator=",">sts_CELTCHF_${date}</foreach>
+                 where 1 = 1
+        <if test="indicatortime!=null">
+            and Time in
+            <foreach collection="indicatortime" item="time" index="index" open="(" close=")" separator=",">
+                '${time}'
+            </foreach>
+        </if>
+        <if test="indicatorbcell!=null">
+            and ObjectID in
+            <foreach collection="indicatorbcell" item="cell" index="index" open="(" close=")" separator=",">
+                '${cell}'
+            </foreach>
+        </if>
+        <if test="indicatorbsc!=null">
+            and BSC in
+            <foreach collection="indicatorbsc" item="bsc" index="index" open="(" close=")" separator=",">
+                '${bsc}'
+            </foreach>
+        </if>) CELTCHF,
+               (select *
+                  from <foreach collection="indicatordate" item="date" index="index" open="" close="" separator=",">sts_CELTCHH_${date}</foreach>
+                 where 1 = 1
+        <if test="indicatortime!=null">
+            and Time in
+            <foreach collection="indicatortime" item="time" index="index" open="(" close=")" separator=",">
+                '${time}'
+            </foreach>
+        </if>
+        <if test="indicatorbcell!=null">
+            and ObjectID in
+            <foreach collection="indicatorbcell" item="cell" index="index" open="(" close=")" separator=",">
+                '${cell}'
+            </foreach>
+        </if>
+        <if test="indicatorbsc!=null">
+            and BSC in
+            <foreach collection="indicatorbsc" item="bsc" index="index" open="(" close=")" separator=",">
+                '${bsc}'
+            </foreach>
+        </if>) CELTCHH
+         where CELTCHF.ObjectID = CELTCHF.ObjectID
+           and CELTCHF.DATE = CELTCHF.DATE
+           and CELTCHF.TIME = CELTCHF.TIME
+           and CELTCHF.BSC = CELTCHF.BSC
+           and CELTCHF.ObjectID = CELTCHH.ObjectID
+           and CELTCHF.DATE = CELTCHH.DATE
+           and CELTCHF.TIME = CELTCHH.TIME
+           and CELTCHF.BSC = CELTCHH.BSC
+         GROUP BY CELTCHF.Date
+         order by 1
+    </select>
+    <select id="queryDateDown" parameterType="map" resultType="map">
+        select substring(CLRXQUAL.Date, 1, 8) as Date,
+        cast(sum(round((CLRXQUAL.QUAL00DL + CLRXQUAL.QUAL10DL + CLRXQUAL.QUAL20DL +
+        CLRXQUAL.QUAL30DL + CLRXQUAL.QUAL40DL + CLRXQUAL.QUAL50DL) /
+        (CLRXQUAL.QUAL00DL + CLRXQUAL.QUAL10DL + CLRXQUAL.QUAL20DL +
+        CLRXQUAL.QUAL30DL + CLRXQUAL.QUAL40DL + CLRXQUAL.QUAL50DL +
+        CLRXQUAL.QUAL60DL + CLRXQUAL.QUAL70DL + 0.00001) * 100,
+        2)) as decimal(15,2)) as 下行语音质量
+        from (select *
+        from <foreach collection="indicatordate" item="date" index="index" open="" close="" separator=",">sts_CLRXQUAL_${date}</foreach>
+        where 1 = 1
+        <if test="indicatortime!=null">
+            and Time in
+            <foreach collection="indicatortime" item="time" index="index" open="(" close=")" separator=",">
+                '${time}'
+            </foreach>
+        </if>
+        <if test="indicatorbcell!=null">
+            and ObjectID in
+            <foreach collection="indicatorbcell" item="cell" index="index" open="(" close=")" separator=",">
+                '${cell}'
+            </foreach>
+        </if>
+        <if test="indicatorbsc!=null">
+            and BSC in
+            <foreach collection="indicatorbsc" item="bsc" index="index" open="(" close=")" separator=",">
+                '${bsc}'
+            </foreach>
+        </if>) CLRXQUAL
+        where CLRXQUAL.ObjectID = CLRXQUAL.ObjectID
+        and CLRXQUAL.DATE = CLRXQUAL.DATE
+        and CLRXQUAL.TIME = CLRXQUAL.TIME
+        and CLRXQUAL.BSC = CLRXQUAL.BSC
+        GROUP BY CLRXQUAL.Date
+        order by 1
+    </select>
+    <select id="queryDateTatol" parameterType="map" resultType="map">
+        select substring(CELTCHF.Date, 1, 8) as Date,
+        cast(sum(round((CELTCHF.TFTRALACC + CELTCHH.THTRALACC) / CELTCHH.THNSCAN,
+        2)) as decimal(15,2)) as 总话务量
+        from (select *
+        from <foreach collection="indicatordate" item="date" index="index" open="" close="" separator=",">sts_CELTCHF_${date}</foreach>
+        where 1 = 1
+        <if test="indicatortime!=null">
+            and Time in
+            <foreach collection="indicatortime" item="time" index="index" open="(" close=")" separator=",">
+                '${time}'
+            </foreach>
+        </if>
+        <if test="indicatorbcell!=null">
+            and ObjectID in
+            <foreach collection="indicatorbcell" item="cell" index="index" open="(" close=")" separator=",">
+                '${cell}'
+            </foreach>
+        </if>
+        <if test="indicatorbsc!=null">
+            and BSC in
+            <foreach collection="indicatorbsc" item="bsc" index="index" open="(" close=")" separator=",">
+                '${bsc}'
+            </foreach>
+        </if>) CELTCHF,
+        (select *
+        from <foreach collection="indicatordate" item="date" index="index" open="" close="" separator=",">sts_CELTCHH_${date}</foreach>
+        where 1 = 1
+        <if test="indicatortime!=null">
+            and Time in
+            <foreach collection="indicatortime" item="time" index="index" open="(" close=")" separator=",">
+                '${time}'
+            </foreach>
+        </if>
+        <if test="indicatorbcell!=null">
+            and ObjectID in
+            <foreach collection="indicatorbcell" item="cell" index="index" open="(" close=")" separator=",">
+                '${cell}'
+            </foreach>
+        </if>
+        <if test="indicatorbsc!=null">
+            and BSC in
+            <foreach collection="indicatorbsc" item="bsc" index="index" open="(" close=")" separator=",">
+                '${bsc}'
+            </foreach>
+        </if>) CELTCHH
+        where CELTCHF.ObjectID = CELTCHF.ObjectID
+        and CELTCHF.DATE = CELTCHF.DATE
+        and CELTCHF.TIME = CELTCHF.TIME
+        and CELTCHF.BSC = CELTCHF.BSC
+        and CELTCHF.ObjectID = CELTCHH.ObjectID
+        and CELTCHF.DATE = CELTCHH.DATE
+        and CELTCHF.TIME = CELTCHH.TIME
+        and CELTCHF.BSC = CELTCHH.BSC
+        GROUP BY CELTCHF.Date
+        order by 1
+    </select>
+
+    <!--时间-->
+    <select id="queryTimeEdge" parameterType="map" resultType="map">
+        select substring(CELLQOSEG.Time, 1, 2) as Time,
+        cast(sum(round((CELLQOSEG.DLTHP3EGDATA + CELLQOSEG.DLTHP2EGDATA +
+        CELLQOSEG.DLTHP1EGDATA + CELLQOSEG.DLBGEGDATA) /
+        (8 * 1024),
+        2)) as decimal(15,2)) as EDGE下行流量M
+        from (select *
+        from <foreach collection="indicatordate" item="date" index="index" open="" close="" separator=",">sts_CELLQOSEG_${date}</foreach>
+        where 1 = 1
+        <if test="indicatortime!=null">
+            and Time in
+            <foreach collection="indicatortime" item="time" index="index" open="(" close=")" separator=",">
+                '${time}'
+            </foreach>
+        </if>
+        <if test="indicatorbcell!=null">
+            and ObjectID in
+            <foreach collection="indicatorbcell" item="cell" index="index" open="(" close=")" separator=",">
+                '${cell}'
+            </foreach>
+        </if>
+        <if test="indicatorbsc!=null">
+            and BSC in
+            <foreach collection="indicatorbsc" item="bsc" index="index" open="(" close=")" separator=",">
+                '${bsc}'
+            </foreach>
+        </if>) CELLQOSEG
+        where CELLQOSEG.ObjectID = CELLQOSEG.ObjectID
+        and CELLQOSEG.DATE = CELLQOSEG.DATE
+        and CELLQOSEG.TIME = CELLQOSEG.TIME
+        and CELLQOSEG.BSC = CELLQOSEG.BSC
+        GROUP BY CELLQOSEG.Time
+        order by 1
+    </select>
+    <select id="queryTimeGPRS" parameterType="map" resultType="map">
+        select substring(CELLQOSG.Time, 1, 2) as Time,
+        cast(sum(round((CELLQOSG.DLBGGDATA + CELLQOSG.DLTHP1GDATA +
+        CELLQOSG.DLTHP2GDATA + CELLQOSG.DLTHP3GDATA) / (8 * 1024),
+        2)) as decimal(15,2)) as GPRS下行流量M
+        from (select *
+        from <foreach collection="indicatordate" item="date" index="index" open="" close="" separator=",">sts_CELLQOSG_${date}</foreach>
+        where 1 = 1
+        <if test="indicatortime!=null">
+            and Time in
+            <foreach collection="indicatortime" item="time" index="index" open="(" close=")" separator=",">
+                '${time}'
+            </foreach>
+        </if>
+        <if test="indicatorbcell!=null">
+            and ObjectID in
+            <foreach collection="indicatorbcell" item="cell" index="index" open="(" close=")" separator=",">
+                '${cell}'
+            </foreach>
+        </if>
+        <if test="indicatorbsc!=null">
+            and BSC in
+            <foreach collection="indicatorbsc" item="bsc" index="index" open="(" close=")" separator=",">
+                '${bsc}'
+            </foreach>
+        </if>) CELLQOSG
+        where CELLQOSG.ObjectID = CELLQOSG.ObjectID
+        and CELLQOSG.DATE = CELLQOSG.DATE
+        and CELLQOSG.TIME = CELLQOSG.TIME
+        and CELLQOSG.BSC = CELLQOSG.BSC
+        GROUP BY CELLQOSG.Time
+        order by 1
+    </select>
+    <select id="queryTimeICM45" parameterType="map" resultType="map">
+        select substring(IDLEUTCHF.Time, 1, 2) as Time,
+        cast(sum(round(100 * (IDLEUTCHF.ITFUSIB4 + IDLEUTCHF.ITFUSIB5) /
+        (IDLEUTCHF.ITFUSIB1 + IDLEUTCHF.ITFUSIB2 +
+        IDLEUTCHF.ITFUSIB3 + IDLEUTCHF.ITFUSIB4 +
+        IDLEUTCHF.ITFUSIB5 + 0.00001),
+        2)) as decimal(15,2)) as ICM45比例
+        from (select *
+        from <foreach collection="indicatordate" item="date" index="index" open="" close="" separator=",">sts_IDLEUTCHF_${date}</foreach>
+        where 1 = 1
+        <if test="indicatortime!=null">
+            and Time in
+            <foreach collection="indicatortime" item="time" index="index" open="(" close=")" separator=",">
+                '${time}'
+            </foreach>
+        </if>
+        <if test="indicatorbcell!=null">
+            and ObjectID in
+            <foreach collection="indicatorbcell" item="cell" index="index" open="(" close=")" separator=",">
+                '${cell}'
+            </foreach>
+        </if>
+        <if test="indicatorbsc!=null">
+            and BSC in
+            <foreach collection="indicatorbsc" item="bsc" index="index" open="(" close=")" separator=",">
+                '${bsc}'
+            </foreach>
+        </if>) IDLEUTCHF
+        where IDLEUTCHF.ObjectID = IDLEUTCHF.ObjectID
+        and IDLEUTCHF.DATE = IDLEUTCHF.DATE
+        and IDLEUTCHF.TIME = IDLEUTCHF.TIME
+        and IDLEUTCHF.BSC = IDLEUTCHF.BSC
+        GROUP BY IDLEUTCHF.Time
+        order by 1
+    </select>
+    <select id="queryTimeSQI" parameterType="map" resultType="map">
+        select substring(CELLSQI.Time, 1, 2) as Time,
+        cast(sum(round(100 * (CELLSQI.TSQIGOOD + 0.5 * CELLSQI.TSQIACCPT) /
+        (CELLSQI.TSQIGOOD + CELLSQI.TSQIACCPT + CELLSQI.TSQIBAD +
+        0.00001),
+        2)) as decimal(15,2)) as SQI
+        from (select *
+        from <foreach collection="indicatordate" item="date" index="index" open="" close="" separator=",">sts_CELLSQI_${date}</foreach>
+        where 1 = 1
+        <if test="indicatortime!=null">
+            and Time in
+            <foreach collection="indicatortime" item="time" index="index" open="(" close=")" separator=",">
+                '${time}'
+            </foreach>
+        </if>
+        <if test="indicatorbcell!=null">
+            and ObjectID in
+            <foreach collection="indicatorbcell" item="cell" index="index" open="(" close=")" separator=",">
+                '${cell}'
+            </foreach>
+        </if>
+        <if test="indicatorbsc!=null">
+            and BSC in
+            <foreach collection="indicatorbsc" item="bsc" index="index" open="(" close=")" separator=",">
+                '${bsc}'
+            </foreach>
+        </if>) CELLSQI
+        where CELLSQI.ObjectID = CELLSQI.ObjectID
+        and CELLSQI.DATE = CELLSQI.DATE
+        and CELLSQI.TIME = CELLSQI.TIME
+        and CELLSQI.BSC = CELLSQI.BSC
+        GROUP BY CELLSQI.Time
+        order by 1
+    </select>
+    <select id="queryTimeS" parameterType="map" resultType="map">
+        select substring(CLSDCCH.Time, 1, 2) as Time,
+          cast(sum(round(CLSDCCH.CTRALACC / CLSDCCH.CNSCAN, 2)) as decimal(15,2)) as S话务量
+          from (select *
+                  from <foreach collection="indicatordate" item="date" index="index" open="" close="" separator=",">sts_CLSDCCH_${date}</foreach>
+                 where 1 = 1
+        <if test="indicatortime!=null">
+            and Time in
+            <foreach collection="indicatortime" item="time" index="index" open="(" close=")" separator=",">
+                '${time}'
+            </foreach>
+        </if>
+        <if test="indicatorbcell!=null">
+            and ObjectID in
+            <foreach collection="indicatorbcell" item="cell" index="index" open="(" close=")" separator=",">
+                '${cell}'
+            </foreach>
+        </if>
+        <if test="indicatorbsc!=null">
+            and BSC in
+            <foreach collection="indicatorbsc" item="bsc" index="index" open="(" close=")" separator=",">
+                '${bsc}'
+            </foreach>
+        </if>) CLSDCCH
+         where CLSDCCH.ObjectID = CLSDCCH.ObjectID
+           and CLSDCCH.DATE = CLSDCCH.DATE
+           and CLSDCCH.TIME = CLSDCCH.TIME
+           and CLSDCCH.BSC = CLSDCCH.BSC
+         GROUP BY CLSDCCH.Time
+         order by 1
+    </select>
+    <select id="queryTimeUp" parameterType="map" resultType="map">
+        select substring(CLRXQUAL.Time, 1, 2) as Time,
+        cast(sum(round((CLRXQUAL.QUAL00UL + CLRXQUAL.QUAL10UL + CLRXQUAL.QUAL20UL +
+        CLRXQUAL.QUAL30UL + CLRXQUAL.QUAL40UL + CLRXQUAL.QUAL50UL) /
+        (CLRXQUAL.QUAL00UL + CLRXQUAL.QUAL10UL + CLRXQUAL.QUAL20UL +
+        CLRXQUAL.QUAL30UL + CLRXQUAL.QUAL40UL + CLRXQUAL.QUAL50UL +
+        CLRXQUAL.QUAL60UL + CLRXQUAL.QUAL70UL + 0.00001) * 100,
+        2)) as decimal(15,2)) as 上行语音质量
+        from (select *
+        from <foreach collection="indicatordate" item="date" index="index" open="" close="" separator=",">sts_CLRXQUAL_${date}</foreach>
+        where 1 = 1
+        <if test="indicatortime!=null">
+            and Time in
+            <foreach collection="indicatortime" item="time" index="index" open="(" close=")" separator=",">
+                '${time}'
+            </foreach>
+        </if>
+        <if test="indicatorbcell!=null">
+            and ObjectID in
+            <foreach collection="indicatorbcell" item="cell" index="index" open="(" close=")" separator=",">
+                '${cell}'
+            </foreach>
+        </if>
+        <if test="indicatorbsc!=null">
+            and BSC in
+            <foreach collection="indicatorbsc" item="bsc" index="index" open="(" close=")" separator=",">
+                '${bsc}'
+            </foreach>
+        </if>) CLRXQUAL
+        where CLRXQUAL.ObjectID = CLRXQUAL.ObjectID
+        and CLRXQUAL.DATE = CLRXQUAL.DATE
+        and CLRXQUAL.TIME = CLRXQUAL.TIME
+        and CLRXQUAL.BSC = CLRXQUAL.BSC
+        GROUP BY CLRXQUAL.Time
+        order by 1
+    </select>
+    <select id="queryTimeAcess" parameterType="map" resultType="map">
+        select substring(CELTCHFP.Time, 1, 2) as Time,
+        cast(sum(round(100 * (CELTCHFP.TFCONGPGSM * CLTCH.TCASSALL) /
+        (((RANDOMACC.CNROCNT + RANDOMACC.RAACCFA) * CLTCH.TASSALL) +
+        0.00001),
+        2)) as decimal(15,2)) as 无线接入性
+        from (select *
+        from <foreach collection="indicatordate" item="date" index="index" open="" close="" separator=",">sts_CELTCHFP_${date}</foreach>
+        where 1 = 1
+        <if test="indicatortime!=null">
+            and Time in
+            <foreach collection="indicatortime" item="time" index="index" open="(" close=")" separator=",">
+                '${time}'
+            </foreach>
+        </if>
+        <if test="indicatorbcell!=null">
+            and ObjectID in
+            <foreach collection="indicatorbcell" item="cell" index="index" open="(" close=")" separator=",">
+                '${cell}'
+            </foreach>
+        </if>
+        <if test="indicatorbsc!=null">
+            and BSC in
+            <foreach collection="indicatorbsc" item="bsc" index="index" open="(" close=")" separator=",">
+                '${bsc}'
+            </foreach>
+        </if>) CELTCHFP,
+        (select *
+        from <foreach collection="indicatordate" item="date" index="index" open="" close="" separator=",">sts_CLTCH_${date}</foreach>
+        where 1 = 1
+        <if test="indicatortime!=null">
+            and Time in
+            <foreach collection="indicatortime" item="time" index="index" open="(" close=")" separator=",">
+                '${time}'
+            </foreach>
+        </if>
+        <if test="indicatorbcell!=null">
+            and ObjectID in
+            <foreach collection="indicatorbcell" item="cell" index="index" open="(" close=")" separator=",">
+                '${cell}'
+            </foreach>
+        </if>
+        <if test="indicatorbsc!=null">
+            and BSC in
+            <foreach collection="indicatorbsc" item="bsc" index="index" open="(" close=")" separator=",">
+                '${bsc}'
+            </foreach>
+        </if>) CLTCH,
+        (select *
+        from <foreach collection="indicatordate" item="date" index="index" open="" close="" separator=",">sts_RANDOMACC_${date}</foreach>
+        where 1 = 1
+        <if test="indicatortime!=null">
+            and Time in
+            <foreach collection="indicatortime" item="time" index="index" open="(" close=")" separator=",">
+                '${time}'
+            </foreach>
+        </if>
+        <if test="indicatorbcell!=null">
+            and ObjectID in
+            <foreach collection="indicatorbcell" item="cell" index="index" open="(" close=")" separator=",">
+                '${cell}'
+            </foreach>
+        </if>
+        <if test="indicatorbsc!=null">
+            and BSC in
+            <foreach collection="indicatorbsc" item="bsc" index="index" open="(" close=")" separator=",">
+                '${bsc}'
+            </foreach>
+        </if>) RANDOMACC
+        where CELTCHFP.ObjectID = CELTCHFP.ObjectID
+        and CELTCHFP.DATE = CELTCHFP.DATE
+        and CELTCHFP.TIME = CELTCHFP.TIME
+        and CELTCHFP.BSC = CELTCHFP.BSC
+        and CELTCHFP.ObjectID = CLTCH.ObjectID
+        and CELTCHFP.DATE = CLTCH.DATE
+        and CELTCHFP.TIME = CLTCH.TIME
+        and CELTCHFP.BSC = CLTCH.BSC
+        and CELTCHFP.ObjectID = RANDOMACC.ObjectID
+        and CELTCHFP.DATE = RANDOMACC.DATE
+        and CELTCHFP.TIME = RANDOMACC.TIME
+        and CELTCHFP.BSC = RANDOMACC.BSC
+        GROUP BY CELTCHFP.Time
+        order by 1
+    </select>
+    <select id="queryTimeDrop" parameterType="map" resultType="map">
+        select substring(CELTCHF.Time, 1, 2) as Time,
+        cast(sum(round(CELTCHF.TFNDROP + CELTCHH.THNDROP, 2)) as decimal(15,2)) as 无线总掉话
+        from (select *
+        from <foreach collection="indicatordate" item="date" index="index" open="" close="" separator=",">sts_CELTCHF_${date}</foreach>
+        where 1 = 1
+        <if test="indicatortime!=null">
+            and Time in
+            <foreach collection="indicatortime" item="time" index="index" open="(" close=")" separator=",">
+                '${time}'
+            </foreach>
+        </if>
+        <if test="indicatorbcell!=null">
+            and ObjectID in
+            <foreach collection="indicatorbcell" item="cell" index="index" open="(" close=")" separator=",">
+                '${cell}'
+            </foreach>
+        </if>
+        <if test="indicatorbsc!=null">
+            and BSC in
+            <foreach collection="indicatorbsc" item="bsc" index="index" open="(" close=")" separator=",">
+                '${bsc}'
+            </foreach>
+        </if>) CELTCHF,
+        (select *
+        from <foreach collection="indicatordate" item="date" index="index" open="" close="" separator=",">sts_CELTCHH_${date}</foreach>
+        where 1 = 1
+        <if test="indicatortime!=null">
+            and Time in
+            <foreach collection="indicatortime" item="time" index="index" open="(" close=")" separator=",">
+                '${time}'
+            </foreach>
+        </if>
+        <if test="indicatorbcell!=null">
+            and ObjectID in
+            <foreach collection="indicatorbcell" item="cell" index="index" open="(" close=")" separator=",">
+                '${cell}'
+            </foreach>
+        </if>
+        <if test="indicatorbsc!=null">
+            and BSC in
+            <foreach collection="indicatorbsc" item="bsc" index="index" open="(" close=")" separator=",">
+                '${bsc}'
+            </foreach>
+        </if>) CELTCHH
+        where CELTCHF.ObjectID = CELTCHF.ObjectID
+        and CELTCHF.DATE = CELTCHF.DATE
+        and CELTCHF.TIME = CELTCHF.TIME
+        and CELTCHF.BSC = CELTCHF.BSC
+        and CELTCHF.ObjectID = CELTCHH.ObjectID
+        and CELTCHF.DATE = CELTCHH.DATE
+        and CELTCHF.TIME = CELTCHH.TIME
+        and CELTCHF.BSC = CELTCHH.BSC
+        GROUP BY CELTCHF.Time
+        order by 1
+    </select>
+    <select id="queryTimeDown" parameterType="map" resultType="map">
+        select substring(CLRXQUAL.Time, 1, 2) as Time,
+        cast(sum(round((CLRXQUAL.QUAL00DL + CLRXQUAL.QUAL10DL + CLRXQUAL.QUAL20DL +
+        CLRXQUAL.QUAL30DL + CLRXQUAL.QUAL40DL + CLRXQUAL.QUAL50DL) /
+        (CLRXQUAL.QUAL00DL + CLRXQUAL.QUAL10DL + CLRXQUAL.QUAL20DL +
+        CLRXQUAL.QUAL30DL + CLRXQUAL.QUAL40DL + CLRXQUAL.QUAL50DL +
+        CLRXQUAL.QUAL60DL + CLRXQUAL.QUAL70DL + 0.00001) * 100,
+        2)) as decimal(15,2)) as 下行语音质量
+        from (select *
+        from <foreach collection="indicatordate" item="date" index="index" open="" close="" separator=",">sts_CLRXQUAL_${date}</foreach>
+        where 1 = 1
+        <if test="indicatortime!=null">
+            and Time in
+            <foreach collection="indicatortime" item="time" index="index" open="(" close=")" separator=",">
+                '${time}'
+            </foreach>
+        </if>
+        <if test="indicatorbcell!=null">
+            and ObjectID in
+            <foreach collection="indicatorbcell" item="cell" index="index" open="(" close=")" separator=",">
+                '${cell}'
+            </foreach>
+        </if>
+        <if test="indicatorbsc!=null">
+            and BSC in
+            <foreach collection="indicatorbsc" item="bsc" index="index" open="(" close=")" separator=",">
+                '${bsc}'
+            </foreach>
+        </if>) CLRXQUAL
+        where CLRXQUAL.ObjectID = CLRXQUAL.ObjectID
+        and CLRXQUAL.DATE = CLRXQUAL.DATE
+        and CLRXQUAL.TIME = CLRXQUAL.TIME
+        and CLRXQUAL.BSC = CLRXQUAL.BSC
+        GROUP BY CLRXQUAL.Time
+        order by 1
+    </select>
+    <select id="queryTimeTatol" parameterType="map" resultType="map">
+        select substring(CELTCHF.Time, 1, 2) as Time,
+        cast(sum(round((CELTCHF.TFTRALACC + CELTCHH.THTRALACC) / CELTCHH.THNSCAN,
+        2)) as decimal(15,2)) as 总话务量
+        from (select *
+        from <foreach collection="indicatordate" item="date" index="index" open="" close="" separator=",">sts_CELTCHF_${date}</foreach>
+        where 1 = 1
+        <if test="indicatortime!=null">
+            and Time in
+            <foreach collection="indicatortime" item="time" index="index" open="(" close=")" separator=",">
+                '${time}'
+            </foreach>
+        </if>
+        <if test="indicatorbcell!=null">
+            and ObjectID in
+            <foreach collection="indicatorbcell" item="cell" index="index" open="(" close=")" separator=",">
+                '${cell}'
+            </foreach>
+        </if>
+        <if test="indicatorbsc!=null">
+            and BSC in
+            <foreach collection="indicatorbsc" item="bsc" index="index" open="(" close=")" separator=",">
+                '${bsc}'
+            </foreach>
+        </if>) CELTCHF,
+        (select *
+        from <foreach collection="indicatordate" item="date" index="index" open="" close="" separator=",">sts_CELTCHH_${date}</foreach>
+        where 1 = 1
+        <if test="indicatortime!=null">
+            and Time in
+            <foreach collection="indicatortime" item="time" index="index" open="(" close=")" separator=",">
+                '${time}'
+            </foreach>
+        </if>
+        <if test="indicatorbcell!=null">
+            and ObjectID in
+            <foreach collection="indicatorbcell" item="cell" index="index" open="(" close=")" separator=",">
+                '${cell}'
+            </foreach>
+        </if>
+        <if test="indicatorbsc!=null">
+            and BSC in
+            <foreach collection="indicatorbsc" item="bsc" index="index" open="(" close=")" separator=",">
+                '${bsc}'
+            </foreach>
+        </if>) CELTCHH
+        where CELTCHF.ObjectID = CELTCHF.ObjectID
+        and CELTCHF.DATE = CELTCHF.DATE
+        and CELTCHF.TIME = CELTCHF.TIME
+        and CELTCHF.BSC = CELTCHF.BSC
+        and CELTCHF.ObjectID = CELTCHH.ObjectID
+        and CELTCHF.DATE = CELTCHH.DATE
+        and CELTCHF.TIME = CELTCHH.TIME
+        and CELTCHF.BSC = CELTCHH.BSC
+        GROUP BY CELTCHF.Time
+        order by 1
+    </select>
+
+</mapper>

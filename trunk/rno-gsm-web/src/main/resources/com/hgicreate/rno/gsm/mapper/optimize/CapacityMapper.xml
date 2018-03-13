@@ -1,0 +1,491 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hgicreate.rno.gsm.mapper.optimize.CapacityMapper">
+    <select id="getCapacityCount" parameterType="map" resultType="map">
+        select BSC,
+        ObjectID,
+        avg(载波数) as 载波数,
+        cast(avg(语音) as decimal(15,2)) as 平均峰值语音,
+        cast(avg(数据) as decimal(15,2)) as 平均峰值数据,
+        cast(avg(峰值话务) as decimal(15,2)) as 平均峰值话务
+        from (  <foreach collection="capacitydate" item="date" index="index" open="" close="" separator="union all">
+        select Date,
+        BSC,
+        ObjectID,
+        max(载波数) as 载波数,
+        max(语音) as 语音,
+        max(数据) as 数据,
+        max(总话务) as 峰值话务
+        from (  select CELTCHf.Date,
+        CELTCHf.BSC,
+        CELTCHf.ObjectID,
+        round((8 * CLTCH.TNUCHCNT + 9 +
+        CLSDCCH.CNUCHCNT) / 64,
+        0) as 载波数,
+        ROUND((CELTCHf.TFTRALACC + CELTCHh.ThTRALACC) /
+        (CELTCHh.ThNSCAN + 0.00001),
+        2) as 语音,
+        ROUND(CELLGPRS.ALLPDCHACTACC /
+        (CELLGPRS.ALLPDCHSCAN + 0.00001),
+        2) as 数据,
+        round(((CELTCHf.TFTRALACC + CELTCHh.ThTRALACC) /
+        (CELTCHh.ThNSCAN + 0.00001)) +
+        (CELLGPRS.ALLPDCHACTACC /
+        (CELLGPRS.ALLPDCHSCAN + 0.00001)),
+        2) as 总话务
+        from   sts_CELLGPRS_${date} as CELLGPRS,
+        sts_CELTCHh_${date}  as CELTCHh,
+        sts_CELTCHf_${date}  as CELTCHf,
+        sts_CLTCH_${date}    as CLTCH,
+        sts_CLSDCCH_${date}  as CLSDCCH
+        where  CELLGPRS.Date = CELTCHh.Date
+        and CELLGPRS.Time = CELTCHh.Time
+        and CELLGPRS.BSC = CELTCHh.BSC
+        and CELLGPRS.ObjectID = CELTCHh.ObjectID
+        and CELLGPRS.Date = CELTCHf.Date
+        and CELLGPRS.Time = CELTCHf.Time
+        and CELLGPRS.BSC = CELTCHf.BSC
+        and CELLGPRS.ObjectID = CELTCHf.ObjectID
+        and CELTCHf.Date = CLSDCCH.Date
+        and CELTCHf.Time = CLSDCCH.Time
+        and CELTCHf.BSC = CLSDCCH.BSC
+        and CELTCHf.ObjectID = CLSDCCH.ObjectID
+        and CLSDCCH.Date = CLTCH.Date
+        and CLSDCCH.Time = CLTCH.Time
+        and CLSDCCH.BSC = CLTCH.BSC
+        and CLSDCCH.ObjectID = CLTCH.ObjectID
+        <if test="capacitycell!=null">
+            and CLTCH.ObjectID in
+            <foreach collection="capacitycell" item="cell" index="index" open="(" close=")" separator=",">
+                '${cell}'
+            </foreach>
+        </if>
+        <if test="capacitybsc!=null">
+            and CLTCH.BSC in
+            <foreach collection="capacitybsc" item="bsc" index="index" open="(" close=")" separator=",">
+                '${bsc}'
+            </foreach>
+        </if> ) zongHuaWu
+        group by Date, BSC, ObjectID
+    </foreach>) temp
+        group by BSC, ObjectID
+    </select>
+
+    <select id="getCapacityCaculateCount" parameterType="map" resultType="map">
+        select pingJun.BSC,
+        ObjectID as CELL,
+        pingJun.平均峰值语音,
+        pingJun.平均峰值数据,
+        pingJun.平均峰值话务,
+        pingJun.载波数,
+        chuanShu.空闲传输数
+        from (  select BSC,
+        ObjectID,
+        avg(载波数) as 载波数,
+        cast(avg(语音) as decimal(15,2)) as 平均峰值语音,
+        cast(avg(数据) as decimal(15,2)) as 平均峰值数据,
+        cast(avg(峰值话务) as decimal(15,2)) as 平均峰值话务
+        from (  <foreach collection="capacitydate" item="date" index="index" open="" close="" separator="union all">
+        select Date,
+        BSC,
+        ObjectID,
+        max(载波数) as 载波数,
+        max(语音) as 语音,
+        max(数据) as 数据,
+        max(总话务) as 峰值话务
+        from (  select CELTCHf.Date,
+        CELTCHf.BSC,
+        CELTCHf.ObjectID,
+        round((8 * CLTCH.TNUCHCNT + 9 +
+        CLSDCCH.CNUCHCNT) / 64,
+        0) as 载波数,
+        ROUND((CELTCHf.TFTRALACC + CELTCHh.ThTRALACC) /
+        (CELTCHh.ThNSCAN + 0.00001),
+        2) as 语音,
+        ROUND(CELLGPRS.ALLPDCHACTACC /
+        (CELLGPRS.ALLPDCHSCAN + 0.00001),
+        2) as 数据,
+        round(((CELTCHf.TFTRALACC + CELTCHh.ThTRALACC) /
+        (CELTCHh.ThNSCAN + 0.00001)) +
+        (CELLGPRS.ALLPDCHACTACC /
+        (CELLGPRS.ALLPDCHSCAN + 0.00001)),
+        2) as 总话务
+        from   sts_CELLGPRS_${date} as CELLGPRS,
+        sts_CELTCHh_${date}  as CELTCHh,
+        sts_CELTCHf_${date}  as CELTCHf,
+        sts_CLTCH_${date}    as CLTCH,
+        sts_CLSDCCH_${date}  as CLSDCCH
+        where  CELLGPRS.Date = CELTCHh.Date
+        and CELLGPRS.Time = CELTCHh.Time
+        and CELLGPRS.BSC = CELTCHh.BSC
+        and CELLGPRS.ObjectID = CELTCHh.ObjectID
+        and CELLGPRS.Date = CELTCHf.Date
+        and CELLGPRS.Time = CELTCHf.Time
+        and CELLGPRS.BSC = CELTCHf.BSC
+        and CELLGPRS.ObjectID = CELTCHf.ObjectID
+        and CELTCHf.Date = CLSDCCH.Date
+        and CELTCHf.Time = CLSDCCH.Time
+        and CELTCHf.BSC = CLSDCCH.BSC
+        and CELTCHf.ObjectID = CLSDCCH.ObjectID
+        and CLSDCCH.Date = CLTCH.Date
+        and CLSDCCH.Time = CLTCH.Time
+        and CLSDCCH.BSC = CLTCH.BSC
+        and CLSDCCH.ObjectID = CLTCH.ObjectID
+        <if test="capacitycell!=null">
+            and CLTCH.ObjectID in
+            <foreach collection="capacitycell" item="cell" index="index" open="(" close=")" separator=",">
+                '${cell}'
+            </foreach>
+        </if>
+        <if test="capacitybsc!=null">
+            and CLTCH.BSC in
+            <foreach collection="capacitybsc" item="bsc" index="index" open="(" close=")" separator=",">
+                '${bsc}'
+            </foreach>
+        </if> ) zongHuaWu
+        group by Date, BSC, ObjectID
+    </foreach>) temp
+        group by BSC, ObjectID) pingJun,
+        (<foreach collection="capacitysqldate" item="date" index="index" open="" close="" separator="union all">
+        select cdd_RXAPP.BSC, RXTCP.CELL, count(cdd_RXAPP.DCP) as 空闲传输数
+        from cdd_RXAPP_${date} as cdd_RXAPP,
+        ( select Distinct cdd_RXTCP.CELL, cdd_RXTCP.BSC, cdd_RXTCP.MO
+        from  cdd_RXTCP_${date} as cdd_RXTCP) RXTCP
+        where  cdd_RXAPP.BSC = RXTCP.BSC
+        and cdd_RXAPP.MO = RXTCP.MO
+        and cdd_RXAPP.APUSAGE = 'UNDEF'
+        and cdd_RXAPP.APSTATE = 'IDLE'
+        GROUP BY cdd_RXAPP.BSC, RXTCP.CELL </foreach>) chuanShu
+        where pingJun.BSC = chuanShu.BSC
+        and pingJun.ObjectID = chuanShu.cell
+    </select>
+
+    <select id="queryCapacityByPage" parameterType="map" resultType="map">
+        select top ${cnt} * from(
+        select row_number() over(order by A.BSC,A.CELL ASC) as rownumber,* from(
+        select BSC,
+        ObjectID as CELL,
+        avg(载波数) as 载波数,
+        cast(avg(语音) as decimal(15,2)) as 平均峰值语音,
+        cast(avg(数据) as decimal(15,2)) as 平均峰值数据,
+        cast(avg(峰值话务) as decimal(15,2)) as 平均峰值话务
+        from (  <foreach collection="capacitydate" item="date" index="index" open="" close="" separator="union all">
+        select Date,
+        BSC,
+        ObjectID,
+        max(载波数) as 载波数,
+        max(语音) as 语音,
+        max(数据) as 数据,
+        max(总话务) as 峰值话务
+        from (  select CELTCHf.Date,
+        CELTCHf.BSC,
+        CELTCHf.ObjectID,
+        round((8 * CLTCH.TNUCHCNT + 9 +
+        CLSDCCH.CNUCHCNT) / 64,
+        0) as 载波数,
+        ROUND((CELTCHf.TFTRALACC + CELTCHh.ThTRALACC) /
+        (CELTCHh.ThNSCAN + 0.00001),
+        2) as 语音,
+        ROUND(CELLGPRS.ALLPDCHACTACC /
+        (CELLGPRS.ALLPDCHSCAN + 0.00001),
+        2) as 数据,
+        round(((CELTCHf.TFTRALACC + CELTCHh.ThTRALACC) /
+        (CELTCHh.ThNSCAN + 0.00001)) +
+        (CELLGPRS.ALLPDCHACTACC /
+        (CELLGPRS.ALLPDCHSCAN + 0.00001)),
+        2) as 总话务
+        from   sts_CELLGPRS_${date} as CELLGPRS,
+        sts_CELTCHh_${date}  as CELTCHh,
+        sts_CELTCHf_${date}  as CELTCHf,
+        sts_CLTCH_${date}    as CLTCH,
+        sts_CLSDCCH_${date}  as CLSDCCH
+        where  CELLGPRS.Date = CELTCHh.Date
+        and CELLGPRS.Time = CELTCHh.Time
+        and CELLGPRS.BSC = CELTCHh.BSC
+        and CELLGPRS.ObjectID = CELTCHh.ObjectID
+        and CELLGPRS.Date = CELTCHf.Date
+        and CELLGPRS.Time = CELTCHf.Time
+        and CELLGPRS.BSC = CELTCHf.BSC
+        and CELLGPRS.ObjectID = CELTCHf.ObjectID
+        and CELTCHf.Date = CLSDCCH.Date
+        and CELTCHf.Time = CLSDCCH.Time
+        and CELTCHf.BSC = CLSDCCH.BSC
+        and CELTCHf.ObjectID = CLSDCCH.ObjectID
+        and CLSDCCH.Date = CLTCH.Date
+        and CLSDCCH.Time = CLTCH.Time
+        and CLSDCCH.BSC = CLTCH.BSC
+        and CLSDCCH.ObjectID = CLTCH.ObjectID
+        <if test="capacitycell!=null">
+            and CLTCH.ObjectID in
+            <foreach collection="capacitycell" item="cell" index="index" open="(" close=")" separator=",">
+                '${cell}'
+            </foreach>
+        </if>
+        <if test="capacitybsc!=null">
+            and CLTCH.BSC in
+            <foreach collection="capacitybsc" item="bsc" index="index" open="(" close=")" separator=",">
+                '${bsc}'
+            </foreach>
+        </if> ) zongHuaWu
+        group by Date, BSC, ObjectID
+    </foreach>) temp
+        group by BSC, ObjectID
+        )A)B where B.rownumber &gt; ${startIndex}
+    </select>
+    
+    <select id="queryCaculateCapacityByPage" parameterType="map" resultType="map">
+		select top ${cnt} * from(
+		select row_number() over(order by A.BSC,A.CELL ASC) as rownumber,* from(
+        select pingJun.BSC,
+        ObjectID as CELL,
+        pingJun.平均峰值语音,
+        pingJun.平均峰值数据,
+        pingJun.平均峰值话务,
+        pingJun.载波数,
+        chuanShu.空闲传输数
+        from (  select BSC,
+        ObjectID,
+        avg(载波数) as 载波数,
+        cast(avg(语音) as decimal(15,2)) as 平均峰值语音,
+        cast(avg(数据) as decimal(15,2)) as 平均峰值数据,
+        cast(avg(峰值话务) as decimal(15,2)) as 平均峰值话务
+        from (  <foreach collection="capacitydate" item="date" index="index" open="" close="" separator="union all">
+        select Date,
+        BSC,
+        ObjectID,
+        max(载波数) as 载波数,
+        max(语音) as 语音,
+        max(数据) as 数据,
+        max(总话务) as 峰值话务
+        from (  select CELTCHf.Date,
+        CELTCHf.BSC,
+        CELTCHf.ObjectID,
+        round((8 * CLTCH.TNUCHCNT + 9 +
+        CLSDCCH.CNUCHCNT) / 64,
+        0) as 载波数,
+        ROUND((CELTCHf.TFTRALACC + CELTCHh.ThTRALACC) /
+        (CELTCHh.ThNSCAN + 0.00001),
+        2) as 语音,
+        ROUND(CELLGPRS.ALLPDCHACTACC /
+        (CELLGPRS.ALLPDCHSCAN + 0.00001),
+        2) as 数据,
+        round(((CELTCHf.TFTRALACC + CELTCHh.ThTRALACC) /
+        (CELTCHh.ThNSCAN + 0.00001)) +
+        (CELLGPRS.ALLPDCHACTACC /
+        (CELLGPRS.ALLPDCHSCAN + 0.00001)),
+        2) as 总话务
+        from   sts_CELLGPRS_${date} as CELLGPRS,
+        sts_CELTCHh_${date}  as CELTCHh,
+        sts_CELTCHf_${date}  as CELTCHf,
+        sts_CLTCH_${date}    as CLTCH,
+        sts_CLSDCCH_${date}  as CLSDCCH
+        where  CELLGPRS.Date = CELTCHh.Date
+        and CELLGPRS.Time = CELTCHh.Time
+        and CELLGPRS.BSC = CELTCHh.BSC
+        and CELLGPRS.ObjectID = CELTCHh.ObjectID
+        and CELLGPRS.Date = CELTCHf.Date
+        and CELLGPRS.Time = CELTCHf.Time
+        and CELLGPRS.BSC = CELTCHf.BSC
+        and CELLGPRS.ObjectID = CELTCHf.ObjectID
+        and CELTCHf.Date = CLSDCCH.Date
+        and CELTCHf.Time = CLSDCCH.Time
+        and CELTCHf.BSC = CLSDCCH.BSC
+        and CELTCHf.ObjectID = CLSDCCH.ObjectID
+        and CLSDCCH.Date = CLTCH.Date
+        and CLSDCCH.Time = CLTCH.Time
+        and CLSDCCH.BSC = CLTCH.BSC
+        and CLSDCCH.ObjectID = CLTCH.ObjectID
+        <if test="capacitycell!=null">
+            and CLTCH.ObjectID in
+            <foreach collection="capacitycell" item="cell" index="index" open="(" close=")" separator=",">
+                '${cell}'
+            </foreach>
+        </if>
+        <if test="capacitybsc!=null">
+            and CLTCH.BSC in
+            <foreach collection="capacitybsc" item="bsc" index="index" open="(" close=")" separator=",">
+                '${bsc}'
+            </foreach>
+        </if> ) zongHuaWu
+        group by Date, BSC, ObjectID
+    </foreach>) temp
+        group by BSC, ObjectID) pingJun,
+        (<foreach collection="capacitysqldate" item="date" index="index" open="" close="" separator="union all">
+        select cdd_RXAPP.BSC, RXTCP.CELL, count(cdd_RXAPP.DCP) as 空闲传输数
+        from cdd_RXAPP_${date} as cdd_RXAPP,
+        ( select Distinct cdd_RXTCP.CELL, cdd_RXTCP.BSC, cdd_RXTCP.MO
+        from  cdd_RXTCP_${date} as cdd_RXTCP) RXTCP
+        where  cdd_RXAPP.BSC = RXTCP.BSC
+        and cdd_RXAPP.MO = RXTCP.MO
+        and cdd_RXAPP.APUSAGE = 'UNDEF'
+        and cdd_RXAPP.APSTATE = 'IDLE'
+        GROUP BY cdd_RXAPP.BSC, RXTCP.CELL </foreach>) chuanShu
+        where pingJun.BSC = chuanShu.BSC
+        and pingJun.ObjectID = chuanShu.cell
+		 )A)B where B.rownumber &gt; ${startIndex}
+    </select>
+
+	<select id="exportCaculateCapacity" parameterType="map" resultType="map">
+        select pingJun.BSC,
+                ObjectID as CELL,
+                pingJun.平均峰值语音,
+                pingJun.平均峰值数据,
+                pingJun.平均峰值话务,
+                pingJun.载波数,
+                chuanShu.空闲传输数
+        from (  select BSC,
+                        ObjectID,
+                        cast(avg(载波数) as decimal(15,0)) as 载波数,
+                        cast(avg(语音) as decimal(15,2)) as 平均峰值语音,
+                        cast(avg(数据) as decimal(15,2)) as 平均峰值数据,
+                        cast(avg(峰值话务) as decimal(15,2)) as 平均峰值话务
+                from (  <foreach collection="capacitydate" item="date" index="index" open="" close="" separator="union all">
+                        select Date,
+                                BSC,
+                                ObjectID,
+                                max(载波数) as 载波数,
+                                max(语音) as 语音,
+                                max(数据) as 数据,
+                                max(总话务) as 峰值话务
+                        from (  select CELTCHf.Date,
+                                        CELTCHf.BSC,
+                                        CELTCHf.ObjectID,
+                                        round((8 * CLTCH.TNUCHCNT + 9 +
+                                        CLSDCCH.CNUCHCNT) / 64,
+                                        0) as 载波数,
+                                        ROUND((CELTCHf.TFTRALACC + CELTCHh.ThTRALACC) /
+                                        (CELTCHh.ThNSCAN + 0.00001),
+                                        2) as 语音,
+                                        ROUND(CELLGPRS.ALLPDCHACTACC /
+                                        (CELLGPRS.ALLPDCHSCAN + 0.00001),
+                                        2) as 数据,
+                                        round(((CELTCHf.TFTRALACC + CELTCHh.ThTRALACC) /
+                                        (CELTCHh.ThNSCAN + 0.00001)) +
+                                        (CELLGPRS.ALLPDCHACTACC /
+                                        (CELLGPRS.ALLPDCHSCAN + 0.00001)),
+                                        2) as 总话务
+                                from   sts_CELLGPRS_${date} as CELLGPRS,
+                                        sts_CELTCHh_${date}  as CELTCHh,
+                                        sts_CELTCHf_${date}  as CELTCHf,
+                                        sts_CLTCH_${date}    as CLTCH,
+                                        sts_CLSDCCH_${date}  as CLSDCCH
+                                where  CELLGPRS.Date = CELTCHh.Date
+                                        and CELLGPRS.Time = CELTCHh.Time
+                                        and CELLGPRS.BSC = CELTCHh.BSC
+                                        and CELLGPRS.ObjectID = CELTCHh.ObjectID
+                                        and CELLGPRS.Date = CELTCHf.Date
+                                        and CELLGPRS.Time = CELTCHf.Time
+                                        and CELLGPRS.BSC = CELTCHf.BSC
+                                        and CELLGPRS.ObjectID = CELTCHf.ObjectID
+                                        and CELTCHf.Date = CLSDCCH.Date
+                                        and CELTCHf.Time = CLSDCCH.Time
+                                        and CELTCHf.BSC = CLSDCCH.BSC
+                                        and CELTCHf.ObjectID = CLSDCCH.ObjectID
+                                        and CLSDCCH.Date = CLTCH.Date
+                                        and CLSDCCH.Time = CLTCH.Time
+                                        and CLSDCCH.BSC = CLTCH.BSC
+                                        and CLSDCCH.ObjectID = CLTCH.ObjectID
+                                    <if test="capacitycell!=null">
+                                        and CLTCH.ObjectID in
+                                        <foreach collection="capacitycell" item="cell" index="index" open="(" close=")" separator=",">
+                                            '${cell}'
+                                        </foreach>
+                                    </if>
+                                    <if test="capacitybsc!=null">
+                                        and CLTCH.BSC in
+                                        <foreach collection="capacitybsc" item="bsc" index="index" open="(" close=")" separator=",">
+                                            '${bsc}'
+                                        </foreach>
+                                    </if> ) zongHuaWu
+                                group by Date, BSC, ObjectID
+              </foreach>) temp
+                group by BSC, ObjectID) pingJun,
+        (<foreach collection="capacitysqldate" item="date" index="index" open="" close="" separator="union all">
+        select cdd_RXAPP.BSC, RXTCP.CELL, count(cdd_RXAPP.DCP) as 空闲传输数
+           from cdd_RXAPP_${date} as cdd_RXAPP,
+                ( select Distinct cdd_RXTCP.CELL, cdd_RXTCP.BSC, cdd_RXTCP.MO
+                    from  cdd_RXTCP_${date} as cdd_RXTCP) RXTCP
+                    where  cdd_RXAPP.BSC = RXTCP.BSC
+                            and cdd_RXAPP.MO = RXTCP.MO
+                            and cdd_RXAPP.APUSAGE = 'UNDEF'
+                            and cdd_RXAPP.APSTATE = 'IDLE'
+                    GROUP BY cdd_RXAPP.BSC, RXTCP.CELL </foreach>) chuanShu
+        where pingJun.BSC = chuanShu.BSC
+              and pingJun.ObjectID = chuanShu.cell
+        order by pingJun.BSC,pingJun.ObjectID ASC
+	</select>
+
+    <select id="exportCapacity" parameterType="map" resultType="map">
+        select BSC,
+        ObjectID as CELL,
+        cast(avg(载波数) as decimal(15,0)) as 载波数,
+        cast(avg(语音) as decimal(15,2)) as 平均峰值语音,
+        cast(avg(数据) as decimal(15,2)) as 平均峰值数据,
+        cast(avg(峰值话务) as decimal(15,2)) as 平均峰值话务
+        from (  <foreach collection="capacitydate" item="date" index="index" open="" close="" separator="union all">
+        select Date,
+        BSC,
+        ObjectID,
+        max(载波数) as 载波数,
+        max(语音) as 语音,
+        max(数据) as 数据,
+        max(总话务) as 峰值话务
+        from (  select CELTCHf.Date,
+        CELTCHf.BSC,
+        CELTCHf.ObjectID,
+        round((8 * CLTCH.TNUCHCNT + 9 +
+        CLSDCCH.CNUCHCNT) / 64,
+        0) as 载波数,
+        ROUND((CELTCHf.TFTRALACC + CELTCHh.ThTRALACC) /
+        (CELTCHh.ThNSCAN + 0.00001),
+        2) as 语音,
+        ROUND(CELLGPRS.ALLPDCHACTACC /
+        (CELLGPRS.ALLPDCHSCAN + 0.00001),
+        2) as 数据,
+        round(((CELTCHf.TFTRALACC + CELTCHh.ThTRALACC) /
+        (CELTCHh.ThNSCAN + 0.00001)) +
+        (CELLGPRS.ALLPDCHACTACC /
+        (CELLGPRS.ALLPDCHSCAN + 0.00001)),
+        2) as 总话务
+        from   sts_CELLGPRS_${date} as CELLGPRS,
+        sts_CELTCHh_${date}  as CELTCHh,
+        sts_CELTCHf_${date}  as CELTCHf,
+        sts_CLTCH_${date}    as CLTCH,
+        sts_CLSDCCH_${date}  as CLSDCCH
+        where  CELLGPRS.Date = CELTCHh.Date
+        and CELLGPRS.Time = CELTCHh.Time
+        and CELLGPRS.BSC = CELTCHh.BSC
+        and CELLGPRS.ObjectID = CELTCHh.ObjectID
+        and CELLGPRS.Date = CELTCHf.Date
+        and CELLGPRS.Time = CELTCHf.Time
+        and CELLGPRS.BSC = CELTCHf.BSC
+        and CELLGPRS.ObjectID = CELTCHf.ObjectID
+        and CELTCHf.Date = CLSDCCH.Date
+        and CELTCHf.Time = CLSDCCH.Time
+        and CELTCHf.BSC = CLSDCCH.BSC
+        and CELTCHf.ObjectID = CLSDCCH.ObjectID
+        and CLSDCCH.Date = CLTCH.Date
+        and CLSDCCH.Time = CLTCH.Time
+        and CLSDCCH.BSC = CLTCH.BSC
+        and CLSDCCH.ObjectID = CLTCH.ObjectID
+        <if test="capacitycell!=null">
+            and CLTCH.ObjectID in
+            <foreach collection="capacitycell" item="cell" index="index" open="(" close=")" separator=",">
+                '${cell}'
+            </foreach>
+        </if>
+        <if test="capacitybsc!=null">
+            and CLTCH.BSC in
+            <foreach collection="capacitybsc" item="bsc" index="index" open="(" close=")" separator=",">
+                '${bsc}'
+            </foreach>
+        </if> ) zongHuaWu
+        group by Date, BSC, ObjectID
+    </foreach>) temp
+        GROUP by BSC, ObjectID
+        order by BSC,ObjectID ASC
+    </select>
+</mapper>

@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hgicreate.rno.demo.mapper.MotsMapper">
+    <select id="queryMots" resultType="com.hgicreate.rno.demo.model.Mots">
+		select sts_MOTS.Date,
+			   sts_MOTS.Time,
+			   sts_MOTS.BSC,
+			   RXMOP_TRX.CELL,
+			   sts_MOTS.ObjectID as RXOTS,
+			   sts_MOTS.CONERRCNT,
+			   sts_MOTS.CONCNT
+		  from sts_MOTS,
+			   (select *
+				  from cdd_RXMOP_TRX
+				 where date in (select top 1 date from cdd_RXMOP_TRX order by 1)) RXMOP_TRX
+		 where sts_MOTS.BSC + substring(replace(sts_MOTS.ObjectID, 'TS', 'TRX'),
+										8,
+										LEN(sts_MOTS.ObjectID) - 8) =
+			   RXMOP_TRX.BSC + substring(RXMOP_TRX.MO, 8, LEN(RXMOP_TRX.MO))
+		   and sts_MOTS.Date in ('20130112', '20130111')
+		   and RXMOP_TRX.CELL in ('TD0003A', 'TD0003B', 'TD0003C')
+		   and sts_MOTS.Time in ('0000:0100', '0100:0200')
+    </select>
+</mapper>

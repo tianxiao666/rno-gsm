@@ -1,0 +1,702 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hgicreate.rno.gsm.app.mapper.IndicatorMapper">
+    <select id="selectZeroTeleTraffic" parameterType="map" resultType="java.util.LinkedHashMap">
+
+        select  date as 日期,
+        time as 时间,
+        bsc as "BSC",
+        cell as "CELL",
+        COALESCE(chinese_name,'nulled') as 中文名,
+        COALESCE(county,'nulled')  as 县区,
+        COALESCE(agency_maintain,'nulled') as 代维,
+        carrier_number as 载波数,
+        total_tele_traffic as 总话务,
+        cast(apply_number as integer)  as 申请数,
+        distribute_number as 指配数
+        from rno_gsm_zero_tele_traffic
+        where 1=1
+        <if test="cells!=null">
+            and
+            <foreach collection="cells" index="index" item="cell" separator="or" open=" " close=" ">
+                cell like concat(concat('%',concat(trim('${cell}'),'')),'%')
+            </foreach>
+        </if>
+        <if test="chinese!=null">
+            and
+            <foreach collection="chinese" index="index" item="china" separator="or" open=" " close=" ">
+                chinese_name like concat(concat('%',concat(trim('${china}'),'')),'%')
+            </foreach>
+        </if>
+
+        and concat(date,substring(time,0,5)) IN
+        <foreach collection="times" index="index" item="time" separator="," open="(" close=")">
+           '${time}'
+        </foreach>
+        order by 1 desc, 2 desc,10 asc   ${topX}
+    </select>
+    <select id="selectZeroFlow" parameterType="map" resultType="java.util.LinkedHashMap">
+
+        select  date as 日期,
+        time as 时间,
+        bsc as "BSC",
+        cell as "CELL",
+        COALESCE(chinese_name,'nulled') as 中文名,
+        COALESCE(county,'nulled')  as 县区,
+        COALESCE(agency_maintain,'nulled') as 代维,
+        gprs_down_flow as "GPRS下行流量",
+        gprs_upper_flow as "GPRS上行流量",
+        edge_down_flow as "EDGE下行流量",
+        edge_upper_flow as "EDGE上行流量",
+        cast(total_tele_traffic as DECIMAL(18,2))  as 总话务
+        from rno_gsm_zero_flow
+        where 1=1
+        <if test="cells!=null">
+            and
+            <foreach collection="cells" index="index" item="cell" separator="or" open=" " close=" ">
+                cell like concat(concat('%',concat(trim('${cell}'),'')),'%')
+            </foreach>
+        </if>
+        <if test="chinese!=null">
+            and
+            <foreach collection="chinese" index="index" item="china" separator="or" open=" " close=" ">
+                chinese_name like concat(concat('%',concat(trim('${china}'),'')),'%')
+            </foreach>
+        </if>
+        and concat(date,substring(time,0,5)) IN
+        <foreach collection="times" index="index" item="time" separator="," open="(" close=")">
+            '${time}'
+        </foreach>
+        order by 1 desc, 2 desc ,12 asc  ${topX}
+    </select>
+    <select id="selectA1A2" parameterType="map" resultType="java.util.LinkedHashMap">
+        select  date as 日期,
+        time as 时间,
+        bsc as "BSC",
+        rsite as "RSITE",
+        genre as 类型,
+        alarm_name as 告警名称,
+        mo as "MO",
+        alarm as "ALARM"
+        from rno_gsm_a1a2
+        where 1=1   and concat(date,substring(time,0,5)) IN
+        <foreach collection="times" index="index" item="time" separator="," open="(" close=")">
+            '${time}'
+        </foreach>
+         order by 1 desc, 2 desc ${topX}
+    </select>
+    <select id="selectIcm" parameterType="map" resultType="java.util.LinkedHashMap">
+        select   date as 日期,
+        time as 时间,
+        bsc as "BSC",
+        cell as "CELL",
+        COALESCE(chinese_name,'nulled') as 中文名,
+        COALESCE(county,'nulled')  as 县区,
+        COALESCE(agency_maintain,'nulled') as 代维,
+        COALESCE(cover_scene,'nulled')  as 覆盖场景,
+        COALESCE(vip,'nulled') as "是否VIP小区",
+        cast(four_five_grade as DECIMAL(18,2)) as 四五级
+        from rno_gsm_icm
+        where 1=1
+        <if test="cells!=null">
+            and
+            <foreach collection="cells" index="index" item="cell" separator="or" open=" " close=" ">
+                cell like concat(concat('%',concat(trim('${cell}'),'')),'%')
+            </foreach>
+        </if>
+        <if test="chinese!=null">
+            and
+            <foreach collection="chinese" index="index" item="china" separator="or" open=" " close=" ">
+                chinese_name like concat(concat('%',concat(trim('${china}'),'')),'%')
+            </foreach>
+        </if>
+        and concat(date,substring(time,0,5)) IN
+        <foreach collection="times" index="index" item="time" separator="," open="(" close=")">
+            '${time}'
+        </foreach>
+        order by 1 desc, 2 desc,10 desc  ${topX}
+    </select>
+    <select id="selectRxmfp" parameterType="map" resultType="java.util.LinkedHashMap">
+        select  date as 日期,
+        time as 时间,
+        bsc as "BSC",
+        cell as "CELL",
+        COALESCE(chinese_name,'nulled') as 中文名,
+        COALESCE(county,'nulled')  as 县区,
+        COALESCE(agency_maintain,'nulled') as 代维,
+        genre as 类型,
+        alarm_name as 告警名称,
+        status as 状态,
+        mo as "MO",
+        fault_codes as "Fault_Codes",
+        datas as "Datas"
+        from rno_gsm_rxmfp
+        where 1=1
+        <if test="cells!=null">
+            and
+            <foreach collection="cells" index="index" item="cell" separator="or" open=" " close=" ">
+                cell like concat(concat('%',concat(trim('${cell}'),'')),'%')
+            </foreach>
+        </if>
+        <if test="chinese!=null">
+            and
+            <foreach collection="chinese" index="index" item="china" separator="or" open=" " close=" ">
+                chinese_name like concat(concat('%',concat(trim('${china}'),'')),'%')
+            </foreach>
+        </if>
+        and concat(date,substring(time,0,5)) IN
+        <foreach collection="times" index="index" item="time" separator="," open="(" close=")">
+            '${time}'
+        </foreach>
+        order by 1 desc, 2 desc ${topX}
+    </select>
+    <select id="selectSqi" parameterType="map" resultType="java.util.LinkedHashMap">
+
+        select  	date as 日期,
+        time as 时间,
+        bsc as "BSC",
+        cell as "CELL",
+        COALESCE(chinese_name,'nulled') as 中文名,
+        COALESCE(county,'nulled')  as 县区,
+        COALESCE(agency_maintain,'nulled') as 代维,
+        cast(sqi as DECIMAL(18,2))  as "SQI",
+        tsqigood as "TSQIGOOD",
+        tsqiaccpt as "TSQIACCPT",
+        tsqibad  as "TSQIBAD",
+        four_five_grade  as 四五级
+        from rno_gsm_sqi
+        where 1=1
+        <if test="cells!=null">
+            and
+            <foreach collection="cells" index="index" item="cell" separator="or" open=" " close=" ">
+                cell like concat(concat('%',concat(trim('${cell}'),'')),'%')
+            </foreach>
+        </if>
+        <if test="chinese!=null">
+            and
+            <foreach collection="chinese" index="index" item="china" separator="or" open=" " close=" ">
+                chinese_name like concat(concat('%',concat(trim('${china}'),'')),'%')
+            </foreach>
+        </if>
+        and concat(date,substring(time,0,5)) IN
+        <foreach collection="times" index="index" item="time" separator="," open="(" close=")">
+            '${time}'
+        </foreach>
+        order by 1 desc, 2 desc,8 asc  ${topX}
+    </select>
+    <select id="selectScallDrop" parameterType="map" resultType="java.util.LinkedHashMap">
+
+        select   date as 日期,
+        time as 时间,
+        bsc as "BSC",
+        cell as "CELL",
+        COALESCE(chinese_name,'nulled') as 中文名,
+        COALESCE(county,'nulled')  as 县区,
+        COALESCE(agency_maintain,'nulled') as 代维,
+        cast(s_call_drop as integer)  as "S掉话",
+        weak_signal_call_drop  as 弱信号掉话,
+        quality_diff_call_drop  as 质差掉话,
+        ta_call_drop  as "TA掉话",
+        other_call_drop  as 其他掉话
+        from rno_gsm_s_call_drop
+        where 1=1
+        <if test="cells!=null">
+            and
+            <foreach collection="cells" index="index" item="cell" separator="or" open=" " close=" ">
+                cell like concat(concat('%',concat(trim('${cell}'),'')),'%')
+            </foreach>
+        </if>
+        <if test="chinese!=null">
+            and
+            <foreach collection="chinese" index="index" item="china" separator="or" open=" " close=" ">
+                chinese_name like concat(concat('%',concat(trim('${china}'),'')),'%')
+            </foreach>
+        </if>
+        and concat(date,substring(time,0,5)) IN
+        <foreach collection="times" index="index" item="time" separator="," open="(" close=")">
+            '${time}'
+        </foreach>
+        order by 1 desc, 2 desc, 8 desc  ${topX}
+    </select>
+    <select id="selectScrowd" parameterType="map" resultType="java.util.LinkedHashMap">
+
+        select   date as 日期,
+        time as 时间,
+        bsc as "BSC",
+        cell as "CELL",
+        COALESCE(chinese_name,'nulled') as 中文名,
+        COALESCE(county,'nulled')  as 县区,
+        COALESCE(agency_maintain,'nulled') as 代维,
+        COALESCE(cover_scene,'nulled')  as 覆盖场景,
+        COALESCE(vip,'nulled') as "是否VIP小区",
+        cast(s_crowd_num as integer)  as "S拥塞数"
+        from rno_gsm_s_crowd
+        where 1=1
+        <if test="cells!=null">
+            and
+            <foreach collection="cells" index="index" item="cell" separator="or" open=" " close=" ">
+                cell like concat(concat('%',concat(trim('${cell}'),'')),'%')
+            </foreach>
+        </if>
+        <if test="chinese!=null">
+            and
+            <foreach collection="chinese" index="index" item="china" separator="or" open=" " close=" ">
+                chinese_name like concat(concat('%',concat(trim('${china}'),'')),'%')
+            </foreach>
+        </if>
+        and concat(date,substring(time,0,5)) IN
+        <foreach collection="times" index="index" item="time" separator="," open="(" close=")">
+            '${time}'
+        </foreach>
+
+        order by 1 desc, 2 desc,10 desc ${topX}
+    </select>
+    <select id="selectTbf" parameterType="map" resultType="java.util.LinkedHashMap">
+        select   date as 日期,
+        time as 时间,
+        bsc as "BSC",
+        cell as "CELL",
+        COALESCE(chinese_name,'nulled') as 中文名,
+        COALESCE(county,'nulled')  as 县区,
+        COALESCE(agency_maintain,'nulled') as 代维,
+        COALESCE(cover_scene,'nulled')  as 覆盖场景,
+        COALESCE(vip,'nulled') as "是否VIP小区",
+        tbf_establish_rate  as "TBF建立成功率",
+        down_total_flow  as 下行总流量
+        from rno_gsm_tbf
+        where 1=1
+        <if test="cells!=null">
+            and
+            <foreach collection="cells" index="index" item="cell" separator="or" open=" " close=" ">
+                cell like concat(concat('%',concat(trim('${cell}'),'')),'%')
+            </foreach>
+        </if>
+        <if test="chinese!=null">
+            and
+            <foreach collection="chinese" index="index" item="china" separator="or" open=" " close=" ">
+                chinese_name like concat(concat('%',concat(trim('${china}'),'')),'%')
+            </foreach>
+        </if>
+        and concat(date,substring(time,0,5)) IN
+        <foreach collection="times" index="index" item="time" separator="," open="(" close=")">
+            '${time}'
+        </foreach>
+       order by 1 desc, 2 desc ${topX}
+    </select>
+    <select id="selectTransportChainScission" parameterType="map" resultType="java.util.LinkedHashMap">
+
+        select   date as 日期,
+        time as 时间,
+        bsc as "BSC",
+        cell as "CELL",
+        COALESCE(chinese_name,'nulled') as 中文名,
+        COALESCE(county,'nulled')  as 县区,
+        COALESCE(agency_maintain,'nulled') as 代维,
+        COALESCE(cover_scene,'nulled')  as 覆盖场景,
+        COALESCE(vip,'nulled') as "是否VIP小区",
+        mo  as "MO",
+        dip  as "DIP",
+        COALESCE(state,'nulled')  as "STATE"
+        from rno_gsm_transport_chain_scission
+        where 1=1
+        <if test="cells!=null">
+            and
+            <foreach collection="cells" index="index" item="cell" separator="or" open=" " close=" ">
+                cell like concat(concat('%',concat(trim('${cell}'),'')),'%')
+            </foreach>
+        </if>
+        <if test="chinese!=null">
+            and
+            <foreach collection="chinese" index="index" item="china" separator="or" open=" " close=" ">
+                chinese_name like concat(concat('%',concat(trim('${china}'),'')),'%')
+            </foreach>
+        </if>
+        and concat(date,substring(time,0,5)) IN
+        <foreach collection="times" index="index" item="time" separator="," open="(" close=")">
+            '${time}'
+        </foreach>
+        order by 1 desc, 2 desc ${topX}
+    </select>
+    <select id="selectFallSiteBcch" parameterType="map" resultType="java.util.LinkedHashMap">
+
+        select   date as 日期,
+        time as 时间,
+        bsc as "BSC",
+        cell as "CELL",
+        COALESCE(chinese_name,'nulled') as 中文名,
+        COALESCE(county,'nulled')  as 县区,
+        COALESCE(agency_maintain,'nulled') as 代维,
+        COALESCE(cover_scene,'nulled')  as 覆盖场景,
+        COALESCE(vip,'nulled') as "是否VIP小区",
+        bcch  as "BCCH",
+        COALESCE(state,'nulled')  as "STATE"
+        from rno_gsm_fall_site_bcch
+        where 1=1
+        <if test="cells!=null">
+            and
+            <foreach collection="cells" index="index" item="cell" separator="or" open=" " close=" ">
+                cell like concat(concat('%',concat(trim('${cell}'),'')),'%')
+            </foreach>
+        </if>
+        <if test="chinese!=null">
+            and
+            <foreach collection="chinese" index="index" item="china" separator="or" open=" " close=" ">
+                chinese_name like concat(concat('%',concat(trim('${china}'),'')),'%')
+            </foreach>
+        </if>
+        and concat(date,substring(time,0,5)) IN
+        <foreach collection="times" index="index" item="time" separator="," open="(" close=")">
+            '${time}'
+        </foreach>
+        order by 1 desc, 2 desc ${topX}
+    </select>
+    <select id="selectCallDrop" parameterType="map" resultType="java.util.LinkedHashMap">
+
+        select  date as 日期,
+        time as 时间,
+        bsc as "BSC",
+        cell as "CELL",
+        COALESCE(chinese_name,'nulled') as 中文名,
+        COALESCE(county,'nulled')  as 县区,
+        COALESCE(agency_maintain,'nulled') as 代维,
+        cmcc_calldrop_num  as "CMCC掉话数",
+        cast(cmcc_calldrop_rate as DECIMAL(18,2))  as "CMCC掉话率",
+        each_line_teletraffic_num  as 每线话务量,
+        wireless_total_call_drop as 无线总掉话,
+        sudden_call_drop as 突然掉话,
+        upper_signal as 上信号,
+        upper_quality_diff as 上质差,
+        down_signal as 下信号,
+        down_quality_diff as 下质差,
+        upper_down_signal as 上下信号,
+        upper_down_quality_diff as 上下质差,
+        ta_call_drop as "TA掉话"
+        from rno_gsm_call_drop
+        where 1=1
+        <if test="cells!=null">
+            and
+            <foreach collection="cells" index="index" item="cell" separator="or" open=" " close=" ">
+                cell like concat(concat('%',concat(trim('${cell}'),'')),'%')
+            </foreach>
+        </if>
+        <if test="chinese!=null">
+            and
+            <foreach collection="chinese" index="index" item="china" separator="or" open=" " close=" ">
+                chinese_name like concat(concat('%',concat(trim('${china}'),'')),'%')
+            </foreach>
+        </if>
+        and concat(date,substring(time,0,5)) IN
+        <foreach collection="times" index="index" item="time" separator="," open="(" close=")">
+            '${time}'
+        </foreach>
+       order by 1 desc, 2 desc,9 desc  ${topX}
+    </select>
+    <select id="selectPitchOut" parameterType="map" resultType="java.util.LinkedHashMap">
+
+        select   date as 日期,
+        time as 时间,
+        bsc as "BSC",
+        cell as "CELL",
+        COALESCE(chinese_name,'nulled') as 中文名,
+        COALESCE(county,'nulled')  as 县区,
+        COALESCE(agency_maintain,'nulled') as 代维,
+        cast(pitch_out_success_rate as DECIMAL(18,2))   as 切出成功率,
+        pitch_out_applying  as 切出申请,
+        pitch_out_success  as 切出成功
+        from rno_gsm_pitching_out
+        where 1=1
+        <if test="cells!=null">
+            and
+            <foreach collection="cells" index="index" item="cell" separator="or" open=" " close=" ">
+                cell like concat(concat('%',concat(trim('${cell}'),'')),'%')
+            </foreach>
+        </if>
+        <if test="chinese!=null">
+            and
+            <foreach collection="chinese" index="index" item="china" separator="or" open=" " close=" ">
+                chinese_name like concat(concat('%',concat(trim('${china}'),'')),'%')
+            </foreach>
+        </if>
+        and concat(date,substring(time,0,5)) IN
+        <foreach collection="times" index="index" item="time" separator="," open="(" close=")">
+            '${time}'
+        </foreach>
+        order by 1 desc, 2 desc,8 asc ${topX}
+    </select>
+    <select id="selectPitchIn" parameterType="map" resultType="java.util.LinkedHashMap">
+        select  date as 日期,
+        time as 时间,
+        bsc as "BSC",
+        cell as "CELL",
+        COALESCE(chinese_name,'nulled') as 中文名,
+        COALESCE(county,'nulled')  as 县区,
+        COALESCE(agency_maintain,'nulled') as 代维,
+        cast(pitch_in_success_rate as DECIMAL(18,2))  as 切入成功率,
+        pitch_in_applying as 切入申请,
+        pitch_in_success  as 切入成功
+        from rno_gsm_pitching_in
+        where 1=1
+        <if test="cells!=null">
+            and
+            <foreach collection="cells" index="index" item="cell" separator="or" open=" " close=" ">
+                cell like concat(concat('%',concat(trim('${cell}'),'')),'%')
+            </foreach>
+        </if>
+        <if test="chinese!=null">
+            and
+            <foreach collection="chinese" index="index" item="china" separator="or" open=" " close=" ">
+                chinese_name like concat(concat('%',concat(trim('${china}'),'')),'%')
+            </foreach>
+        </if>
+        and concat(date,substring(time,0,5)) IN
+        <foreach collection="times" index="index" item="time" separator="," open="(" close=")">
+            '${time}'
+        </foreach>
+        order by 1 desc, 2 desc,8 asc ${topX}
+    </select>
+    <select id="selectWirelessAccess" parameterType="map" resultType="java.util.LinkedHashMap">
+
+        select  date as 日期,
+        time as 时间,
+        bsc as "BSC",
+        cell as "CELL",
+        COALESCE(chinese_name,'nulled') as 中文名,
+        COALESCE(county,'nulled')  as 县区,
+        COALESCE(agency_maintain,'nulled') as 代维,
+        molecule_tfcongpgsm as "分子TFCONGPGSM",
+        molecule_tcassall as "分子TCASSALL",
+        denominator_cnrocnt as "分母CNROCNT",
+        denominator_raaccfa as "分母RAACCFA",
+        denominator_tassall as "分母TASSALL",
+        wireless_molecule as 无线分子,
+        wireless_denominator as 无线分母,
+        cast(wireless_access as DECIMAL(18,2))  as 无线接入性,
+        each_line_teletraffic_num as 每线话务量
+        from rno_gsm_wireless_access
+        where 1=1
+        <if test="cells!=null">
+            and
+            <foreach collection="cells" index="index" item="cell" separator="or" open=" " close=" ">
+                cell like concat(concat('%',concat(trim('${cell}'),'')),'%')
+            </foreach>
+        </if>
+        <if test="chinese!=null">
+            and
+            <foreach collection="chinese" index="index" item="china" separator="or" open=" " close=" ">
+                chinese_name like concat(concat('%',concat(trim('${china}'),'')),'%')
+            </foreach>
+        </if>
+        and concat(date,substring(time,0,5)) IN
+        <foreach collection="times" index="index" item="time" separator="," open="(" close=")">
+            '${time}'
+        </foreach>
+        order by 1 desc, 2 desc ,15 asc ${topX}
+    </select>
+    <select id="selectErrorSlideCode" parameterType="map" resultType="java.util.LinkedHashMap">
+
+        select  date as 日期,
+        time as 时间,
+        bsc as "BSC",
+        cell as "CELL",
+        COALESCE(chinese_name,'nulled') as 中文名,
+        COALESCE(county,'nulled')  as 县区,
+        COALESCE(agency_maintain,'nulled') as 代维,
+        COALESCE(cover_scene,'nulled')  as 覆盖场景,
+        COALESCE(vip,'nulled') as "是否VIP小区",
+        dip as "DIP",
+        t1 as "T1",
+        t2 as "T2",
+        slip as "SLIP",
+        slip2 as "SLIP2",
+        esv_or_nes as "ESV_or_NES",
+        sesv_or_fes as "SESV_or_FES",
+        sfv as "SFV",
+        es2v_or_nes2 as "ES2V_or_NES2",
+        ses2v_or_fes2 as "SES2V_or_FES2"
+        from rno_gsm_error_slide_code
+        where 1=1
+        <if test="cells!=null">
+            and
+            <foreach collection="cells" index="index" item="cell" separator="or" open=" " close=" ">
+                cell like concat(concat('%',concat(trim('${cell}'),'')),'%')
+            </foreach>
+        </if>
+        <if test="chinese!=null">
+            and
+            <foreach collection="chinese" index="index" item="china" separator="or" open=" " close=" ">
+                chinese_name like concat(concat('%',concat(trim('${china}'),'')),'%')
+            </foreach>
+        </if>
+        and concat(date,substring(time,0,5)) IN
+        <foreach collection="times" index="index" item="time" separator="," open="(" close=")">
+            '${time}'
+        </foreach>
+       order by 1 desc, 2 desc ${topX}
+    </select>
+    <select id="selectChannelWellRate" parameterType="map" resultType="java.util.LinkedHashMap">
+        select  date as 日期,
+        time as 时间,
+        bsc as "BSC",
+        cell as "CELL",
+        COALESCE(chinese_name,'nulled') as 中文名,
+        COALESCE(county,'nulled')  as 县区,
+        COALESCE(agency_maintain,'nulled') as 代维,
+        carrier_num  as 载波数,
+        definition_channel as 定义信道,
+        available_channel as 可用信道,
+        cast(channel_well_rate as DECIMAL(18,2)) as 信道完好率
+        from rno_gsm_channel_well_rate
+        where 1=1
+        <if test="cells!=null">
+            and
+            <foreach collection="cells" index="index" item="cell" separator="or" open=" " close=" ">
+                cell like concat(concat('%',concat(trim('${cell}'),'')),'%')
+            </foreach>
+        </if>
+        <if test="chinese!=null">
+            and
+            <foreach collection="chinese" index="index" item="china" separator="or" open=" " close=" ">
+                chinese_name like concat(concat('%',concat(trim('${china}'),'')),'%')
+            </foreach>
+        </if>
+        and concat(date,substring(time,0,5)) IN
+        <foreach collection="times" index="index" item="time" separator="," open="(" close=")">
+            '${time}'
+        </foreach>
+        order by 1 desc, 2 desc,11 asc ${topX}
+    </select>
+    <select id="selectPagingCrowd" parameterType="map" resultType="java.util.LinkedHashMap">
+
+        select  date as 日期,
+        time as 时间,
+        bsc as "BSC",
+        cell as "CELL",
+        COALESCE(chinese_name,'nulled') as 中文名,
+        COALESCE(county,'nulled')  as 县区,
+        COALESCE(agency_maintain,'nulled') as 代维,
+        COALESCE(cover_scene,'nulled')  as 覆盖场景,
+        COALESCE(vip,'nulled') as "是否VIP小区",
+        cast(paging_crowd as integer) as 寻呼拥塞
+        from rno_gsm_paging_crowd
+        where 1=1
+        <if test="cells!=null">
+            and
+            <foreach collection="cells" index="index" item="cell" separator="or" open=" " close=" ">
+                cell like concat(concat('%',concat(trim('${cell}'),'')),'%')
+            </foreach>
+        </if>
+        <if test="chinese!=null">
+            and
+            <foreach collection="chinese" index="index" item="china" separator="or" open=" " close=" ">
+                chinese_name like concat(concat('%',concat(trim('${china}'),'')),'%')
+            </foreach>
+        </if>
+        and concat(date,substring(time,0,5)) IN
+        <foreach collection="times" index="index" item="time" separator="," open="(" close=")">
+            '${time}'
+        </foreach>
+        order by 1 desc,  2 desc,10 desc ${topX}
+    </select>
+    <select id="selectCrowd" parameterType="map" resultType="java.util.LinkedHashMap">
+
+        select   date as 日期,
+        time as 时间,
+        bsc as "BSC",
+        cell as "CELL",
+        COALESCE(chinese_name,'nulled') as 中文名,
+        COALESCE(county,'nulled')  as 县区,
+        COALESCE(agency_maintain,'nulled') as 代维,
+        total_tele_traffic as 总话务,
+        each_line_teletraffic as 每线话务,
+        h_teletraffic as "H话务量",
+        applying_num as 申请数,
+        distribute_num as 指配数,
+        crowd_num as 拥塞数,
+        distribute_crowd_num as 指配拥塞数,
+        cast(channel_well_rate as DECIMAL(18,2)) as 信道完好率
+        from rno_gsm_crowd
+        where 1=1
+        <if test="cells!=null">
+            and
+            <foreach collection="cells" index="index" item="cell" separator="or" open=" " close=" ">
+                cell like concat(concat('%',concat(trim('${cell}'),'')),'%')
+            </foreach>
+        </if>
+        <if test="chinese!=null">
+            and
+            <foreach collection="chinese" index="index" item="china" separator="or" open=" " close=" ">
+                chinese_name like concat(concat('%',concat(trim('${china}'),'')),'%')
+            </foreach>
+        </if>
+        and concat(date,substring(time,0,5)) IN
+        <foreach collection="times" index="index" item="time" separator="," open="(" close=")">
+            '${time}'
+        </foreach>
+        order by 1 desc, 2 desc,15 desc ${topX}
+    </select>
+    <select id="selectQuality" parameterType="map" resultType="java.util.LinkedHashMap">
+
+        select  date as 日期,
+        time as 时间,
+        bsc as "BSC",
+        cell as "CELL",
+        COALESCE(chinese_name,'nulled') as 中文名,
+        COALESCE(county,'nulled')  as 县区,
+        COALESCE(agency_maintain,'nulled') as 代维,
+        upper_voice_quality as 上行语音质量,
+        cast(down_voice_quality as DECIMAL(18,2)) as 下行语音质量,
+        down_total_sampling_spot as 下行总采样点
+        from rno_gsm_quality
+        where 1=1
+        <if test="cells!=null">
+            and
+            <foreach collection="cells" index="index" item="cell" separator="or" open=" " close=" ">
+                cell like concat(concat('%',concat(trim('${cell}'),'')),'%')
+            </foreach>
+        </if>
+        <if test="chinese!=null">
+            and
+            <foreach collection="chinese" index="index" item="china" separator="or" open=" " close=" ">
+                chinese_name like concat(concat('%',concat(trim('${china}'),'')),'%')
+            </foreach>
+        </if>
+        and concat(date,substring(time,0,5)) IN
+        <foreach collection="times" index="index" item="time" separator="," open="(" close=")">
+           '${time}'
+        </foreach>
+
+        order by 1 desc, 2 desc,9 asc ${topX}
+    </select>
+    <select id="selectIndex" parameterType="map" resultType="java.util.LinkedHashMap">
+        select date as 日期,time as 时间,bsc as "BSC",cell as "CELL",chinese as 中文名,
+        county as 县区,agency_maitain as 代维,carrier_num as 载波数,channel_well_rate as 信道完好率,
+        each_line_tele_traffic_num as 每线话务量,tele_traffic_num as 话务量,average_pdch_num "平均占用PDCH数",
+        perception_crowd_num as 感知拥塞数,call_drop_num 掉话次数,call_drop_rate 掉话率,
+        sdcch_crowd_num as "SDCCH拥塞数",wireless_access as 无线接入性,
+        four_five_grade_inteference_rate as "45级干扰比例",
+        COALESCE(fault_alarm,' ') as 故障告警,
+        COALESCE(transport_chain_scission,' ') as 传输断链,
+        COALESCE(error_slide_code,' ') as 误码滑码 from rno_gsm_indicator
+        where 1=1
+        <if test="cells!=null">
+            and
+            <foreach collection="cells" index="index" item="cell" separator="or" open=" " close=" ">
+                cell like concat(concat('%',concat(trim('${cell}'),'')),'%')
+            </foreach>
+        </if>
+        <if test="chinese!=null">
+            and
+            <foreach collection="chinese" index="index" item="china" separator="or" open=" " close=" ">
+                chinese like concat(concat('%',concat(trim('${china}'),'')),'%')
+            </foreach>
+        </if>
+        and concat(date,substring(time,0,5)) IN
+        <foreach collection="times" index="index" item="time" separator="," open="(" close=")">
+            '${time}'
+        </foreach>
+         ${topX}
+    </select>
+</mapper>

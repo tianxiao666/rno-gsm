@@ -1,0 +1,27 @@
+/* 覆盖sb-admin2中的样式*/
+#page-wrapper {
+    position: relative;
+    border-left: none;
+    margin: 50px 0 0 215px;
+    padding: 15px 0;
+}
+
+.sidebar {
+    width: 205px;
+    min-height: 1080px;
+    background-color: #2D6DA5;
+}
+
+#footer {
+    width: 100%;
+    height: 30px;
+    padding: 6px 11px;
+    background-color: #2D6DA5;
+    color: #FFFFFF;
+    font-size: 13px;
+    text-align: right;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    margin: 0;
+}

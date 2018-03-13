@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hgicreate.rno.gsm.mapper.optimize.BsicMapper">
+    <select id="getCountFromTempCell" resultType="long">
+       select count(*) from sysobjects where id = object_id('temp_CELL')
+    </select>
+    
+    <select id="getCountFromTempBsic" resultType="long">
+       select count(*) from sysobjects where id = object_id('temp_BSIC')
+    </select>
+    
+    <delete id="dropTempCell">
+       drop table temp_CELL
+    </delete>
+    
+    <delete id="dropTempBsic">
+       drop table temp_BSIC
+    </delete>
+    
+    <insert id="insertToTempCell">
+       select ObjectID as CELL,BCCH,BSIC,经度,纬度 into temp_CELL from sts_GSM_CELL
+    </insert>
+    
+    <select id="createTempBsic">
+       create table temp_BSIC(BSIC varchar(2))
+    </select>
+    
+    <select id="preparationForBulkInsert" resultType="map">
+       select @@trancount;SET FMTONLY ON select * from temp_BSIC exec ..sp_tablecollations_100 N'.[temp_BSIC]'
+    </select>
+    
+    <!-- <insert id="insertToTempBsic">
+       insert bulk temp_BSIC ([BSIC] VarChar(2) COLLATE Chinese_PRC_CI_AS)
+    </insert> -->
+    
+     <insert id="insertToTempBsic" parameterType="string">
+         insert into temp_BSIC(BSIC)   
+        <foreach collection="list" item="item" index="index" separator="union">
+          select '${item}'
+        </foreach>
+    </insert>
+    
+    <update id="updateTempCell">
+       update temp_cell set BSIC='' where CELL='${cell}'
+    </update>
+    
+    <select id="checkBsic" resultType="string">
+	    SET ANSI_WARNINGS off SET ARITHABORT off SET ARITHIGNORE on
+			select BSIC
+			  from temp_CELL,
+			       (select convert(float, temp_CELL.经度) as C经度,
+			               convert(float, temp_CELL.纬度) as C纬度
+			          from temp_CELL
+			         where cell = '${cell}') CELL_JWD
+			 where round(111.12 *
+			             ACOS((SIN(CELL_JWD.C纬度 * PI() / 180) *
+			                  SIN(convert(real, temp_CELL.纬度) * PI() / 180) +
+			                  COS(CELL_JWD.C纬度 * PI() / 180) *
+			                  COS(convert(real, temp_CELL.纬度) * PI() / 180) *
+			                  COS((convert(real, temp_CELL.经度) - CELL_JWD.C经度) * PI() / 180))) * 180 / PI(),
+			             2) &lt;= ${distance}
+	     SET ANSI_WARNINGS on SET ARITHABORT on SET ARITHIGNORE off
+    </select>
+    
+    <select id="getAvailBsic" resultType="String">
+       select * from temp_bsic where BSIC not in('',
+       <foreach collection="array" item="item" index="index" close=")" separator=",">
+          '${item}'
+       </foreach>
+    </select>
+    
+    <update id="updateBsic">
+       update temp_cell set BSIC='${bsic}' where CELL='${cell}'
+    </update>
+    
+    <select id="getBsicCount" parameterType="list" resultType="long">
+        select count(*) from temp_CELL where cell in
+        <foreach collection="list" item="item" index="index" open="(" close=")" separator=",">
+           '${item}'
+        </foreach>
+    </select>
+    
+    <select id="queryBsicByPage" parameterType="map" resultType="map">
+       select top ${cnt} * from(
+          select row_number() over(order by A.CELL) as rownumber, * from
+             (select CONVERT(varchar(100), GETDATE(), 112) as 日期, CELL, BSIC from temp_CELL where cell in 
+             <foreach collection="cell" item="cell" index="index" open="(" close=")" separator=",">
+                '${cell}'
+             </foreach>
+             )A)B where B.rownumber &gt; ${startIndex}
+    </select>
+    
+    <select id="getBsic" parameterType="string" resultType="java.util.LinkedHashMap">
+       select CONVERT(varchar(100), GETDATE(), 112) as 日期, CELL, BSIC from temp_CELL where cell in 
+             <foreach collection="list" item="item" index="index" open="(" close=")" separator=",">
+                '${item}'
+             </foreach>
+             order by CELL
+    </select>
+</mapper>

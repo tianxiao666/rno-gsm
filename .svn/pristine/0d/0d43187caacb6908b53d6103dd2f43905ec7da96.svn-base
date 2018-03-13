@@ -1,0 +1,242 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hgicreate.rno.gsm.mapper.optimize.FrequencyMapper">
+    <select id="getFrequencyCount" parameterType="map" resultType="long">
+		select count(*)
+		from cdd_tongPinTongSeJianCha
+		<if test="frequencydate!=null">
+			where 日期 in
+			<foreach collection="frequencydate" item="date" index="index" open="(" close=")" separator=",">
+				${date}
+			</foreach>
+		</if>
+		<if test="frequencycell!=null">
+			and CELL in
+			<foreach collection="frequencycell" item="cell" index="index" open="(" close=")" separator=",">
+				'${cell}'
+			</foreach>
+		</if>
+		<if test="frequencybsc!=null">
+			and BSC in
+			<foreach collection="frequencybsc" item="bsc" index="index" open="(" close=")" separator=",">
+				'${bsc}'
+			</foreach>
+		</if>
+    </select>
+
+	<select id="getFrequencyCounts" parameterType="map" resultType="long">
+		select
+		count(*)
+		from (select cdd_RLDEP.Date,
+		cdd_RLDEP.BSC,
+		cdd_RLDEP.CELL,
+		cdd_RLDEP.BSIC,
+		cdd_RLDEP.BCCHNO,
+		convert(float, sts_GSM_CELL.经度) as 经度,
+		convert(float, sts_GSM_CELL.纬度) as 纬度
+		from <foreach collection="frequencydates" item="date" index="index" open="" close="" separator=",">cdd_RLDEP_${date}</foreach> as cdd_RLDEP,
+		sts_GSM_CELL
+		where cdd_RLDEP.CELL = sts_GSM_CELL.ObjectID
+		<if test="frequencycells!=null">
+			and cdd_RLDEP.CELL in
+			<foreach collection="frequencycells" item="cell" index="index" open="(" close=")" separator=",">
+				'${cell}'
+			</foreach>
+		</if>
+		<if test="frequencybscs!=null">
+			and cdd_RLDEP.BSC in
+			<foreach collection="frequencybscs" item="bsc" index="index" open="(" close=")" separator=",">
+				'${bsc}'
+			</foreach>
+		</if>
+		) BCCH_BSIC,
+		sts_GSM_CELL,
+		<foreach collection="frequencydates" item="date" index="index" open="" close="" separator=",">cdd_RLDEP_${date}</foreach> as cdd_RLDEP
+		where BCCH_BSIC.CELL != sts_GSM_CELL.ObjectID
+		and cdd_RLDEP.BSIC = BCCH_BSIC.BSIC
+		and cdd_RLDEP.BCCHNO = BCCH_BSIC.BCCHNO
+		and cdd_RLDEP.CELL = sts_GSM_CELL.ObjectID
+		and 111.12 *
+		ACOS((SIN(BCCH_BSIC.纬度 * PI() / 180) *
+		SIN(convert(float, sts_GSM_CELL.纬度) * PI() / 180) +
+		COS(BCCH_BSIC.纬度 * PI() / 180) *
+		COS(convert(float, sts_GSM_CELL.纬度) * PI() / 180) *
+		COS((convert(float, sts_GSM_CELL.经度) - BCCH_BSIC.经度) * PI() / 180))) * 180 / PI() &lt; 15
+		and not
+		(BCCH_BSIC.经度 = sts_GSM_CELL.经度 and BCCH_BSIC.纬度 = sts_GSM_CELL.纬度)
+	</select>
+
+    <select id="calcaculateFrequencyByPage" parameterType="map" resultType="map">
+		select top ${cnts} * from(
+		select row_number() over(order by A.Date) as rownumber,* from(
+		select
+				BCCH_BSIC.Date,
+				BCCH_BSIC.BSC,
+				BCCH_BSIC.CELL,
+				cdd_RLDEP.BSC         as CELLR_BSC,
+				sts_GSM_CELL.ObjectID as CELLR,
+				BCCH_BSIC.BSIC,
+				BCCH_BSIC.BCCHNO,
+				round(111.12 *
+				ACOS((SIN(BCCH_BSIC.纬度 * PI() / 180) *
+				SIN(convert(float, sts_GSM_CELL.纬度) * PI() / 180) +
+				COS(BCCH_BSIC.纬度 * PI() / 180) *
+				COS(convert(float, sts_GSM_CELL.纬度) * PI() / 180) *
+				COS((convert(float, sts_GSM_CELL.经度) - BCCH_BSIC.经度) * PI() / 180))) * 180 / PI(),
+				2) as 距离
+		from (select cdd_RLDEP.Date,
+		cdd_RLDEP.BSC,
+		cdd_RLDEP.CELL,
+		cdd_RLDEP.BSIC,
+		cdd_RLDEP.BCCHNO,
+		convert(float, sts_GSM_CELL.经度) as 经度,
+		convert(float, sts_GSM_CELL.纬度) as 纬度
+		from <foreach collection="frequencydates" item="date" index="index" open="" close="" separator=",">cdd_RLDEP_${date}</foreach> as cdd_RLDEP,
+		sts_GSM_CELL
+		where cdd_RLDEP.CELL = sts_GSM_CELL.ObjectID
+		<if test="frequencycells!=null">
+			and cdd_RLDEP.CELL in
+			<foreach collection="frequencycells" item="cell" index="index" open="(" close=")" separator=",">
+				'${cell}'
+			</foreach>
+		</if>
+		<if test="frequencybscs!=null">
+			and cdd_RLDEP.BSC in
+			<foreach collection="frequencybscs" item="bsc" index="index" open="(" close=")" separator=",">
+				'${bsc}'
+			</foreach>
+		</if>
+		) BCCH_BSIC,
+		sts_GSM_CELL,
+		<foreach collection="frequencydates" item="date" index="index" open="" close="" separator=",">cdd_RLDEP_${date}</foreach> as cdd_RLDEP
+		where BCCH_BSIC.CELL != sts_GSM_CELL.ObjectID
+		and cdd_RLDEP.BSIC = BCCH_BSIC.BSIC
+		and cdd_RLDEP.BCCHNO = BCCH_BSIC.BCCHNO
+		and cdd_RLDEP.CELL = sts_GSM_CELL.ObjectID
+		and 111.12 *
+		ACOS((SIN(BCCH_BSIC.纬度 * PI() / 180) *
+		SIN(convert(float, sts_GSM_CELL.纬度) * PI() / 180) +
+		COS(BCCH_BSIC.纬度 * PI() / 180) *
+		COS(convert(float, sts_GSM_CELL.纬度) * PI() / 180) *
+		COS((convert(float, sts_GSM_CELL.经度) - BCCH_BSIC.经度) * PI() / 180))) * 180 / PI() &lt; 15
+		and not
+		(BCCH_BSIC.经度 = sts_GSM_CELL.经度 and BCCH_BSIC.纬度 = sts_GSM_CELL.纬度)
+		 )A)B where B.rownumber &gt; ${startIndexs}
+    </select>
+
+	<select id="queryFrequencyByPage" parameterType="map" resultType="map">
+		select top ${cnt} * from(
+		select row_number() over(order by A.日期) as rownumber,* from(
+		select 日期,BSC,CELL,CELLR_BSC,CELLR,BSIC,BCCHNO,距离
+		from cdd_tongPinTongSeJianCha
+		<if test="frequencydate!=null">
+			where 日期 in
+			<foreach collection="frequencydate" item="date" index="index" open="(" close=")" separator=",">
+				${date}
+			</foreach>
+		</if>
+		<if test="frequencycell!=null">
+			and CELL in
+			<foreach collection="frequencycell" item="cell" index="index" open="(" close=")" separator=",">
+				'${cell}'
+			</foreach>
+		</if>
+		<if test="frequencybsc!=null">
+			and BSC in
+			<foreach collection="frequencybsc" item="bsc" index="index" open="(" close=")" separator=",">
+				'${bsc}'
+			</foreach>
+		</if>)A)B where B.rownumber &gt; ${startIndex}
+	</select>
+
+	<select id="first_CalFrequency" parameterType="map" resultType="map">
+		select
+		CELL
+		from <foreach collection="frequencydates" item="date" index="index" open="" close="" separator=",">cdd_RLDEP_${date}</foreach>
+		where 1=1
+		<if test="frequencycells!=null">
+			and CELL in
+			<foreach collection="frequencycells" item="cell" index="index" open="(" close=")" separator=",">
+				'${cell}'
+			</foreach>
+		</if>
+	</select>
+
+	<select id="exportFrequency" parameterType="map" resultType="java.util.LinkedHashMap">
+		select 日期,BSC,CELL,CELLR_BSC,CELLR,BSIC,BCCHNO,距离
+		from cdd_tongPinTongSeJianCha
+		<if test="frequencydate!=null">
+			where 日期 in
+			<foreach collection="frequencydate" item="date" index="index" open="(" close=")" separator=",">
+				${date}
+			</foreach>
+		</if>
+		<if test="frequencycell!=null">
+			and CELL in
+			<foreach collection="frequencycell" item="cell" index="index" open="(" close=")" separator=",">
+				'${cell}'
+			</foreach>
+		</if>
+		<if test="frequencybsc!=null">
+			and BSC in
+			<foreach collection="frequencybsc" item="bsc" index="index" open="(" close=")" separator=",">
+				'${bsc}'
+			</foreach>
+		</if>
+	</select>
+
+	<select id="cal_exportFrequency" parameterType="map" resultType="java.util.LinkedHashMap">
+		select
+		BCCH_BSIC.Date as 日期,
+		BCCH_BSIC.BSC,
+		BCCH_BSIC.CELL,
+		cdd_RLDEP.BSC         as CELLR_BSC,
+		sts_GSM_CELL.ObjectID as CELLR,
+		BCCH_BSIC.BSIC,
+		BCCH_BSIC.BCCHNO,
+		cast((111.12 *
+		ACOS((SIN(BCCH_BSIC.纬度 * PI() / 180) *SIN(convert(float, sts_GSM_CELL.纬度) * PI() / 180) +
+		COS(BCCH_BSIC.纬度 * PI() / 180) *COS(convert(float, sts_GSM_CELL.纬度) * PI() / 180) *COS((convert(float, sts_GSM_CELL.经度) -
+		BCCH_BSIC.经度) * PI() / 180))) * 180 / PI()) as decimal(15,2)) as 距离
+		from (select cdd_RLDEP.Date,
+		cdd_RLDEP.BSC,
+		cdd_RLDEP.CELL,
+		cdd_RLDEP.BSIC,
+		cdd_RLDEP.BCCHNO,
+		convert(float, sts_GSM_CELL.经度) as 经度,
+		convert(float, sts_GSM_CELL.纬度) as 纬度
+		from <foreach collection="frequencydate" item="date" index="index" open="" close="" separator=",">cdd_RLDEP_${date}</foreach> as cdd_RLDEP,
+		sts_GSM_CELL
+		where cdd_RLDEP.CELL = sts_GSM_CELL.ObjectID
+		<if test="frequencycell!=null">
+			and cdd_RLDEP.CELL in
+			<foreach collection="frequencycell" item="cell" index="index" open="(" close=")" separator=",">
+				'${cell}'
+			</foreach>
+		</if>
+		<if test="frequencybsc!=null">
+			and cdd_RLDEP.BSC in
+			<foreach collection="frequencybsc" item="bsc" index="index" open="(" close=")" separator=",">
+				'${bsc}'
+			</foreach>
+		</if>
+		) BCCH_BSIC,
+		sts_GSM_CELL,
+		<foreach collection="frequencydate" item="date" index="index" open="" close="" separator=",">cdd_RLDEP_${date}</foreach> as cdd_RLDEP
+		where BCCH_BSIC.CELL != sts_GSM_CELL.ObjectID
+		and cdd_RLDEP.BSIC = BCCH_BSIC.BSIC
+		and cdd_RLDEP.BCCHNO = BCCH_BSIC.BCCHNO
+		and cdd_RLDEP.CELL = sts_GSM_CELL.ObjectID
+		and 111.12 *
+		ACOS((SIN(BCCH_BSIC.纬度 * PI() / 180) *
+		SIN(convert(float, sts_GSM_CELL.纬度) * PI() / 180) +
+		COS(BCCH_BSIC.纬度 * PI() / 180) *
+		COS(convert(float, sts_GSM_CELL.纬度) * PI() / 180) *
+		COS((convert(float, sts_GSM_CELL.经度) - BCCH_BSIC.经度) * PI() / 180))) * 180 / PI() &lt; 15
+		and not
+		(BCCH_BSIC.经度 = sts_GSM_CELL.经度 and BCCH_BSIC.纬度 = sts_GSM_CELL.纬度)
+	</select>
+</mapper>

@@ -1,0 +1,14 @@
+spring.datasource.url=jdbc:sqlserver://192.168.6.71:1433;databaseName=GSM
+spring.datasource.username=sa
+spring.datasource.password=Rno@2017
+
+logging.level.com.microsoft.sqlserver.jdbc=info
+logging.level.com.microsoft.sqlserver.jdbc.internals=debug
+logging.level.com.hgicreate.rno.gsm.controller=debug
+logging.level.com.hgicreate.rno.gsm.service=debug
+
+rno.gsm.security=true
+
+spring.http.multipart.location=d:/home/gsm/indicator
+
+
